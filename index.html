@@ -155,7 +155,7 @@
                 
                 <section class="switch-part switch-part2">
                     <div class="widget tagcloud" id="js-tagcloud">
-                        <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/Anfroid/" style="font-size: 10px;">Anfroid</a> <a href="/tags/HTML5/" style="font-size: 10px;">HTML5</a> <a href="/tags/Html5/" style="font-size: 10px;">Html5</a> <a href="/tags/Java/" style="font-size: 15px;">Java</a> <a href="/tags/NDK/" style="font-size: 10px;">NDK</a> <a href="/tags/SDK/" style="font-size: 10px;">SDK</a> <a href="/tags/remoteService/" style="font-size: 10px;">remoteService</a> <a href="/tags/随笔/" style="font-size: 10px;">随笔</a> <a href="/tags/面试/" style="font-size: 10px;">面试</a>
+                        <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/Anfroid/" style="font-size: 10px;">Anfroid</a> <a href="/tags/HTML5/" style="font-size: 10px;">HTML5</a> <a href="/tags/Html5/" style="font-size: 10px;">Html5</a> <a href="/tags/Java/" style="font-size: 15px;">Java</a> <a href="/tags/NDK/" style="font-size: 10px;">NDK</a> <a href="/tags/SDK/" style="font-size: 10px;">SDK</a> <a href="/tags/hexo/" style="font-size: 15px;">hexo</a> <a href="/tags/remoteService/" style="font-size: 10px;">remoteService</a> <a href="/tags/面试/" style="font-size: 10px;">面试</a>
                     </div>
                 </section>
                 
@@ -231,6 +231,126 @@
 </nav>
       <div class="body-wrap">
   
+    <article id="post-docker" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2018/03/10/docker/" class="article-date">
+      <time datetime="2018-03-10T08:24:40.000Z" itemprop="datePublished">2018-03-10</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/03/10/docker/">Docker学习</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <p><em>记录Docker的使用</em><br>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+
+      
+      
+        <p class="article-more-link">
+          <a href="/2018/03/10/docker/#more">more >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-hexo博客迁移-多机更新" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/01/10/hexo博客迁移-多机更新/" class="article-date">
+      <time datetime="2017-01-10T07:32:56.000Z" itemprop="datePublished">2017-01-10</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/01/10/hexo博客迁移-多机更新/">hexo博客迁移&amp;多机更新</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+              <p><em>记录hexo博客迁移和多级更新过程</em><br>
+          
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hexo/">hexo</a></li></ul>
+    </div>
+
+      
+        <p class="article-more-link">
+          <a href="/2017/01/10/hexo博客迁移-多机更新/#more">more >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
     <article id="post-git命令" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -258,45 +378,8 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <h1 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h1><pre><code>//初始化全局用户配置
-git config --global user.name &quot;Your Name&quot;
-git config --global user.email you@example.com
-//查看配置信息
-git config --list
-//有多个user.name，若要替换所有
-git config --global --replace-all user.name &quot;xxx&quot;
-//或是去除重复值
-git config --global --unset user.name
-</code></pre><h1 id="创建SSH密钥"><a href="#创建SSH密钥" class="headerlink" title="创建SSH密钥"></a>创建SSH密钥</h1><p>Step1:Check for SSH Keys </p>
-<pre><code>首先检查在你的电脑上是否存在SSH 
-命令：
- cd ~/.ssh
-如果显示‘No such file or directory’那么直接到step3
-</code></pre><p>Step2: Back up and remove exiting SSH</p>
-<pre><code>$ ls -l
-$ mkdir key_backup 
-$ cp id_rsa* key_backup 
-$ rm id_rsa*
-</code></pre><p>Step3:Generate a new ssh key</p>
-<pre><code>$ ssh-keygen -t rsa -C &quot;you email@email.com&quot; 或者去掉 －t rsa
-接下来会提示你输入一个文件名来保存你的SSH key ，如果不输入直接回车，则会保存在默认的文件里id_rsa.pub
-然后会提示你输入passphrases 连续输入两次，这在你在网页中添加SSH key的时候会让你输入一次。
-</code></pre><p>Step4:Add you ssh key to GitHub</p>
-<pre><code>首先得到刚才生成的SSH，自己打开id_rsa.pub复制内容或者如下命令放到剪切板中也可以
-$ sudo apt-get install xclip   //安装剪切板
-$ xclip -sel clip &lt; ~/.ssh/id_rsa.pub 
-这样就复制到剪切板了
-然后到github.com 登录自己的帐号。Account Setting ----&gt;SSH KEYS ----&gt;Add SSH key ------&gt;粘贴到KEY feild  然后自己取个名------&gt;会提示你confirm password 点击 ------&gt;弹出密码输入框，就是输入给你刚才的自己设置的passphrases ，ok！
-</code></pre><p>Step5:testing</p>
-<pre><code>命令：
-$ ssh -T git@github.com
-如果看到提示:
-The authenticity of host &apos;github.com (207.97.227.239)&apos; can&apos;t be established.RSA key fingerprint is 16:27:ac:a5:76:28:2d:36:63:1b:56:4d:eb:df:a6:48.Are you sure you want to continue connecting (yes/no)?
-没关系，正常情况……yes
-Hi username! You&apos;ve successfully authenticated, but GitHub does not provide shell access.
-</code></pre><h1 id="git冲突"><a href="#git冲突" class="headerlink" title="git冲突"></a>git冲突</h1><h3 id="Please-move-or-remove-them-before-you-can-merge"><a href="#Please-move-or-remove-them-before-you-can-merge" class="headerlink" title="Please move or remove them before you can merge"></a>Please move or remove them before you can merge</h3><pre><code>git clean -d -fx &quot;&quot;
-</code></pre><p>其中<br>x —–删除忽略文件已经对git来说不识别的文件<br>d —–删除未被添加到git的路径中的文件<br>f —–强制运行</p>
-
+              <p><em>git命令记录。</em><br>
+          
       
     </div>
     
@@ -305,6 +388,10 @@ Hi username! You&apos;ve successfully authenticated, but GitHub does not provide
       
 
       
+      
+        <p class="article-more-link">
+          <a href="/2016/07/28/git命令/#more">more >></a>
+        </p>
       
       <div class="clearfix"></div>
     </div>
@@ -322,10 +409,10 @@ Hi username! You&apos;ve successfully authenticated, but GitHub does not provide
 
 
   
-    <article id="post-记录github上的学习资源" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-游戏项目记录" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/07/17/记录github上的学习资源/" class="article-date">
+      <a href="/2016/07/17/游戏项目记录/" class="article-date">
       <time datetime="2016-07-17T07:51:45.000Z" itemprop="datePublished">2016-07-17</time>
 </a>
     </div>
@@ -339,7 +426,7 @@ Hi username! You&apos;ve successfully authenticated, but GitHub does not provide
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/17/记录github上的学习资源/">记录github上的学习资源</a>
+      <a class="article-title" href="/2016/07/17/游戏项目记录/">游戏项目记录</a>
     </h1>
   
 
@@ -349,7 +436,7 @@ Hi username! You&apos;ve successfully authenticated, but GitHub does not provide
     <div class="article-entry" itemprop="articleBody">
       
           
-              <p><em>阅读源码学习实现原理。</em><br>
+              <p><em>记录一个参与的游戏项目中实现交互模块所用到的开源工具。</em><br>
           
       
     </div>
@@ -365,7 +452,7 @@ Hi username! You&apos;ve successfully authenticated, but GitHub does not provide
 
       
         <p class="article-more-link">
-          <a href="/2016/07/17/记录github上的学习资源/#more">more >></a>
+          <a href="/2016/07/17/游戏项目记录/#more">more >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -473,7 +560,7 @@ Hi username! You&apos;ve successfully authenticated, but GitHub does not provide
     <div class="article-entry" itemprop="articleBody">
       
           
-              <p><em>记录下开发中碰到的一些工具。</em><br>
+              <p><em>记录一些开发中使用的工具。</em><br>
           
       
     </div>
@@ -734,130 +821,6 @@ Hi username! You&apos;ve successfully authenticated, but GitHub does not provide
       
         <p class="article-more-link">
           <a href="/2016/04/16/Android-px-dp-sp/#more">more >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-Android-fragment" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/04/15/Android-fragment/" class="article-date">
-      <time datetime="2016-04-15T03:02:53.000Z" itemprop="datePublished">2016-04-15</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/04/15/Android-fragment/">Android fragment</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <p><em>fragment的相关资料整理。</em><br>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/">Android</a></li></ul>
-    </div>
-
-      
-        <p class="article-more-link">
-          <a href="/2016/04/15/Android-fragment/#more">more >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-Android-adb" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/04/08/Android-adb/" class="article-date">
-      <time datetime="2016-04-08T03:37:09.000Z" itemprop="datePublished">2016-04-08</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/04/08/Android-adb/">Android adb</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <p><em>在一个Android电视上开发应用时碰到些问题需要调试，在这整理一下调试方面的知识</em><br>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-
-      
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/">Android</a></li></ul>
-    </div>
-
-      
-        <p class="article-more-link">
-          <a href="/2016/04/08/Android-adb/#more">more >></a>
         </p>
       
       <div class="clearfix"></div>

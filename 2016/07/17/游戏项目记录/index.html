@@ -3,19 +3,19 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Android_Html5 | Onlyyouhuang&#39;s blog</title>
+  <title>游戏项目记录 | Onlyyouhuang&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="公司的app中部分页面需要用HTML5，趁此机会开始好好学习前端知识">
-<meta name="keywords" content="Android,HTML5">
+  <meta name="description" content="记录一个参与的游戏项目中实现交互模块所用到的开源工具。">
+<meta name="keywords" content="Android,Java">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Android_Html5">
-<meta property="og:url" content="https://onlyyouhuang.github.io/2016/04/07/Android-Html5/index.html">
+<meta property="og:title" content="游戏项目记录">
+<meta property="og:url" content="https://onlyyouhuang.github.io/2016/07/17/游戏项目记录/index.html">
 <meta property="og:site_name" content="Onlyyouhuang&#39;s blog">
-<meta property="og:description" content="公司的app中部分页面需要用HTML5，趁此机会开始好好学习前端知识">
-<meta property="og:updated_time" content="2016-04-11T03:23:40.000Z">
+<meta property="og:description" content="记录一个参与的游戏项目中实现交互模块所用到的开源工具。">
+<meta property="og:updated_time" content="2018-03-10T08:10:19.560Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Android_Html5">
-<meta name="twitter:description" content="公司的app中部分页面需要用HTML5，趁此机会开始好好学习前端知识">
+<meta name="twitter:title" content="游戏项目记录">
+<meta name="twitter:description" content="记录一个参与的游戏项目中实现交互模块所用到的开源工具。">
   
     <link rel="alternative" href="/atom.xml" title="Onlyyouhuang&#39;s blog" type="application/atom+xml">
   
@@ -229,11 +229,11 @@
         </header>                
     </div>
 </nav>
-      <div class="body-wrap"><article id="post-Android-Html5" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-游戏项目记录" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/04/07/Android-Html5/" class="article-date">
-      <time datetime="2016-04-07T07:26:18.000Z" itemprop="datePublished">2016-04-07</time>
+      <a href="/2016/07/17/游戏项目记录/" class="article-date">
+      <time datetime="2016-07-17T07:51:45.000Z" itemprop="datePublished">2016-07-17</time>
 </a>
     </div>
   
@@ -246,7 +246,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      Android_Html5
+      游戏项目记录
     </h1>
   
 
@@ -257,7 +257,7 @@
 
         
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HTML5/">HTML5</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
     </div>
 
         <div class="clearfix"></div>
@@ -267,141 +267,16 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <p><em>公司的app中部分页面需要用HTML5，趁此机会开始好好学习前端知识</em><br><a id="more"></a></p>
-<ol>
-<li><a href="http://www.w3school.com.cn/html5/index.asp" target="_blank" rel="noopener">HTML5 W3C教程</a></li>
-<li><a href="http://blog.csdn.net/cai1213/article/details/7956051" target="_blank" rel="noopener">Android与HTML5的交互</a></li>
-</ol>
-<p>touchstart,touchmove,touchend触摸事件<br>移动设备上是不支持鼠标事件的，好在webkit内核的移动浏览器支持touch事件</p>
-<pre><code>$(document).bind(touchEvents.touchstart, function (event) {
-    event.preventDefault();
-});
-$(document).bind(touchEvents.touchmove, function (event) {
-    event.preventDefault();
-});
-$(document).bind(touchEvents.touchend, function (event) {
-    event.preventDefault();
-});
-</code></pre><blockquote>
-<p>很多博文中称touch的三个事件都有targetTouches，touches以及changedTouches对象列表，其实不然，touchend事件中应该是只有个changedTouches触摸实例列表的，而且这里说明一下，回调函数的event只是一个普通的object对象，实际上event中有一个originalEvent属性，这才是真正的touch事件，这个事件中才存在着上诉三个触摸实例列表，这三个实例存储了触摸事件的位置等等属性，类似于鼠标事件。其他地方基本与鼠标事件是一致的。简单介绍一下这三个触摸列表，touches是在屏幕上的所有手指列表，targetTouches是当前DOM上的手指列表，所以当手指移开触发touchend事件时，event.originalEvent是没有这个targetTouches列表的，而changedTouches列表是涉及当前事件的列表，例如touchend事件中，手指移开。</p>
-</blockquote>
-<p>使用html5，不仅仅要ios和android适配，pc上直接打开网页最好也是可以的</p>
-<pre><code>var touchEvents = {
-    touchstart: &quot;touchstart&quot;,
-    touchmove: &quot;touchmove&quot;,
-    touchend: &quot;touchend&quot;,
+        <p><em>记录一个参与的游戏项目中实现交互模块所用到的开源工具。</em><br><a id="more"></a></p>
+<p>最初的需求是要实现一个Android手机遥控器，可以向Android设备上的应用发送指令。先是借鉴聊天室，客户端和服务器端建立socket连接发送消息。但是这样使用上需要先安装一个Android应用，不太方便。因此考虑将客户端改用H5网页的形式实现，改用WebSocket建立连接，顺便解决了iOS用户使用的问题。</p>
+<p>在项目里使用了<a href="https://github.com/TooTallNate/Java-WebSocket" target="_blank" rel="noopener">Java-WebSocket</a></p>
+<pre><code>A barebones WebSocket client and server implementation written in 100% Java. http://java-websocket.org/       
+可以用在JAVA 1.5和Android 1.6之上的WebSocket解决方案，客户端和服务器端都可以实现。
+</code></pre><p>之后就是解决这个H5网页的请求问题，最后找到了<a href="https://github.com/NanoHttpd/nanohttpd" target="_blank" rel="noopener">NanoHttpd</a>  </p>
+<pre><code>Tiny, easily embeddable HTTP server in Java. http://nanohttpd.org  
+仅仅用一个Java类，就实现了一个轻量级的 Web Server，可以非常方便地集成到Android应用中去，让你的App支持 HTTP GET, POST, PUT, HEAD 和 DELETE 请求。
+</code></pre><p>在服务器端直接实现一个简易的Web Server，客户端与服务器端建立WebSocket连接后，直接可以获取到H5页面。</p>
 
-    /**
-     * @desc:判断是否pc设备，若是pc，需要更改touch事件为鼠标事件，否则默认触摸事件
-     */
-    initTouchEvents: function () {
-        if (isPC()) {
-            this.touchstart = &quot;mousedown&quot;;
-            this.touchmove = &quot;mousemove&quot;;
-            this.touchend = &quot;mouseup&quot;;
-        }
-    }
-};
-</code></pre><p>JS判断客户端是手机还是PC<br>第一种：</p>
-<pre><code>function isPC() {
-    var userAgentInfo = navigator.userAgent;
-    var Agents = [&quot;Android&quot;, &quot;iPhone&quot;, &quot;iPad&quot;, &quot;iPod&quot;, &quot;SymbianOS&quot;, &quot;Windows Phone&quot;];
-    var flag = true;
-    for (var v = 0; v &lt; Agents.length; v++) {
-        if (userAgentInfo.indexOf(Agents[v]) &gt; 0) {
-            flag = false;
-            break;
-        }
-    }
-    return flag;
-}
-</code></pre><p>第二种：</p>
-<pre><code>function browserRedirect() {
-    var sUserAgent = navigator.userAgent.toLowerCase();
-    var bIsIpad = sUserAgent.match(/ipad/i) == &quot;ipad&quot;;
-    var bIsIphoneOs = sUserAgent.match(/iphone os/i) == &quot;iphone os&quot;;
-    var bIsMidp = sUserAgent.match(/midp/i) == &quot;midp&quot;;
-    var bIsUc7 = sUserAgent.match(/rv:1.2.3.4/i) == &quot;rv:1.2.3.4&quot;;
-    var bIsUc = sUserAgent.match(/ucweb/i) == &quot;ucweb&quot;;
-    var bIsAndroid = sUserAgent.match(/android/i) == &quot;android&quot;;
-    var bIsCE = sUserAgent.match(/windows ce/i) == &quot;windows ce&quot;;
-    var bIsWM = sUserAgent.match(/windows mobile/i) == &quot;windows mobile&quot;;
-    if (!(bIsIpad || bIsIphoneOs || bIsMidp || bIsUc7 || bIsUc || bIsAndroid || bIsCE || bIsWM) ){
-        window.location.href=B页面;
-    }
-}
-browserRedirect();
-</code></pre><p>百度的判断代码</p>
-<pre><code>function uaredirect(f) {
-    try {
-        if (document.getElementById(&quot;bdmark&quot;) != null) {
-            return
-        }
-        var b = false;
-        if (arguments[1]) {
-            var e = window.location.host;
-            var a = window.location.href;
-            if (isSubdomain(arguments[1], e) == 1) {
-                f = f + &quot;/#m/&quot; + a;
-                b = true
-        } else {
-            if (isSubdomain(arguments[1], e) == 2) {
-                f = f + &quot;/#m/&quot; + a;
-                b = true
-            } else {
-                f = a;
-                b = false
-            }
-        }
-        } else {
-            b = true
-        }
-        if (b) {
-            var c = window.location.hash;
-            if (!c.match(&quot;fromapp&quot;)) {
-                if ((navigator.userAgent.match(/(iPhone|iPod|Android|ios|SymbianOS)/i))) {
-                    location.replace(f)
-                }
-            }
-        }
-    } catch(d) {}
-}
-
-function isSubdomain(c, d) {
-    this.getdomain = function(f) {
-        var e = f.indexOf(&quot;://&quot;);
-        if (e &gt; 0) {
-            var h = f.substr(e + 3)
-        } else {
-            var h = f
-        }
-        var g = /^www\./;
-        if (g.test(h)) {
-            h = h.substr(4)
-        }
-        return h
-    };
-    if (c == d) {
-        return 1
-    } else {
-        var c = this.getdomain(c);
-        var b = this.getdomain(d);
-        if (c == b) {
-            return 1
-        } else {
-            c = c.replace(&quot;.&quot;, &quot;\\.&quot;);
-            var a = new RegExp(&quot;\\.&quot; + c + &quot;$&quot;);
-            if (b.match(a)) {
-                return 2
-            } else {
-                return 0
-            }
-        }
-    }
-};
-</code></pre><p>使用方法：</p>
-<pre><code>uaredirect(&quot;手机站&quot;,&quot;WEB站&quot;);
-</code></pre>
       
     </div>
     
@@ -409,13 +284,13 @@ function isSubdomain(c, d) {
   
     
     <div class="copyright">
-        <p><span>本文标题:</span><a href="/2016/04/07/Android-Html5/">Android_Html5</a></p>
+        <p><span>本文标题:</span><a href="/2016/07/17/游戏项目记录/">游戏项目记录</a></p>
         <p><span>文章作者:</span><a href="/" title="回到主页">HuangLangyou</a></p>
-        <p><span>发布时间:</span>2016-04-07, 15:26:18</p>
-        <p><span>最后更新:</span>2016-04-11, 11:23:40</p>
+        <p><span>发布时间:</span>2016-07-17, 15:51:45</p>
+        <p><span>最后更新:</span>2018-03-10, 16:10:19</p>
         <p>
-            <span>原始链接:</span><a class="post-url" href="/2016/04/07/Android-Html5/" title="Android_Html5">https://onlyyouhuang.github.io/2016/04/07/Android-Html5/</a>
-            <span class="copy-path" data-clipboard-text="原文: https://onlyyouhuang.github.io/2016/04/07/Android-Html5/　　作者: HuangLangyou" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <span>原始链接:</span><a class="post-url" href="/2016/07/17/游戏项目记录/" title="游戏项目记录">https://onlyyouhuang.github.io/2016/07/17/游戏项目记录/</a>
+            <span class="copy-path" data-clipboard-text="原文: https://onlyyouhuang.github.io/2016/07/17/游戏项目记录/　　作者: HuangLangyou" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
             <script src="/js/clipboard.min.js"></script>
             <script> var clipboard = new Clipboard('.copy-path'); </script>
         </p>
@@ -429,15 +304,15 @@ function isSubdomain(c, d) {
     <nav id="article-nav">
         
             <div id="article-nav-newer" class="article-nav-title">
-                <a href="/2016/04/08/Android-adb/">
-                    Android adb
+                <a href="/2016/07/28/git命令/">
+                    git命令
                 </a>
             </div>
         
         
             <div id="article-nav-older" class="article-nav-title">
-                <a href="/2016/04/05/Java实现断点续传/">
-                    Java实现断点续传
+                <a href="/2016/07/01/Android-NDK/">
+                    Android NDK
                 </a>
             </div>
         
@@ -505,7 +380,7 @@ function isSubdomain(c, d) {
         </div>
         <script>
             window._bd_share_config={
-                "common":{"bdSnsKey":{},"bdText":"Android_Html5　| Onlyyouhuang's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+                "common":{"bdSnsKey":{},"bdText":"游戏项目记录　| Onlyyouhuang's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
         </script>
     
 
@@ -525,7 +400,7 @@ function isSubdomain(c, d) {
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/2016/04/08/Android-adb/" title="上一篇: Android adb">
+            <a href="/2016/07/28/git命令/" title="上一篇: git命令">
                 <i class="fa fa-angle-left"></i>
             </a>
         
@@ -533,7 +408,7 @@ function isSubdomain(c, d) {
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
 
         
-            <a href="/2016/04/05/Java实现断点续传/" title="下一篇: Java实现断点续传">
+            <a href="/2016/07/01/Android-NDK/" title="下一篇: Android NDK">
                 <i class="fa fa-angle-right"></i>
             </a>
         
