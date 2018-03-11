@@ -5,17 +5,17 @@
   
   <title>游戏项目记录 | Onlyyouhuang&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="记录一个参与的游戏项目中实现交互模块所用到的开源工具。">
+  <meta name="description" content="记录一个参与的游戏项目中实现交互模块的解决方案。">
 <meta name="keywords" content="Android,Java">
 <meta property="og:type" content="article">
 <meta property="og:title" content="游戏项目记录">
 <meta property="og:url" content="https://onlyyouhuang.github.io/2016/07/17/游戏项目记录/index.html">
 <meta property="og:site_name" content="Onlyyouhuang&#39;s blog">
-<meta property="og:description" content="记录一个参与的游戏项目中实现交互模块所用到的开源工具。">
-<meta property="og:updated_time" content="2018-03-10T08:10:19.560Z">
+<meta property="og:description" content="记录一个参与的游戏项目中实现交互模块的解决方案。">
+<meta property="og:updated_time" content="2018-03-11T13:40:41.726Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="游戏项目记录">
-<meta name="twitter:description" content="记录一个参与的游戏项目中实现交互模块所用到的开源工具。">
+<meta name="twitter:description" content="记录一个参与的游戏项目中实现交互模块的解决方案。">
   
     <link rel="alternative" href="/atom.xml" title="Onlyyouhuang&#39;s blog" type="application/atom+xml">
   
@@ -267,15 +267,25 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <p><em>记录一个参与的游戏项目中实现交互模块所用到的开源工具。</em><br><a id="more"></a></p>
-<p>最初的需求是要实现一个Android手机遥控器，可以向Android设备上的应用发送指令。先是借鉴聊天室，客户端和服务器端建立socket连接发送消息。但是这样使用上需要先安装一个Android应用，不太方便。因此考虑将客户端改用H5网页的形式实现，改用WebSocket建立连接，顺便解决了iOS用户使用的问题。</p>
-<p>在项目里使用了<a href="https://github.com/TooTallNate/Java-WebSocket" target="_blank" rel="noopener">Java-WebSocket</a></p>
+        <p><em>记录一个参与的游戏项目中实现交互模块的解决方案。</em><br><a id="more"></a></p>
+<p>最初的需求是要实现一个Android手机遥控器，可以向Android设备上的应用发送指令。先是借鉴聊天室，客户端和服务器端建立Socket连接发送消息。但是这样使用上需要先安装一个Android应用，不太方便。因此考虑将客户端改用H5网页的形式实现，改用WebSocket建立连接，顺便解决了iOS用户使用的问题。</p>
+<p>然后了解到了WebSocket的存在。</p>
+<pre><code>WebSocket协议是基于TCP的一种新的网络协议，在2008年诞生，2011年成为国际标准。所有浏览器都已经支持了。
+它的最大特点就是，服务器可以主动向客户端推送信息，客户端也可以主动向服务器发送信息，是真正的双向平等对话，属于服务器推送技术的一种。
+其他特点包括：
+（1）建立在 TCP 协议之上，服务器端的实现比较容易。
+（2）与 HTTP 协议有着良好的兼容性。默认端口也是80和443，并且握手阶段采用 HTTP 协议，因此握手时不容易屏蔽，能通过各种 HTTP 代理服务器。
+（3）数据格式比较轻量，性能开销小，通信高效
+（4）可以发送文本，也可以发送二进制数据。
+（5）没有同源限制，客户端可以与任意服务器通信。
+（6）协议标识符是ws（如果加密，则为wss），服务器网址就是 URL。
+</code></pre><p>目前有很多Java实现，项目里使用了<a href="https://github.com/TooTallNate/Java-WebSocket" target="_blank" rel="noopener">Java-WebSocket</a></p>
 <pre><code>A barebones WebSocket client and server implementation written in 100% Java. http://java-websocket.org/       
 可以用在JAVA 1.5和Android 1.6之上的WebSocket解决方案，客户端和服务器端都可以实现。
-</code></pre><p>之后就是解决这个H5网页的请求问题，最后找到了<a href="https://github.com/NanoHttpd/nanohttpd" target="_blank" rel="noopener">NanoHttpd</a>  </p>
+</code></pre><p>H5网页还是内嵌在客户端的WebView，如果再另外写个后台程序提供H5页面就太麻烦了。最后找到了<a href="https://github.com/NanoHttpd/nanohttpd" target="_blank" rel="noopener">NanoHttpd</a>  </p>
 <pre><code>Tiny, easily embeddable HTTP server in Java. http://nanohttpd.org  
 仅仅用一个Java类，就实现了一个轻量级的 Web Server，可以非常方便地集成到Android应用中去，让你的App支持 HTTP GET, POST, PUT, HEAD 和 DELETE 请求。
-</code></pre><p>在服务器端直接实现一个简易的Web Server，客户端与服务器端建立WebSocket连接后，直接可以获取到H5页面。</p>
+</code></pre><p>直接实现一个简易的Web Server集成在服务器端，这样服务器端放出一个二维码，手机用浏览器或内嵌浏览器的应用扫一扫就可以直接得到访问地址，与服务器端建立WebSocket连接后，可以获取到H5页面。</p>
 
       
     </div>
@@ -287,7 +297,7 @@
         <p><span>本文标题:</span><a href="/2016/07/17/游戏项目记录/">游戏项目记录</a></p>
         <p><span>文章作者:</span><a href="/" title="回到主页">HuangLangyou</a></p>
         <p><span>发布时间:</span>2016-07-17, 15:51:45</p>
-        <p><span>最后更新:</span>2018-03-10, 16:10:19</p>
+        <p><span>最后更新:</span>2018-03-11, 21:40:41</p>
         <p>
             <span>原始链接:</span><a class="post-url" href="/2016/07/17/游戏项目记录/" title="游戏项目记录">https://onlyyouhuang.github.io/2016/07/17/游戏项目记录/</a>
             <span class="copy-path" data-clipboard-text="原文: https://onlyyouhuang.github.io/2016/07/17/游戏项目记录/　　作者: HuangLangyou" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>

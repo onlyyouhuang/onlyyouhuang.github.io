@@ -11,7 +11,7 @@
 <meta property="og:url" content="https://onlyyouhuang.github.io/2016/07/28/git命令/index.html">
 <meta property="og:site_name" content="Onlyyouhuang&#39;s blog">
 <meta property="og:description" content="git命令记录。">
-<meta property="og:updated_time" content="2018-03-09T10:27:21.309Z">
+<meta property="og:updated_time" content="2018-03-11T13:46:22.020Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="git命令">
 <meta name="twitter:description" content="git命令记录。">
@@ -285,19 +285,21 @@ $ rm id_rsa*
 </code></pre><p>Step3:Generate a new ssh key</p>
 <pre><code>$ ssh-keygen -t rsa -C &quot;you email@email.com&quot; 或者去掉 －t rsa
 接下来会提示你输入一个文件名来保存你的SSH key ，如果不输入直接回车，则会保存在默认的文件里id_rsa.pub
-然后会提示你输入passphrases 连续输入两次，这在你在网页中添加SSH key的时候会让你输入一次。
+然后会提示你输入passphrases连续输入两次，这在你在网页中添加SSH key的时候会让你输入一次，可以不输入直接回车。
 </code></pre><p>Step4:Add you ssh key to GitHub</p>
 <pre><code>首先得到刚才生成的SSH，自己打开id_rsa.pub复制内容或者如下命令放到剪切板中也可以
 $ sudo apt-get install xclip   //安装剪切板
 $ xclip -sel clip &lt; ~/.ssh/id_rsa.pub 
 这样就复制到剪切板了
-然后到github.com 登录自己的帐号。Account Setting ----&gt;SSH KEYS ----&gt;Add SSH key ------&gt;粘贴到KEY feild  然后自己取个名------&gt;会提示你confirm password 点击 ------&gt;弹出密码输入框，就是输入给你刚才的自己设置的passphrases ，ok！
+然后到github.com 登录自己的帐号。
+Account Setting ----&gt;SSH KEYS ----&gt;Add SSH key ------&gt;粘贴到KEY feild  
+然后自己取个名------&gt;会提示你confirm password 点击 ------&gt;弹出密码输入框，就是输入给你刚才的自己设置的passphrases ，ok！
 </code></pre><p>Step5:testing</p>
 <pre><code>命令：
 $ ssh -T git@github.com
 如果看到提示:
-The authenticity of host &apos;github.com (207.97.227.239)&apos; can&apos;t be established.RSA key fingerprint is 16:27:ac:a5:76:28:2d:36:63:1b:56:4d:eb:df:a6:48.Are you sure you want to continue connecting (yes/no)?
-没关系，正常情况……yes
+The authenticity of host &apos;github.com ...Are you sure you want to continue connecting (yes/no)?
+输入yes回车
 Hi username! You&apos;ve successfully authenticated, but GitHub does not provide shell access.
 </code></pre><h1 id="git冲突"><a href="#git冲突" class="headerlink" title="git冲突"></a>git冲突</h1><h3 id="Please-move-or-remove-them-before-you-can-merge"><a href="#Please-move-or-remove-them-before-you-can-merge" class="headerlink" title="Please move or remove them before you can merge"></a>Please move or remove them before you can merge</h3><pre><code>git clean -d -fx &quot;&quot;
 </code></pre><p>其中<br>x —–删除忽略文件已经对git来说不识别的文件<br>d —–删除未被添加到git的路径中的文件<br>f —–强制运行</p>
@@ -312,7 +314,7 @@ Hi username! You&apos;ve successfully authenticated, but GitHub does not provide
         <p><span>本文标题:</span><a href="/2016/07/28/git命令/">git命令</a></p>
         <p><span>文章作者:</span><a href="/" title="回到主页">HuangLangyou</a></p>
         <p><span>发布时间:</span>2016-07-28, 10:50:52</p>
-        <p><span>最后更新:</span>2018-03-09, 18:27:21</p>
+        <p><span>最后更新:</span>2018-03-11, 21:46:22</p>
         <p>
             <span>原始链接:</span><a class="post-url" href="/2016/07/28/git命令/" title="git命令">https://onlyyouhuang.github.io/2016/07/28/git命令/</a>
             <span class="copy-path" data-clipboard-text="原文: https://onlyyouhuang.github.io/2016/07/28/git命令/　　作者: HuangLangyou" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
