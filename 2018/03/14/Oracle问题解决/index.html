@@ -3,19 +3,18 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Android NDK | Onlyyouhuang&#39;s blog</title>
+  <title>Oracle问题&amp;解决方案 | Onlyyouhuang&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Android项目中涉及了Java和C的交互,需要学习JNI开发。">
-<meta name="keywords" content="Android,NDK">
+  <meta name="description" content="记录使用Oracle过程中遇到的问题及解决方案">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Android NDK">
-<meta property="og:url" content="https://onlyyouhuang.github.io/2016/07/01/Android-NDK/index.html">
+<meta property="og:title" content="Oracle问题&amp;解决方案">
+<meta property="og:url" content="https://onlyyouhuang.github.io/2018/03/14/Oracle问题解决/index.html">
 <meta property="og:site_name" content="Onlyyouhuang&#39;s blog">
-<meta property="og:description" content="Android项目中涉及了Java和C的交互,需要学习JNI开发。">
-<meta property="og:updated_time" content="2016-07-02T07:02:59.000Z">
+<meta property="og:description" content="记录使用Oracle过程中遇到的问题及解决方案">
+<meta property="og:updated_time" content="2018-03-14T08:15:44.751Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Android NDK">
-<meta name="twitter:description" content="Android项目中涉及了Java和C的交互,需要学习JNI开发。">
+<meta name="twitter:title" content="Oracle问题&amp;解决方案">
+<meta name="twitter:description" content="记录使用Oracle过程中遇到的问题及解决方案">
   
     <link rel="alternative" href="/atom.xml" title="Onlyyouhuang&#39;s blog" type="application/atom+xml">
   
@@ -229,11 +228,11 @@
         </header>                
     </div>
 </nav>
-      <div class="body-wrap"><article id="post-Android-NDK" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-Oracle问题解决" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/07/01/Android-NDK/" class="article-date">
-      <time datetime="2016-07-01T09:35:47.000Z" itemprop="datePublished">2016-07-01</time>
+      <a href="/2018/03/14/Oracle问题解决/" class="article-date">
+      <time datetime="2018-03-14T05:40:02.000Z" itemprop="datePublished">2018-03-14</time>
 </a>
     </div>
   
@@ -246,7 +245,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      Android NDK
+      Oracle问题&amp;解决方案
     </h1>
   
 
@@ -256,10 +255,6 @@
         
 
         
-    <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/NDK/">NDK</a></li></ul>
-    </div>
-
         <div class="clearfix"></div>
       </div>
       
@@ -267,14 +262,38 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <p><em>Android项目中涉及了Java和C的交互,需要学习JNI开发。</em><br><a id="more"></a><br>什么是NDK(android native develop kits ):android 本地开发工具集 ,可以把c/c++ -&gt;编译成一个 linux下可以执行的二进制文件 java代码里面就可以通过jni 调用执行二进制的文件.</p>
-<p>什么是JNI ：java本地开发接口,JNI是一个协议这个协议用来沟通java代码和外部的本地代码(c/c++).通过这个协议,java代码就可以调用外部的c/c++，代码外部的c/c++代码也可以调用java代码。</p>
-<h1 id="eclipse"><a href="#eclipse" class="headerlink" title="eclipse"></a>eclipse</h1><ol>
-<li><a href="http://www.cnblogs.com/yejiurui/p/3476565.html" target="_blank" rel="noopener">NDK环境搭建</a></li>
-<li><a href="http://blog.csdn.net/songyuc/article/details/51339711" target="_blank" rel="noopener">Eclipse中使用JNI编写C代码时出现“Unresolved inclusion: &lt;***.h&gt;”的解决方案</a></li>
-</ol>
-<h1 id="Android-Studio"><a href="#Android-Studio" class="headerlink" title="Android Studio"></a>Android Studio</h1><p><a href="http://blog.csdn.net/tuoguang/article/details/48141251" target="_blank" rel="noopener">android studio下的NDK开发详解</a></p>
-
+        <p><em>记录使用Oracle过程中遇到的问题及解决方案</em><br><a id="more"></a></p>
+<h1 id="ORA-12899"><a href="#ORA-12899" class="headerlink" title="ORA-12899"></a>ORA-12899</h1><p>导入dmp时遇到的字符集问题，中文在UTF-8里占3个字节，ZHS16GBK里占2个字节,而源dmp文件字符集是ZHS16GBK的库到出来的，导入到目标字符集为UFT-8（默认）的库里就会报错。只要修改后者的字符集，跟前者保持一致就可以解决这个问题.</p>
+<p>输入下列命令：</p>
+<pre><code>sqlplus /nolog    
+</code></pre><p>进入之后会出现”SQL&gt;”的提示，输入下列语句：</p>
+<pre><code>SQL&gt;conn /as sysdba
+</code></pre><p>Linux下输入这条命令后，会报错</p>
+<pre><code>ORA-01031: insufficient privileges
+</code></pre><p>搜索解决方案，很多都说检查sqlnet.ora文件（WINDOWS下位于%ORACLE_HOME%NETWORKADMIN目录），但发现Linux下没有这个文件。后来又看到一个Linux下的修改方案，依次输入下列命令：</p>
+<pre><code>su - oracle      #切换为Oracle用户
+sqlplus /nolog
+</code></pre><p>进入之后会出现”SQL&gt;”的提示，依次执行下列语句：</p>
+<pre><code>SQL&gt;conn /as sysdba
+SQL&gt;SHUTDOWN IMMEDIATE
+SQL&gt;STARTUP MOUNT
+SQL&gt;ALTER SYSTEM ENABLE RESTRICTED SESSION;
+SQL&gt;ALTER SYSTEM SET JOB_QUEUE_PROCESSES=0;
+SQL&gt;ALTER SYSTEM SET AQ_TM_PROCESSES=0;
+SQL&gt;ALTER DATABASE OPEN;
+SQL&gt;ALTER DATABASE CHARACTER SET ZHS16GBK;
+</code></pre><p>报字符集不兼容，此时下INTERNAL_USE指令不对字符集超集进行检查：</p>
+<pre><code>ALTER DATABASE CHARACTER SET ZHS16GBK
+*ERROR at line 1:
+ORA-12712: new character set must be a superset of     old character set
+</code></pre><p>继续执行下列语句：</p>
+<pre><code>SQL&gt;ALTER DATABASE CHARACTER SET INTERNAL_USE ZHS16GBK;
+SQL&gt;SHUTDOWN IMMEDIATE
+SQL&gt;STARTUP    
+</code></pre><p>修改完成。</p>
+<pre><code>--查看数据库字符编码集  
+SQL&gt;select userenv(&apos;language&apos;) from dual; 
+</code></pre>
       
     </div>
     
@@ -282,13 +301,13 @@
   
     
     <div class="copyright">
-        <p><span>本文标题:</span><a href="/2016/07/01/Android-NDK/">Android NDK</a></p>
+        <p><span>本文标题:</span><a href="/2018/03/14/Oracle问题解决/">Oracle问题&amp;解决方案</a></p>
         <p><span>文章作者:</span><a href="/" title="回到主页">HuangLangyou</a></p>
-        <p><span>发布时间:</span>2016-07-01, 17:35:47</p>
-        <p><span>最后更新:</span>2016-07-02, 15:02:59</p>
+        <p><span>发布时间:</span>2018-03-14, 13:40:02</p>
+        <p><span>最后更新:</span>2018-03-14, 16:15:44</p>
         <p>
-            <span>原始链接:</span><a class="post-url" href="/2016/07/01/Android-NDK/" title="Android NDK">https://onlyyouhuang.github.io/2016/07/01/Android-NDK/</a>
-            <span class="copy-path" data-clipboard-text="原文: https://onlyyouhuang.github.io/2016/07/01/Android-NDK/　　作者: HuangLangyou" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <span>原始链接:</span><a class="post-url" href="/2018/03/14/Oracle问题解决/" title="Oracle问题&amp;解决方案">https://onlyyouhuang.github.io/2018/03/14/Oracle问题解决/</a>
+            <span class="copy-path" data-clipboard-text="原文: https://onlyyouhuang.github.io/2018/03/14/Oracle问题解决/　　作者: HuangLangyou" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
             <script src="/js/clipboard.min.js"></script>
             <script> var clipboard = new Clipboard('.copy-path'); </script>
         </p>
@@ -301,16 +320,10 @@
 
     <nav id="article-nav">
         
-            <div id="article-nav-newer" class="article-nav-title">
-                <a href="/2016/07/17/游戏项目记录/">
-                    游戏项目记录
-                </a>
-            </div>
-        
         
             <div id="article-nav-older" class="article-nav-title">
-                <a href="/2016/06/29/开发工具记录/">
-                    开发工具记录
+                <a href="/2018/03/10/docker/">
+                    Docker命令
                 </a>
             </div>
         
@@ -321,7 +334,7 @@
 
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
-    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#eclipse"><span class="toc-number">1.</span> <span class="toc-text">eclipse</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Android-Studio"><span class="toc-number">2.</span> <span class="toc-text">Android Studio</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#ORA-12899"><span class="toc-number">1.</span> <span class="toc-text">ORA-12899</span></a></li></ol>
 </div>
 <style>
     .left-col .switch-btn {
@@ -378,7 +391,7 @@
         </div>
         <script>
             window._bd_share_config={
-                "common":{"bdSnsKey":{},"bdText":"Android NDK　| Onlyyouhuang's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+                "common":{"bdSnsKey":{},"bdText":"Oracle问题&解决方案　| Onlyyouhuang's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
         </script>
     
 
@@ -398,15 +411,13 @@
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/2016/07/17/游戏项目记录/" title="上一篇: 游戏项目记录">
-                <i class="fa fa-angle-left"></i>
-            </a>
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
         
 
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
 
         
-            <a href="/2016/06/29/开发工具记录/" title="下一篇: 开发工具记录">
+            <a href="/2018/03/10/docker/" title="下一篇: Docker命令">
                 <i class="fa fa-angle-right"></i>
             </a>
         
