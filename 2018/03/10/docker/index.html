@@ -6,12 +6,13 @@
   <title>Docker命令 | Onlyyouhuang&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="记录Docker的使用">
+<meta name="keywords" content="docker">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Docker命令">
 <meta property="og:url" content="https://onlyyouhuang.github.io/2018/03/10/docker/index.html">
 <meta property="og:site_name" content="Onlyyouhuang&#39;s blog">
 <meta property="og:description" content="记录Docker的使用">
-<meta property="og:updated_time" content="2018-03-14T06:11:04.637Z">
+<meta property="og:updated_time" content="2018-03-20T03:09:47.092Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Docker命令">
 <meta name="twitter:description" content="记录Docker的使用">
@@ -154,7 +155,7 @@
                 
                 <section class="switch-part switch-part2">
                     <div class="widget tagcloud" id="js-tagcloud">
-                        <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/Anfroid/" style="font-size: 10px;">Anfroid</a> <a href="/tags/HTML5/" style="font-size: 10px;">HTML5</a> <a href="/tags/Html5/" style="font-size: 10px;">Html5</a> <a href="/tags/Java/" style="font-size: 15px;">Java</a> <a href="/tags/NDK/" style="font-size: 10px;">NDK</a> <a href="/tags/SDK/" style="font-size: 10px;">SDK</a> <a href="/tags/hexo/" style="font-size: 15px;">hexo</a> <a href="/tags/remoteService/" style="font-size: 10px;">remoteService</a> <a href="/tags/面试/" style="font-size: 10px;">面试</a>
+                        <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/Anfroid/" style="font-size: 10px;">Anfroid</a> <a href="/tags/HTML5/" style="font-size: 10px;">HTML5</a> <a href="/tags/Html5/" style="font-size: 10px;">Html5</a> <a href="/tags/Java/" style="font-size: 16.67px;">Java</a> <a href="/tags/NDK/" style="font-size: 10px;">NDK</a> <a href="/tags/SDK/" style="font-size: 10px;">SDK</a> <a href="/tags/Spring/" style="font-size: 10px;">Spring</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/hexo/" style="font-size: 13.33px;">hexo</a> <a href="/tags/remoteService/" style="font-size: 10px;">remoteService</a> <a href="/tags/算法/" style="font-size: 10px;">算法</a> <a href="/tags/网络/" style="font-size: 10px;">网络</a> <a href="/tags/面试/" style="font-size: 10px;">面试</a>
                     </div>
                 </section>
                 
@@ -255,6 +256,10 @@
         
 
         
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/">docker</a></li></ul>
+    </div>
+
         <div class="clearfix"></div>
       </div>
       
@@ -266,13 +271,29 @@
 <p>负责维护一个早年开发的项目，开发环境是JDK6，而且用的Oracle数据库，现在实验室服务器的JDK版本比较高，Oracle的安装过程也比较麻烦。这种情况可以用Docker快速解决这个问题。</p>
 <pre><code>Docker是一个开源的引擎，可以轻松的为任何应用创建一个轻量级的、可移植的、自给自足的容器。开发者在笔记本上编译测试通过的容器可以批量地在生产环境中部署，包括VMs（虚拟机）、bare metal、OpenStack 集群和其他的基础应用平台。 
 </code></pre><p>简单说，Docker是容器，可以放应用，一个网站是应用，一个程序也是应用，一个系统也是应用。这样就不用配环境了，也不用装环境了，更不用统一环境了。因为Docker都打包好了，可以搜索可用的Docker镜像，下载好放到一个Docker容器直接运行，更轻量，更简单，更快速。</p>
-<p>#Docker命令</p>
-<pre><code>容器生命周期管理 — docker [run|start|stop|restart|kill|rm|pause|unpause]
+<h1 id="Docker命令"><a href="#Docker命令" class="headerlink" title="Docker命令"></a>Docker命令</h1><pre><code>容器生命周期管理 — docker [run|start|stop|restart|kill|rm|pause|unpause]
 容器操作运维 — docker [ps|inspect|top|attach|events|logs|wait|export|port]
 容器rootfs命令 — docker [commit|cp|diff]
 镜像仓库 — docker [login|pull|push|search]
 本地镜像管理 — docker [images|rmi|tag|build|history|save|import]
 其他命令 — docker [info|version]
+</code></pre><h1 id="Docker使用"><a href="#Docker使用" class="headerlink" title="Docker使用"></a>Docker使用</h1><h3 id="搜索镜像"><a href="#搜索镜像" class="headerlink" title="搜索镜像"></a>搜索镜像</h3><p>Docker官方网站专门有一个<a href="https://hub.docker.com/" target="_blank" rel="noopener">页面</a>来存储所有可用的镜像，也可以使用命令来检索：</p>
+<pre><code>docker search 镜像名字
+</code></pre><p>以一个叫alexeiled/docker-oracle-xe-11g的镜像为例，记录完整的过程。</p>
+<h3 id="下载镜像"><a href="#下载镜像" class="headerlink" title="下载镜像"></a>下载镜像</h3><pre><code>docker pull alexeiled/docker-oracle-xe-11g #需要完整的名字
+</code></pre><h3 id="运行镜像"><a href="#运行镜像" class="headerlink" title="运行镜像"></a>运行镜像</h3><p>使用docker镜像alexeiled/docker-oracle-xe-11g，以后台模式启动一个容器，将容器命名为oracle，将容器的1521和8080端口映射到宿主机的1521和8080端口,宿主机的目录/oracle_share挂载到容器的/share，命令如下：</p>
+<pre><code>docker run -d --name oracle --shm-size=2g -p 1521:1521 -p 8080:8080 -v /oracle_share:/share alexeiled/docker-oracle-xe-11g
+</code></pre><p>在docker run 后面追加-d=true或者-d，则containter将会运行在后台模式(Detached mode)。此时所有I/O数据只能通过网络资源或者共享卷组来进行交互。因为container不再监听你执行docker run的这个终端命令行窗口。但你可以通过执行docker attach 来重新挂载这个container里面。需要注意的时，如果你选择执行-d使container进入后台模式，那么将无法配合”–rm”参数。</p>
+<p>如果在docker run后面没有追加-d参数，则container将默认进入前台模式(Foregroud mode)。<br>Docker会启动这个container，同时将当前的命令行窗口挂载到container的标准输入，标准输出和标准错误中。也就是container中所有的输出，你都可以再当前窗口中查看到。甚至docker可以虚拟出一个TTY窗口，来执行信号中断。</p>
+<p>如果你在执行docker run时没有指定 –name，那么deamon会自动生成一个随机数字符串当做UUID。但是对于一个container来说有个name会非常方便，因为你可以当你需要link其它容器时或者其他类似需要区分其它容器时，使用容器名称会简化操作。无论container运行在前台或者后台，这个名字都是有效的。</p>
+<p>显示运行容器</p>
+<pre><code>docker ps
+</code></pre><p>要查看所有容器，请使用-a</p>
+<pre><code>docker ps -a
+</code></pre><p>快捷地查看端口的绑定情况</p>
+<pre><code>docker port oracle 1521
+</code></pre><h3 id="进入容器"><a href="#进入容器" class="headerlink" title="进入容器"></a>进入容器</h3><p>在容器oracle中开启一个交互模式的终端</p>
+<pre><code>docker exec -it oracle bash
 </code></pre>
       
     </div>
@@ -284,7 +305,7 @@
         <p><span>本文标题:</span><a href="/2018/03/10/docker/">Docker命令</a></p>
         <p><span>文章作者:</span><a href="/" title="回到主页">HuangLangyou</a></p>
         <p><span>发布时间:</span>2018-03-10, 16:24:40</p>
-        <p><span>最后更新:</span>2018-03-14, 14:11:04</p>
+        <p><span>最后更新:</span>2018-03-20, 11:09:47</p>
         <p>
             <span>原始链接:</span><a class="post-url" href="/2018/03/10/docker/" title="Docker命令">https://onlyyouhuang.github.io/2018/03/10/docker/</a>
             <span class="copy-path" data-clipboard-text="原文: https://onlyyouhuang.github.io/2018/03/10/docker/　　作者: HuangLangyou" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
@@ -308,8 +329,8 @@
         
         
             <div id="article-nav-older" class="article-nav-title">
-                <a href="/2017/01/10/hexo博客迁移-多机更新/">
-                    hexo博客迁移&amp;多机更新
+                <a href="/2018/02/20/排序算法/">
+                    排序算法
                 </a>
             </div>
         
@@ -320,7 +341,7 @@
 
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
-    
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Docker命令"><span class="toc-number">1.</span> <span class="toc-text">Docker命令</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Docker使用"><span class="toc-number">2.</span> <span class="toc-text">Docker使用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#搜索镜像"><span class="toc-number">2.0.1.</span> <span class="toc-text">搜索镜像</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#下载镜像"><span class="toc-number">2.0.2.</span> <span class="toc-text">下载镜像</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#运行镜像"><span class="toc-number">2.0.3.</span> <span class="toc-text">运行镜像</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#进入容器"><span class="toc-number">2.0.4.</span> <span class="toc-text">进入容器</span></a></li></ol></li></ol></li></ol>
 </div>
 <style>
     .left-col .switch-btn {
@@ -405,13 +426,13 @@
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
 
         
-            <a href="/2017/01/10/hexo博客迁移-多机更新/" title="下一篇: hexo博客迁移&amp;多机更新">
+            <a href="/2018/02/20/排序算法/" title="下一篇: 排序算法">
                 <i class="fa fa-angle-right"></i>
             </a>
         
     </div>
 
-    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/03/14/Oracle问题解决/">Oracle问题&解决方案</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/10/docker/">Docker命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/01/10/hexo博客迁移-多机更新/">hexo博客迁移&多机更新</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/28/git命令/">git命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/17/游戏项目记录/">游戏项目记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/01/Android-NDK/">Android NDK</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/29/开发工具记录/">开发工具记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/21/Android-JS桥/">Android JS桥</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/05/18/Android-onTouch事件传递机制/">Android onTouch事件传递机制</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/22/Android-Studio/">Android Studio</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/16/Android-px-dp-sp/">Android px_dp_sp</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/15/Android-fragment/">Android fragment</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/08/Android-adb/">Android adb</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/07/Android-Html5/">Android_Html5</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/05/Java实现断点续传/">Java实现断点续传</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/31/淘宝SDK-for-Android/">淘宝SDK for Android</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/20/2016-3-10-Android面试/">2016-3-10 Android面试总结</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/14/个人博客搭建/">个人博客搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/14/hello-world/">Hello World</a></li></ul>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/03/14/Oracle问题解决/">Oracle问题&解决方案</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/10/docker/">Docker命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/02/20/排序算法/">排序算法</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/22/Spring框架IOC容器和AOP解析/">Spring框架IOC容器和AOP解析</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/28/IDEA配置记录/">IDEA配置记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/01/10/hexo博客迁移-多机更新/">hexo博客迁移&多机更新</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/08/20/Java-BIO、NIO、AIO/">Java BIO、NIO、AIO</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/28/git命令/">git命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/17/游戏项目记录/">游戏项目记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/01/Android-NDK/">Android NDK</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/29/开发工具记录/">开发工具记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/21/Android-JS桥/">Android JS桥</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/05/18/Android-onTouch事件传递机制/">Android onTouch事件传递机制</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/22/Android-Studio/">Android Studio</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/16/Android-px-dp-sp/">Android px_dp_sp</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/15/Android-fragment/">Android fragment</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/08/Android-adb/">Android adb</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/07/Android-Html5/">Android_Html5</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/05/Java实现断点续传/">Java实现断点续传</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/31/淘宝SDK-for-Android/">淘宝SDK for Android</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/20/2016-3-10-Android面试/">2016-3-10 Android面试总结</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/14/个人博客搭建/">个人博客搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/14/hello-world/">Hello World</a></li></ul>
 
 
 

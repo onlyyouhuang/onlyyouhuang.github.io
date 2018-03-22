@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html >
+<head>
+  <meta charset="utf-8">
+  
+  <title>Java BIO、NIO、AIO | Onlyyouhuang&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="关于BIO、NIO、AIO的各路大神讲解整理">
+<meta name="keywords" content="Java,网络">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java BIO、NIO、AIO">
+<meta property="og:url" content="https://onlyyouhuang.github.io/2016/08/20/Java-BIO、NIO、AIO/index.html">
+<meta property="og:site_name" content="Onlyyouhuang&#39;s blog">
+<meta property="og:description" content="关于BIO、NIO、AIO的各路大神讲解整理">
+<meta property="og:updated_time" content="2018-03-22T13:26:10.664Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java BIO、NIO、AIO">
+<meta name="twitter:description" content="关于BIO、NIO、AIO的各路大神讲解整理">
+  
+    <link rel="alternative" href="/atom.xml" title="Onlyyouhuang&#39;s blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+      <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+  
+  
+  
+      <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+      <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+    <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false,
+      }
+  </script>
+
+  
+      <script>
+          yiliaConfig.rootUrl = "/";
+      </script>
+  
+
+  
+
+  
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/img/avatar.jpg" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">HuangLangyou</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">Stay Hungry, Stay Foolish</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:315950352@qq.com" title="Email"></a></li>
+                            
+                                <li id="新浪微博"><a class="新浪微博" target="_blank" href="http://weibo.com/onlyyouhuang" title="新浪微博"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="https://github.com/onlyyouhuang" title="GitHub"></a></li>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/Anfroid/" style="font-size: 10px;">Anfroid</a> <a href="/tags/HTML5/" style="font-size: 10px;">HTML5</a> <a href="/tags/Html5/" style="font-size: 10px;">Html5</a> <a href="/tags/Java/" style="font-size: 16.67px;">Java</a> <a href="/tags/NDK/" style="font-size: 10px;">NDK</a> <a href="/tags/SDK/" style="font-size: 10px;">SDK</a> <a href="/tags/Spring/" style="font-size: 10px;">Spring</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/hexo/" style="font-size: 13.33px;">hexo</a> <a href="/tags/remoteService/" style="font-size: 10px;">remoteService</a> <a href="/tags/算法/" style="font-size: 10px;">算法</a> <a href="/tags/网络/" style="font-size: 10px;">网络</a> <a href="/tags/面试/" style="font-size: 10px;">面试</a>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">小码农</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">HuangLangyou</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/img/avatar.jpg" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">HuangLangyou</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">Stay Hungry, Stay Foolish</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:315950352@qq.com" title="Email"></a></li>
+                            
+                                <li id="新浪微博"><a class="新浪微博" target="_blank" href="http://weibo.com/onlyyouhuang" title="新浪微博"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="https://github.com/onlyyouhuang" title="GitHub"></a></li>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-Java-BIO、NIO、AIO" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/08/20/Java-BIO、NIO、AIO/" class="article-date">
+      <time datetime="2016-08-20T13:35:26.000Z" itemprop="datePublished">2016-08-20</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Java BIO、NIO、AIO
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/网络/">网络</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p><em>关于BIO、NIO、AIO的各路大神讲解整理</em><br><a id="more"></a></p>
+<p>在研究一个开源项目的具体实现时，看到使用的是Socket BIO(Blocking I/O，一搜BIO又出现了NIO和AIO，这3个IO模型具体是怎样的，3者之间又有什么区别？</p>
+<p>在弄清楚这几个问题之前，首先得明白什么是同步，异步，阻塞，非阻塞，只有这几个单个概念理解清楚了，然后在组合理解起来，就相对比较容易了。 </p>
+<p>1,同步和异步是针对应用程序和内核的交互而言的。 同步/异步是在时间上强调处理事情的结果/机会成本的两种处理策略；强调结果意味着对结果的迫不急待，不过结果是正确的还是错误的，反正你要立即给我一个结果响应；强调时间机会成本意味着对等待结果浪费的时间极其难接受，而对结果并不是那么急切，暂时不管结果（让处理方处理完主动通知结果/自己空闲的时候主动去获取结果）转而去处理其他事情</p>
+<p>2,阻塞和非阻塞是针对于进程在访问数据的时候，根据IO操作的就绪状态来采取的不同方式，说白了是一种读取或者写入操作函数的实现方式，阻塞方式下读取或者写入函数将一直等待，而非阻塞方式下，读取或者写入函数会立即返回一个状态值。</p>
+<p>3,同步/异步是宏观上（进程间通讯，通常表现为网络IO的处理上），阻塞/非阻塞是微观上（进程内数据传输，通常表现为对本地IO的处理上）；阻塞和非阻塞是同步/异步的表现形式</p>
+<p>由上描述基本可以总结一句简短的话，同步和异步是目的，阻塞和非阻塞是实现方式。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">词</th>
+<th style="text-align:left">解释</th>
+<th style="text-align:left">举例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">同步</td>
+<td style="text-align:left">指的是用户进程触发IO操作并等待或者轮询的去查看IO操作是否就绪</td>
+<td style="text-align:left">自己上街买衣服，自己亲自干这件事，别的事干不了。</td>
+</tr>
+<tr>
+<td style="text-align:left">异步</td>
+<td style="text-align:left">异步是指用户进程触发IO操作以后便开始做自己的事情，而当IO操作已经完成的时候会得到IO完成的通知（异步的特点就是通知）</td>
+<td style="text-align:left">告诉朋友自己合适衣服的尺寸，大小，颜色，让朋友委托去卖，然后自己可以去干别的事。（使用异步IO时，Java将IO读写委托给OS处理，需要将数据缓冲区地址和大小传给OS）</td>
+</tr>
+<tr>
+<td style="text-align:left">阻塞</td>
+<td style="text-align:left">所谓阻塞方式的意思是指, 当试图对该文件描述符进行读写时, 如果当时没有东西可读,或者暂时不可写, 程序就进入等待 状态, 直到有东西可读或者可写为止</td>
+<td style="text-align:left">去公交站充值，发现这个时候，充值员不在（可能上厕所去了），然后我们就在这里等待，一直等到充值员回来为止。（当然现实社会，可不是这样，但是在计算机里确实如此。）</td>
+</tr>
+</tbody>
+</table>
+<p>非阻塞|非阻塞状态下, 如果没有东西可读, 或者不可写, 读写函数马上返回, 而不会等待|银行里取款办业务时，领取一张小票，领取完后我们自己可以玩玩手机，或者与别人聊聊天，当轮我们时，银行的喇叭会通知，这时候我们就可以去了。 |</p>
+<h2 id="简单地讲"><a href="#简单地讲" class="headerlink" title="简单地讲"></a>简单地讲</h2><p>BIO：线程发起IO请求，不管内核是否准备好IO操作，从发起请求起，线程一直阻塞，直到操作完成。</p>
+<p>NIO(reactor模型)：线程发起IO请求，立即返回；内核在做好IO操作的准备之后，通过调用注册的回调函数通知线程做IO操作，线程开始阻塞，直到操作完成。</p>
+<p>AIO(proactor模型)：线程发起IO请求，立即返回；内存做好IO操作的准备之后，做IO操作，直到操作完成或者失败，通过调用注册的回调函数通知线程做IO操作完成或者失败。</p>
+<h2 id="具体分析"><a href="#具体分析" class="headerlink" title="具体分析"></a>具体分析</h2><p>同步阻塞IO（JAVA BIO）：同步并阻塞，服务器实现模式为一个连接一个线程，即客户端有连接请求时服务器端就需要启动一个线程进行处理，如果这个连接不做任何事情会造成不必要的线程开销，当然可以通过线程池机制改善。 </p>
+<p>同步非阻塞IO(Java NIO) ：同步非阻塞，服务器实现模式为一个请求一个线程，即客户端发送的连接请求都会注册到多路复用器上，多路复用器轮询到连接有I/O请求时才启动一个线程进行处理。用户进程也需要时不时的询问IO操作是否就绪，这就要求用户进程不停的去询问。 </p>
+<p>异步阻塞IO（Java NIO）： 此种方式下是指应用发起一个IO操作以后，不等待内核IO操作的完成，等内核完成IO操作以后会通知应用程序，这其实就是同步和异步最关键的区别，同步必须等待或者主动的去询问IO是否完成，那么为什么说是阻塞的呢？因为此时是通过select系统调用来完成的，而select函数本身的实现方式是阻塞的，而采用select函数有个好处就是它可以同时监听多个文件句柄（如果从UNP的角度看，select属于同步操作。因为select之后，进程还需要读写数据），从而提高系统的并发性！  </p>
+<p>（Java AIO(NIO.2)）异步非阻塞IO：在此种模式下，用户进程只需要发起一个IO操作然后立即返回，等IO操作真正的完成以后，应用程序会得到IO操作完成的通知，此时用户进程只需要对数据进行处理就好了，不需要进行实际的IO读写操作，因为真正的IO读取或者写入操作已经由内核完成了。</p>
+<h2 id="BIO、NIO、AIO适用场景分析"><a href="#BIO、NIO、AIO适用场景分析" class="headerlink" title="BIO、NIO、AIO适用场景分析:"></a>BIO、NIO、AIO适用场景分析:</h2><pre><code>BIO方式适用于连接数目比较小且固定的架构，这种方式对服务器资源要求比较高，并发局限于应用中，JDK1.4以前的唯一选择，但程序直观简单易理解。 
+
+NIO方式适用于连接数目多且连接比较短（轻操作）的架构，比如聊天服务器，并发局限于应用中，编程比较复杂，JDK1.4开始支持。 
+
+AIO方式使用于连接数目多且连接比较长（重操作）的架构，比如相册服务器，充分调用OS参与并发操作，编程比较复杂，JDK7开始支持。
+</code></pre><h2 id="比较明白的解释"><a href="#比较明白的解释" class="headerlink" title="比较明白的解释"></a>比较明白的解释</h2><p>“一个IO操作其实分成了两个步骤：发起IO请求和实际的IO操作。<br>同步IO和异步IO的区别就在于第二个步骤是否阻塞，如果实际的IO读写阻塞请求进程，那么就是同步IO。<br>阻塞IO和非阻塞IO的区别在于第一步，发起IO请求是否会被阻塞，如果阻塞直到完成那么就是传统的阻塞IO，如果不阻塞，那么就是非阻塞IO。 </p>
+<p>同步和异步是针对应用程序和内核的交互而言的，同步指的是用户进程触发IO操作并等待或者轮询的去查看IO操作是否就绪，而异步是指用户进程触发IO操作以后便开始做自己的事情，而当IO操作已经完成的时候会得到IO完成的通知。而阻塞和非阻塞是针对于进程在访问数据的时候，根据IO操作的就绪状态来采取的不同方式，说白了是一种读取或者写入操作函数的实现方式，阻塞方式下读取或者写入函数将一直等待，而非阻塞方式下，读取或者写入函数会立即返回一个状态值。<br>所以,IO操作可以分为3类：同步阻塞（即早期的IO操作）、同步非阻塞（NIO）、异步（AIO）。<br>同步阻塞：<br>在此种方式下，用户进程在发起一个IO操作以后，必须等待IO操作的完成，只有当真正完成了IO操作以后，用户进程才能运行。JAVA传统的IO模型属于此种方式。 </p>
+<p>同步非阻塞：<br>在此种方式下，用户进程发起一个IO操作以后边可返回做其它事情，但是用户进程需要时不时的询问IO操作是否就绪，这就要求用户进程不停的去询问，从而引入不必要的CPU资源浪费。其中目前JAVA的NIO就属于同步非阻塞IO。<br>异步：<br>此种方式下是指应用发起一个IO操作以后，不等待内核IO操作的完成，等内核完成IO操作以后会通知应用程序。” </p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2016/08/20/Java-BIO、NIO、AIO/">Java BIO、NIO、AIO</a></p>
+        <p><span>文章作者:</span><a href="/" title="回到主页">HuangLangyou</a></p>
+        <p><span>发布时间:</span>2016-08-20, 21:35:26</p>
+        <p><span>最后更新:</span>2018-03-22, 21:26:10</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2016/08/20/Java-BIO、NIO、AIO/" title="Java BIO、NIO、AIO">https://onlyyouhuang.github.io/2016/08/20/Java-BIO、NIO、AIO/</a>
+            <span class="copy-path" data-clipboard-text="原文: https://onlyyouhuang.github.io/2016/08/20/Java-BIO、NIO、AIO/　　作者: HuangLangyou" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script src="/js/clipboard.min.js"></script>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2017/01/10/hexo博客迁移-多机更新/">
+                    hexo博客迁移&amp;多机更新
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2016/07/28/git命令/">
+                    git命令
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#简单地讲"><span class="toc-number">1.</span> <span class="toc-text">简单地讲</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#具体分析"><span class="toc-number">2.</span> <span class="toc-text">具体分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#BIO、NIO、AIO适用场景分析"><span class="toc-number">3.</span> <span class="toc-text">BIO、NIO、AIO适用场景分析:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#比较明白的解释"><span class="toc-number">4.</span> <span class="toc-text">比较明白的解释</span></a></li></ol>
+</div>
+<style>
+    .left-col .switch-btn {
+        display: none;
+    }
+    .left-col .switch-area {
+        display: none;
+    }
+</style>
+
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+            $(".switch-btn, .switch-area").fadeOut(300);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+            $(".switch-btn, .switch-area").fadeIn(500);
+        }
+    })
+
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+        $(".switch-btn, .switch-area").show();
+    }
+</script>
+
+
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <li id="bds_twi"><a href="#" class="bds_twi" data-cmd="twi" title="分享到推特"></a></li>
+            <li id="bds_tsina"><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a></li>
+            <li id="bds_sqq"><a href="#" class="bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a></li>
+            <li id="bds_copy"><a href="#" class="bds_copy" data-cmd="copy" title="复制网址"></a></li>
+            <li id="bds_mail"><a href="#" class="bds_mail" data-cmd="mail" title="通过邮件分享"></a></li>
+            <li id="bds_weixin"><a href="#" class="bds_weixin" data-cmd="weixin" title="生成文章二维码"></a></li>
+            <li id="bds_more"><a href="#" class="bds_more" data-cmd="more"></i></a></li>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"Java BIO、NIO、AIO　| Onlyyouhuang's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2017/01/10/hexo博客迁移-多机更新/" title="上一篇: hexo博客迁移&amp;多机更新">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2016/07/28/git命令/" title="下一篇: git命令">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/03/14/Oracle问题解决/">Oracle问题&解决方案</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/10/docker/">Docker命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/02/20/排序算法/">排序算法</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/22/Spring框架IOC容器和AOP解析/">Spring框架IOC容器和AOP解析</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/28/IDEA配置记录/">IDEA配置记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/01/10/hexo博客迁移-多机更新/">hexo博客迁移&多机更新</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/08/20/Java-BIO、NIO、AIO/">Java BIO、NIO、AIO</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/28/git命令/">git命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/17/游戏项目记录/">游戏项目记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/01/Android-NDK/">Android NDK</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/29/开发工具记录/">开发工具记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/21/Android-JS桥/">Android JS桥</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/05/18/Android-onTouch事件传递机制/">Android onTouch事件传递机制</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/22/Android-Studio/">Android Studio</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/16/Android-px-dp-sp/">Android px_dp_sp</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/15/Android-fragment/">Android fragment</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/08/Android-adb/">Android adb</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/07/Android-Html5/">Android_Html5</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/05/Java实现断点续传/">Java实现断点续传</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/31/淘宝SDK-for-Android/">淘宝SDK for Android</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/20/2016-3-10-Android面试/">2016-3-10 Android面试总结</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/14/个人博客搭建/">个人博客搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/14/hello-world/">Hello World</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2018 HuangLangyou
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题">Yelee</a> by MOxFIVE
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" >本站到访数: 
+                            <span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>, </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit">本页阅读量: 
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.1.22/require.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+</body>
+</html>
