@@ -3,19 +3,19 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Java BIO、NIO、AIO | Onlyyouhuang&#39;s blog</title>
+  <title>JVM GC与性能优化 | Onlyyouhuang&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="关于BIO、NIO、AIO的各路大神讲解整理">
-<meta name="keywords" content="Java,网络">
+  <meta name="description" content="JVM GC">
+<meta name="keywords" content="JVM">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java BIO、NIO、AIO">
-<meta property="og:url" content="https://onlyyouhuang.github.io/2016/08/20/Java-BIO、NIO、AIO/index.html">
+<meta property="og:title" content="JVM GC与性能优化">
+<meta property="og:url" content="https://onlyyouhuang.github.io/2018/04/04/JVM-GC与性能优化/index.html">
 <meta property="og:site_name" content="Onlyyouhuang&#39;s blog">
-<meta property="og:description" content="关于BIO、NIO、AIO的各路大神讲解整理">
-<meta property="og:updated_time" content="2018-03-22T13:26:10.664Z">
+<meta property="og:description" content="JVM GC">
+<meta property="og:updated_time" content="2018-04-07T02:57:30.938Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Java BIO、NIO、AIO">
-<meta name="twitter:description" content="关于BIO、NIO、AIO的各路大神讲解整理">
+<meta name="twitter:title" content="JVM GC与性能优化">
+<meta name="twitter:description" content="JVM GC">
   
     <link rel="alternative" href="/atom.xml" title="Onlyyouhuang&#39;s blog" type="application/atom+xml">
   
@@ -229,11 +229,11 @@
         </header>                
     </div>
 </nav>
-      <div class="body-wrap"><article id="post-Java-BIO、NIO、AIO" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-JVM-GC与性能优化" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/08/20/Java-BIO、NIO、AIO/" class="article-date">
-      <time datetime="2016-08-20T13:35:26.000Z" itemprop="datePublished">2016-08-20</time>
+      <a href="/2018/04/04/JVM-GC与性能优化/" class="article-date">
+      <time datetime="2018-04-03T16:18:34.000Z" itemprop="datePublished">2018-04-04</time>
 </a>
     </div>
   
@@ -246,7 +246,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      Java BIO、NIO、AIO
+      JVM GC与性能优化
     </h1>
   
 
@@ -257,7 +257,7 @@
 
         
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/网络/">网络</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JVM/">JVM</a></li></ul>
     </div>
 
         <div class="clearfix"></div>
@@ -267,55 +267,47 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <p><em>关于BIO、NIO、AIO的各路大神讲解整理</em><br><a id="more"></a></p>
-<p>在研究一个开源项目的具体实现时，看到使用的是Socket BIO(Blocking I/O，一搜BIO又出现了NIO和AIO，这3个IO模型具体是怎样的，3者之间又有什么区别？</p>
-<p>在弄清楚这几个问题之前，首先得明白什么是同步，异步，阻塞，非阻塞，只有这几个单个概念理解清楚了，然后在组合理解起来，就相对比较容易了。 </p>
-<p>1,同步和异步是针对应用程序和内核的交互而言的。 同步/异步是在时间上强调处理事情的结果/机会成本的两种处理策略；强调结果意味着对结果的迫不急待，不过结果是正确的还是错误的，反正你要立即给我一个结果响应；强调时间机会成本意味着对等待结果浪费的时间极其难接受，而对结果并不是那么急切，暂时不管结果（让处理方处理完主动通知结果/自己空闲的时候主动去获取结果）转而去处理其他事情</p>
-<p>2,阻塞和非阻塞是针对于进程在访问数据的时候，根据IO操作的就绪状态来采取的不同方式，说白了是一种读取或者写入操作函数的实现方式，阻塞方式下读取或者写入函数将一直等待，而非阻塞方式下，读取或者写入函数会立即返回一个状态值。</p>
-<p>3,同步/异步是宏观上（进程间通讯，通常表现为网络IO的处理上），阻塞/非阻塞是微观上（进程内数据传输，通常表现为对本地IO的处理上）；阻塞和非阻塞是同步/异步的表现形式</p>
-<p>由上描述基本可以总结一句简短的话，同步和异步是目的，阻塞和非阻塞是实现方式。</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">词</th>
-<th style="text-align:left">解释</th>
-<th style="text-align:left">举例</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left">同步</td>
-<td style="text-align:left">指的是用户进程触发IO操作并等待或者轮询的去查看IO操作是否就绪</td>
-<td style="text-align:left">自己上街买衣服，自己亲自干这件事，别的事干不了。</td>
-</tr>
-<tr>
-<td style="text-align:left">异步</td>
-<td style="text-align:left">异步是指用户进程触发IO操作以后便开始做自己的事情，而当IO操作已经完成的时候会得到IO完成的通知（异步的特点就是通知）</td>
-<td style="text-align:left">告诉朋友自己合适衣服的尺寸，大小，颜色，让朋友委托去卖，然后自己可以去干别的事。（使用异步IO时，Java将IO读写委托给OS处理，需要将数据缓冲区地址和大小传给OS）</td>
-</tr>
-<tr>
-<td style="text-align:left">阻塞</td>
-<td style="text-align:left">所谓阻塞方式的意思是指, 当试图对该文件描述符进行读写时, 如果当时没有东西可读,或者暂时不可写, 程序就进入等待 状态, 直到有东西可读或者可写为止</td>
-<td style="text-align:left">去公交站充值，发现这个时候，充值员不在（可能上厕所去了），然后我们就在这里等待，一直等到充值员回来为止。（当然现实社会，可不是这样，但是在计算机里确实如此。）</td>
-</tr>
-</tbody>
-</table>
-<p>非阻塞|非阻塞状态下, 如果没有东西可读, 或者不可写, 读写函数马上返回, 而不会等待|银行里取款办业务时，领取一张小票，领取完后我们自己可以玩玩手机，或者与别人聊聊天，当轮我们时，银行的喇叭会通知，这时候我们就可以去了。 |</p>
-<h2 id="简单地讲"><a href="#简单地讲" class="headerlink" title="简单地讲"></a>简单地讲</h2><p>BIO：线程发起IO请求，不管内核是否准备好IO操作，从发起请求起，线程一直阻塞，直到操作完成。</p>
-<p>NIO(reactor模型)：线程发起IO请求，立即返回；内核在做好IO操作的准备之后，通过调用注册的回调函数通知线程做IO操作，线程开始阻塞，直到操作完成。</p>
-<p>AIO(proactor模型)：线程发起IO请求，立即返回；内存做好IO操作的准备之后，做IO操作，直到操作完成或者失败，通过调用注册的回调函数通知线程做IO操作完成或者失败。</p>
-<h2 id="具体分析"><a href="#具体分析" class="headerlink" title="具体分析"></a>具体分析</h2><p>同步阻塞IO（JAVA BIO）：同步并阻塞，服务器实现模式为一个连接一个线程，即客户端有连接请求时服务器端就需要启动一个线程进行处理，如果这个连接不做任何事情会造成不必要的线程开销，当然可以通过线程池机制改善。 </p>
-<p>同步非阻塞IO(Java NIO) ：同步非阻塞，服务器实现模式为一个请求一个线程，即客户端发送的连接请求都会注册到多路复用器上，多路复用器轮询到连接有I/O请求时才启动一个线程进行处理。用户进程也需要时不时的询问IO操作是否就绪，这就要求用户进程不停的去询问。 </p>
-<p>异步阻塞IO（Java NIO）： 此种方式下是指应用发起一个IO操作以后，不等待内核IO操作的完成，等内核完成IO操作以后会通知应用程序，这其实就是同步和异步最关键的区别，同步必须等待或者主动的去询问IO是否完成，那么为什么说是阻塞的呢？因为此时是通过select系统调用来完成的，而select函数本身的实现方式是阻塞的，而采用select函数有个好处就是它可以同时监听多个文件句柄（如果从UNP的角度看，select属于同步操作。因为select之后，进程还需要读写数据），从而提高系统的并发性！  </p>
-<p>（Java AIO(NIO.2)）异步非阻塞IO：在此种模式下，用户进程只需要发起一个IO操作然后立即返回，等IO操作真正的完成以后，应用程序会得到IO操作完成的通知，此时用户进程只需要对数据进行处理就好了，不需要进行实际的IO读写操作，因为真正的IO读取或者写入操作已经由内核完成了。</p>
-<h2 id="BIO、NIO、AIO适用场景分析"><a href="#BIO、NIO、AIO适用场景分析" class="headerlink" title="BIO、NIO、AIO适用场景分析:"></a>BIO、NIO、AIO适用场景分析:</h2><pre><code>BIO方式适用于连接数目比较小且固定的架构，这种方式对服务器资源要求比较高，并发局限于应用中，JDK1.4以前的唯一选择，但程序直观简单易理解。 
-
-NIO方式适用于连接数目多且连接比较短（轻操作）的架构，比如聊天服务器，并发局限于应用中，编程比较复杂，JDK1.4开始支持。 
-
-AIO方式使用于连接数目多且连接比较长（重操作）的架构，比如相册服务器，充分调用OS参与并发操作，编程比较复杂，JDK7开始支持。
-</code></pre><h2 id="比较明白的解释"><a href="#比较明白的解释" class="headerlink" title="比较明白的解释"></a>比较明白的解释</h2><p>“一个IO操作其实分成了两个步骤：发起IO请求和实际的IO操作。<br>同步IO和异步IO的区别就在于第二个步骤是否阻塞，如果实际的IO读写阻塞请求进程，那么就是同步IO。<br>阻塞IO和非阻塞IO的区别在于第一步，发起IO请求是否会被阻塞，如果阻塞直到完成那么就是传统的阻塞IO，如果不阻塞，那么就是非阻塞IO。 </p>
-<p>同步和异步是针对应用程序和内核的交互而言的，同步指的是用户进程触发IO操作并等待或者轮询的去查看IO操作是否就绪，而异步是指用户进程触发IO操作以后便开始做自己的事情，而当IO操作已经完成的时候会得到IO完成的通知。而阻塞和非阻塞是针对于进程在访问数据的时候，根据IO操作的就绪状态来采取的不同方式，说白了是一种读取或者写入操作函数的实现方式，阻塞方式下读取或者写入函数将一直等待，而非阻塞方式下，读取或者写入函数会立即返回一个状态值。<br>所以,IO操作可以分为3类：同步阻塞（即早期的IO操作）、同步非阻塞（NIO）、异步（AIO）。<br>同步阻塞：<br>在此种方式下，用户进程在发起一个IO操作以后，必须等待IO操作的完成，只有当真正完成了IO操作以后，用户进程才能运行。JAVA传统的IO模型属于此种方式。 </p>
-<p>同步非阻塞：<br>在此种方式下，用户进程发起一个IO操作以后边可返回做其它事情，但是用户进程需要时不时的询问IO操作是否就绪，这就要求用户进程不停的去询问，从而引入不必要的CPU资源浪费。其中目前JAVA的NIO就属于同步非阻塞IO。<br>异步：<br>此种方式下是指应用发起一个IO操作以后，不等待内核IO操作的完成，等内核完成IO操作以后会通知应用程序。” </p>
+        <p><em>JVM GC</em><br><a id="more"></a></p>
+<p>JAVA 并没有提供明确的代码来标注一块内存并将其回收。我们可以将相关对象设为 null 或者用 System.gc()。然而后者将会严重影响代码的性能，因为一般每一次显式的调用system.gc()都会停止所有响应，去检查内存中是否有可回收的对象。这会对程序的正常运行造成极大的威胁。另外，调用该方法并不能保证 JVM 立即进行垃圾回收，仅仅是通知 JVM 要进行垃圾回收了，具体回收与否完全由 JVM 决定。</p>
+<p>垃圾回收器是利用有向图来记录和管理内存中的所有对象，通过该有向图，就可以识别哪些对象“可达”，哪些对象“不可达”，“不可达”的对象就是可以被回收的。</p>
+<h3 id="追踪回收算法（tracing-collector）"><a href="#追踪回收算法（tracing-collector）" class="headerlink" title="追踪回收算法（tracing collector）"></a>追踪回收算法（tracing collector）</h3><p>从根结点开始遍历对象的应用图。同时标记遍历到的对象。遍历完成后，没有被标记的对象就是目前未被引用，可以被回收。</p>
+<h3 id="压缩回收算法（Compacting-Collector）"><a href="#压缩回收算法（Compacting-Collector）" class="headerlink" title="压缩回收算法（Compacting Collector）"></a>压缩回收算法（Compacting Collector）</h3><p>把堆中活动的对象集中移动到堆的一端，就会在堆的另一端流出很大的空闲区域。这种处理简化了消除碎片的工作，但可能带来性能的损失。<br>复制回收算法（Coping Collector) 把堆均分成两个大小相同的区域，只使用其中的一个区域，直到该区域消耗完。此时垃圾回收器终端程序的执行，通过遍历把所有活动的对象复制到另一个区域，复制过程中它们是紧挨着布置的，这样也可以达到消除内存碎片的目的。复制结束后程序会继续运行，直到该区域被用完。 但是有两个缺陷:对于指定大小的堆,需要两倍大小的内存空间；需要中断正在执行的程序，降低了执行效率</p>
+<h3 id="按代回收算法（Generational-Collector"><a href="#按代回收算法（Generational-Collector" class="headerlink" title="按代回收算法（Generational Collector)"></a>按代回收算法（Generational Collector)</h3><p>为什么要按代进行回收？这是因为不同对象生命周期不同，每次回收都要遍历所有存活对象，对于整个堆内存进行回收无疑浪费了大量时间，对症下药可以提高垃圾回收的效率。主要思路是：把堆分成若搞个子堆，每个子堆视为一代，算法在运行的过程中优先收集“年幼”的对象，如果某个对象经过多次回收仍然“存活”,就移动到高一级的堆，减少对其扫描次数。</p>
+<h2 id="Java内存回收"><a href="#Java内存回收" class="headerlink" title="Java内存回收"></a>Java内存回收</h2><p>垃圾回收器(4种收集器)和finalize()方法</p>
+<p>java中垃圾回收器可以自动回收无用对象占据的内存，但它只负责释放java中创建的对象所占据的所有内存，通过某种创建对象之外的方式为对象分配的内存空间则无法被垃圾回收器回收；而且垃圾回收本身也有开销，GC的优先级比较低，所以如果JVM没有面临内存耗尽，它是不会去浪费资源进行垃圾回收以恢复内存的。最后我们会发现，只要程序没有濒临存储空间用完那一刻，对象占用的空间就总也得不到释放。我们可以通过代码System.gc()来主动启动一个垃圾回收器(虽然JVM不会立刻去回收)，在释放new分配内存空间之前，将会通过finalize()释放用其他方法分配的内存空间。</p>
+<h3 id="Serial收集器"><a href="#Serial收集器" class="headerlink" title="Serial收集器"></a>Serial收集器</h3><p>一个单线程的新生代收集器，它进行垃圾收集时，必须暂停其他所有的工作线程，直到它收集结束。简单高效</p>
+<h3 id="Parallel（并行）收集器"><a href="#Parallel（并行）收集器" class="headerlink" title="Parallel（并行）收集器"></a>Parallel（并行）收集器</h3><p>JVM缺省收集器，其最大的优点是使用多个线程来通过扫描并压缩堆。并行收集器可以理解是多线程串行收集，在串行收集基础上采用多线程方式进行GC，很好的弥补了串行收集的不足，可以大幅缩短停顿时间，因此对于空间不大的区域（如young generation），采用并行收集器停顿时间很短，回收效率高，适合高频率执行。</p>
+<h3 id="CMS收集器"><a href="#CMS收集器" class="headerlink" title="CMS收集器"></a>CMS收集器</h3><p>基于“标记-清除”算法实现的，它使用多线程的算法去扫描老生代堆（标记）并对发现的待回收对象进行回收(清除)，容易产生大量内存碎片使得大对象无法创建然后不得不提前触发full GC。CPU资源占用过大，标记之后容易产生浮动垃圾只能留到下一次GC处理。</p>
+<h3 id="G1收集器"><a href="#G1收集器" class="headerlink" title="G1收集器"></a>G1收集器</h3><p>G1收集器是基于“标记-整理”算法实现的收集器，也就是说它不会产生空间碎片。G1是一个针对多处理器大容量内存的服务器端的垃圾收集器，其目标是在实现高吞吐量的同时，尽可能的满足垃圾收集暂停时间的要求。它能让使用者明确指定在一个长度为M毫秒的时间片段内，消耗在垃圾收集上的时间不得超过N毫秒，具备了一些实时Java（RTSJ）的垃圾收集器的特征。</p>
+<h3 id="finalize-方法的工作原理"><a href="#finalize-方法的工作原理" class="headerlink" title="finalize()方法的工作原理"></a>finalize()方法的工作原理</h3><p>一旦垃圾回收器准备好释放对象占用的存储空间，将首先调用并且只能调用一次该对象的finalize()方法(通过代码System.gc()实现)，并且在下一次垃圾回收动作发生时，才会真正回收对象占用的内存。所以如果我们重载finalize()方法就能在垃圾回收时刻做一些重要的清理工作或者自救该对象一次(只要在finalize()方法中让该对象重新和引用链上的任何一个对象建立关联即可)。finalize()方法用于释放用特殊方式分配的内存空间，这是因为我们可能在java中调用非java代码来分配内存。</p>
+<h2 id="JAVA性能优化"><a href="#JAVA性能优化" class="headerlink" title="JAVA性能优化"></a>JAVA性能优化</h2><ul>
+<li>减少new对象。每次new对象之后，都要开辟新的内存空间。这些对象不被引用之后，还要回收掉。因此，如果最大限度地合理重用对象，或者使用基本数据类型替代对象，都有助于节省内存；</li>
+<li>多使用局部变量，减少使用静态变量。局部变量被创建在栈中，存取速度快。静态变量则是在堆内存；</li>
+<li>如果是单线程，尽量使用非多线程安全的，因为线程安全来自于同步机制，同步机制会降低性能。例如，单线程程序，能使用HashMap，就不要用HashTable。同理，尽量减少使用synchronized</li>
+<li>用移位符号替代乘除号。eg：a*8应该写作a&lt;&lt;3;   </li>
+<li>对于经常反复使用的对象使用缓存；</li>
+<li>尽量使用基本类型而不是包装类型，尽量使用一维数组而不是二维数组；</li>
+<li>尽量使用final修饰符，final表示不可修改，访问效率高</li>
+<li>单线程情况下（或者是针对于局部变量），字符串尽量使用StringBuilder，比StringBuffer要快；</li>
+<li>每次对 String 类型改变的时候都等同于生成了一个新的String对象，然后将指针指向新的 String 对象。如果不能保证线程安全，尽量使用StringBuffer来连接字符串。需要注意的是StringBuffer的默认缓存容量是16个字符，如果超过16，apend方法调用私有的expandCapacity()方法，来保证足够的缓存容量。因此，如果可以预设StringBuffer的容量，避免append再去扩展容量。如果可以保证线程安全，就是用StringBuilder。</li>
+<li>最基本的建议就是尽早释放无用对象的引用。大多数程序员在使用临时变量的时候，都是让引用变量在退出活动域（scope）后，自动设置为 null.我们在使用这种方式时候，必须特别注意一些复杂的对象图，例如数组，队列，树，图等，这些对象之间有相互引用关系较为复杂。对于这类对象，GC 回收它们一般效率较低。如果程序允许，尽早将不用的引用对象赋为null.这样可以加速GC的工作。</li>
+<li>尽量少用finalize方式回收资源,finalize函数是Java提供给程序员一个释放对象或资源的机会。但它会加大GC的工作量;    3.如果需要使用经常使用的图片，可以使用soft应用类型。它可以尽可能将图片保存在内存中，供程序调用，而不引起OutOfMemory.</li>
+<li>注意集合数据类型，包括数组,树,图,链表等，这些数据结构对GC来说，回收更为复杂。另外，注意一些全局的变量，以及一些静态变量。这些变量往往容易引起悬挂对象（dangling reference），造成内存浪费。</li>
+<li>当程序有一定的等待时间，程序员可以手动执行System.gc()，通知GC运行，但是Java语言规范并不保证GC一定会执行。使用增量式GC可以缩短Java程序的暂停时间。</li>
+</ul>
+<h2 id="GC频繁发生的原因"><a href="#GC频繁发生的原因" class="headerlink" title="GC频繁发生的原因"></a>GC频繁发生的原因</h2><ul>
+<li>堆空间不足, 提高最小堆空间-Xms和最大堆空间-Xmx的大小，提高年轻带-Xmn有助于在一定的程度解决GC的问题。</li>
+<li>最好看看内存的DUMP文件，进行分析，在对JVM参数进行相对的配置。</li>
+<li>是不是有大量的线程在等待，是否需要调整线程的大小。</li>
+<li>minor gc还是full gc，用的什么gc方式(串行、并行、CMS)？如果是CMS，回收的百分比设了多少？是否用了悲观策略？old区大小够了？服务端JAVA 偏后端执行注重吞吐量的用并行收集器,偏WEB 注重用户交互的用CMS收集器。</li>
+<li>或者代码写得有问题，导致对象一直没回收占满了heap。</li>
+</ul>
+<h2 id="导致full-gc的执行的因素："><a href="#导致full-gc的执行的因素：" class="headerlink" title="导致full gc的执行的因素："></a>导致full gc的执行的因素：</h2><ul>
+<li>年轻代空间不足; </li>
+<li>永久代（Java8已移除）空间满; </li>
+<li>CMS GC运行期间预留的内存无法满足程序需要时出现promotion failed和concurrent mode failure; </li>
+<li>统计得到的Minor GC晋升到旧生代的平均大小大于旧生代的剩余空间等</li>
+</ul>
 
       
     </div>
@@ -324,13 +316,13 @@ AIO方式使用于连接数目多且连接比较长（重操作）的架构，�
   
     
     <div class="copyright">
-        <p><span>本文标题:</span><a href="/2016/08/20/Java-BIO、NIO、AIO/">Java BIO、NIO、AIO</a></p>
+        <p><span>本文标题:</span><a href="/2018/04/04/JVM-GC与性能优化/">JVM GC与性能优化</a></p>
         <p><span>文章作者:</span><a href="/" title="回到主页">HuangLangyou</a></p>
-        <p><span>发布时间:</span>2016-08-20, 21:35:26</p>
-        <p><span>最后更新:</span>2018-03-22, 21:26:10</p>
+        <p><span>发布时间:</span>2018-04-04, 00:18:34</p>
+        <p><span>最后更新:</span>2018-04-07, 10:57:30</p>
         <p>
-            <span>原始链接:</span><a class="post-url" href="/2016/08/20/Java-BIO、NIO、AIO/" title="Java BIO、NIO、AIO">https://onlyyouhuang.github.io/2016/08/20/Java-BIO、NIO、AIO/</a>
-            <span class="copy-path" data-clipboard-text="原文: https://onlyyouhuang.github.io/2016/08/20/Java-BIO、NIO、AIO/　　作者: HuangLangyou" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <span>原始链接:</span><a class="post-url" href="/2018/04/04/JVM-GC与性能优化/" title="JVM GC与性能优化">https://onlyyouhuang.github.io/2018/04/04/JVM-GC与性能优化/</a>
+            <span class="copy-path" data-clipboard-text="原文: https://onlyyouhuang.github.io/2018/04/04/JVM-GC与性能优化/　　作者: HuangLangyou" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
             <script src="/js/clipboard.min.js"></script>
             <script> var clipboard = new Clipboard('.copy-path'); </script>
         </p>
@@ -343,16 +335,10 @@ AIO方式使用于连接数目多且连接比较长（重操作）的架构，�
 
     <nav id="article-nav">
         
-            <div id="article-nav-newer" class="article-nav-title">
-                <a href="/2017/01/10/hexo博客迁移-多机更新/">
-                    hexo博客迁移&amp;多机更新
-                </a>
-            </div>
-        
         
             <div id="article-nav-older" class="article-nav-title">
-                <a href="/2016/07/28/git命令/">
-                    git命令
+                <a href="/2018/04/04/数据库索引/">
+                    数据库索引
                 </a>
             </div>
         
@@ -363,7 +349,7 @@ AIO方式使用于连接数目多且连接比较长（重操作）的架构，�
 
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#简单地讲"><span class="toc-number">1.</span> <span class="toc-text">简单地讲</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#具体分析"><span class="toc-number">2.</span> <span class="toc-text">具体分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#BIO、NIO、AIO适用场景分析"><span class="toc-number">3.</span> <span class="toc-text">BIO、NIO、AIO适用场景分析:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#比较明白的解释"><span class="toc-number">4.</span> <span class="toc-text">比较明白的解释</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#追踪回收算法（tracing-collector）"><span class="toc-number">1.</span> <span class="toc-text">追踪回收算法（tracing collector）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#压缩回收算法（Compacting-Collector）"><span class="toc-number">2.</span> <span class="toc-text">压缩回收算法（Compacting Collector）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#按代回收算法（Generational-Collector"><span class="toc-number">3.</span> <span class="toc-text">按代回收算法（Generational Collector)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Java内存回收"><span class="toc-number"></span> <span class="toc-text">Java内存回收</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Serial收集器"><span class="toc-number">1.</span> <span class="toc-text">Serial收集器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Parallel（并行）收集器"><span class="toc-number">2.</span> <span class="toc-text">Parallel（并行）收集器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CMS收集器"><span class="toc-number">3.</span> <span class="toc-text">CMS收集器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#G1收集器"><span class="toc-number">4.</span> <span class="toc-text">G1收集器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#finalize-方法的工作原理"><span class="toc-number">5.</span> <span class="toc-text">finalize()方法的工作原理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JAVA性能优化"><span class="toc-number"></span> <span class="toc-text">JAVA性能优化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GC频繁发生的原因"><span class="toc-number"></span> <span class="toc-text">GC频繁发生的原因</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#导致full-gc的执行的因素："><span class="toc-number"></span> <span class="toc-text">导致full gc的执行的因素：</span></a>
 </div>
 <style>
     .left-col .switch-btn {
@@ -420,7 +406,7 @@ AIO方式使用于连接数目多且连接比较长（重操作）的架构，�
         </div>
         <script>
             window._bd_share_config={
-                "common":{"bdSnsKey":{},"bdText":"Java BIO、NIO、AIO　| Onlyyouhuang's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+                "common":{"bdSnsKey":{},"bdText":"JVM GC与性能优化　| Onlyyouhuang's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
         </script>
     
 
@@ -440,15 +426,13 @@ AIO方式使用于连接数目多且连接比较长（重操作）的架构，�
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/2017/01/10/hexo博客迁移-多机更新/" title="上一篇: hexo博客迁移&amp;多机更新">
-                <i class="fa fa-angle-left"></i>
-            </a>
+            <a href="/" title="回到主页"><i class="fa fa-home"></i></a>
         
 
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
 
         
-            <a href="/2016/07/28/git命令/" title="下一篇: git命令">
+            <a href="/2018/04/04/数据库索引/" title="下一篇: 数据库索引">
                 <i class="fa fa-angle-right"></i>
             </a>
         

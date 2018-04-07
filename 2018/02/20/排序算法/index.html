@@ -12,7 +12,7 @@
 <meta property="og:url" content="https://onlyyouhuang.github.io/2018/02/20/排序算法/index.html">
 <meta property="og:site_name" content="Onlyyouhuang&#39;s blog">
 <meta property="og:description" content="排序算法知识点记录">
-<meta property="og:updated_time" content="2018-03-22T14:08:15.239Z">
+<meta property="og:updated_time" content="2018-04-07T02:21:36.306Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="排序算法">
 <meta name="twitter:description" content="排序算法知识点记录">
@@ -155,7 +155,7 @@
                 
                 <section class="switch-part switch-part2">
                     <div class="widget tagcloud" id="js-tagcloud">
-                        <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/Anfroid/" style="font-size: 10px;">Anfroid</a> <a href="/tags/HTML5/" style="font-size: 10px;">HTML5</a> <a href="/tags/Html5/" style="font-size: 10px;">Html5</a> <a href="/tags/Java/" style="font-size: 16.67px;">Java</a> <a href="/tags/NDK/" style="font-size: 10px;">NDK</a> <a href="/tags/SDK/" style="font-size: 10px;">SDK</a> <a href="/tags/Spring/" style="font-size: 10px;">Spring</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/hexo/" style="font-size: 13.33px;">hexo</a> <a href="/tags/remoteService/" style="font-size: 10px;">remoteService</a> <a href="/tags/算法/" style="font-size: 10px;">算法</a> <a href="/tags/网络/" style="font-size: 10px;">网络</a> <a href="/tags/面试/" style="font-size: 10px;">面试</a>
+                        <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/Anfroid/" style="font-size: 10px;">Anfroid</a> <a href="/tags/HTML5/" style="font-size: 10px;">HTML5</a> <a href="/tags/Html5/" style="font-size: 10px;">Html5</a> <a href="/tags/JVM/" style="font-size: 10px;">JVM</a> <a href="/tags/Java/" style="font-size: 16.67px;">Java</a> <a href="/tags/NDK/" style="font-size: 10px;">NDK</a> <a href="/tags/SDK/" style="font-size: 10px;">SDK</a> <a href="/tags/Spring/" style="font-size: 10px;">Spring</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/hexo/" style="font-size: 13.33px;">hexo</a> <a href="/tags/remoteService/" style="font-size: 10px;">remoteService</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/算法/" style="font-size: 10px;">算法</a> <a href="/tags/网络/" style="font-size: 10px;">网络</a> <a href="/tags/面试/" style="font-size: 10px;">面试</a>
                     </div>
                 </section>
                 
@@ -338,6 +338,320 @@
 </tr>
 </tbody>
 </table>
+<h3 id="分类："><a href="#分类：" class="headerlink" title="分类："></a>分类：</h3><p>1）插入排序（直接插入排序、希尔排序）</p>
+<p>2）交换排序（冒泡排序、快速排序）</p>
+<p>3）选择排序（直接选择排序、堆排序）</p>
+<p>4）归并排序</p>
+<p>5）分配排序（箱排序、基数排序）</p>
+<p>所需辅助空间最多：归并排序</p>
+<p>所需辅助空间最少：堆排序</p>
+<p>平均速度最快：快速排序</p>
+<p>不稳定：快速排序，希尔排序，堆排序。</p>
+<h3 id="选择排序算法的时候"><a href="#选择排序算法的时候" class="headerlink" title="选择排序算法的时候"></a>选择排序算法的时候</h3><p>1.数据的规模 ；  2.数据的类型 ；  3.数据已有的顺序<br>一般来说，当数据规模较小时，应选择直接插入排序或冒泡排序。任何排序算法在数据量小时基本体现不出来差距。 考虑数据的类型，比如如果全部是正整数，那么考虑使用桶排序为最优。  考虑数据已有顺序，快排是一种不稳定的排序（当然可以改进），对于大部分排好的数据，快排会浪费大量不必要的步骤。数据量极小，而起已经基本排好序，冒泡是最佳选择。我们说快排好，是指大量随机数据下，快排效果最理想。而不是所有情况。</p>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><p>——按平均的时间性能来分：</p>
+<pre><code>1）时间复杂度为O(nlogn)的方法有：快速排序、堆排序和归并排序，其中以快速排序为最好；
+2）时间复杂度为O(n^2)的有：直接插入排序、起泡排序和简单选择排序，其中以直接插入为最好，特别是对那些对关键字近似有序的记录序列尤为如此；
+3）时间复杂度为O(n)的排序方法只有，基数排序。
+</code></pre><p>当待排记录序列按关键字顺序有序时，直接插入排序和起泡排序能达到O(n)的时间复杂度;而对于快速排序而言，这是最不好的情况，此时的时间性能蜕化为O(n2)，因此是应该尽量避免的情况。简单选择排序、堆排序和归并排序的时间性能不随记录序列中关键字的分布而改变。<br>——按平均的空间性能来分（指的是排序过程中所需的辅助空间大小）：</p>
+<pre><code>1） 所有的简单排序方法(包括：直接插入、起泡和简单选择)和堆排序的空间复杂度为O(1)；
+2） 快速排序为O(logn )，为栈所需的辅助空间;
+3） 归并排序所需辅助空间最多，其空间复杂度为O(n);
+4） 链式基数排序需附设队列首尾指针，则空间复杂度为O(rd)。
+</code></pre><p>——排序方法的稳定性能：</p>
+<pre><code>1） 稳定的排序方法指的是，对于两个关键字相等的记录，它们在序列中的相对位置，在排序之前和经过排序之后，没有改变。
+2） 当对多关键字的记录序列进行LSD方法排序时，必须采用稳定的排序方法。
+3） 对于不稳定的排序方法，只要能举出一个实例说明即可。
+4） 快速排序，希尔排序和堆排序是不稳定的排序方法。
+</code></pre><h1 id="排序算法Java实现"><a href="#排序算法Java实现" class="headerlink" title="排序算法Java实现"></a>排序算法Java实现</h1><h2 id="插入排序："><a href="#插入排序：" class="headerlink" title="插入排序："></a>插入排序：</h2><p>包括直接插入排序，希尔插入排序。</p>
+<p>直接插入排序算法的核心思想是，将第 i 个记录插入到前面 i-1 个已经有序的集合中。<br>该算法的时间复杂度为O(n*n), 当待排记录序列为正序时，时间复杂度提高至O(n)。</p>
+<p>希尔排序（缩小增量排序 diminishing increment sort）：先将整个待排记录序列分割成若干个子序列分别进行直接插入排序，待整个序列中的记录基本有序时，再对全体记录进行一次直接插入排序。</p>
+<p>插入排序Java代码：</p>
+<pre><code>public class InsertionSort {
+
+    //直接插入排序  
+    public void straightSort(int[] array) {
+        for (int i = 1; i &lt; array.length; i++) {
+            for (int j = i; j &gt; 0; j--) {
+                if (array[j] &lt; array[j - 1]) {
+                    int temp = array[j - 1];
+                    array[j - 1] = array[j];
+                    array[j] = temp;
+                }else 
+                    break;
+            }
+        }
+        //遍历输出数组元素
+        for(int value : array){
+            System.out.print(value + &quot;,&quot;);
+        }
+    }   
+
+    //希尔排序，渐减delete的值
+    public static void shellSort(){
+        int[] array = {46,55,13,42,94,17,5,70};
+        int[] deletes = {4,2,1};
+        for (int i=0;i&lt;deletes.length;i++){
+            oneShellSort(array,deletes[i]);
+        }
+        //遍历输出数组内容
+        for(int value : array){
+            System.out.print(value + &quot;,&quot;);
+        }
+    }
+
+    //根据距离增量的值划分子序列并对子序列内部进行直接插入排序
+    public static void oneShellSort(int[] array,int delete){
+        int temp;
+        for(int i=delet;i&lt;array.length;i++){
+            //从第二个子序列开始交替进行直接的插入排序
+            //将当前元素插入到前面的有序队列中
+            if(array[i-delete] &gt; array[i]){
+                temp = array[i];
+                int j=i-delet;
+                while(j&gt;=0 &amp;&amp; array[j] &gt; temp){
+                    array[j+delete] = array[j];
+                    j -= delet;
+                }
+                array[j + delete] = temp;
+            }
+        }
+    }  
+
+}
+</code></pre><h2 id="交换排序："><a href="#交换排序：" class="headerlink" title="交换排序："></a>交换排序：</h2><p>包括冒泡排序，快速排序。</p>
+<p>冒泡排序法的核心思想是通过两两比较，每次将最大或者最小的元素移动到整个序列的一端。该算法是专门针对已部分排序的数据进行排序的一种排序算法。如果在你的数据清单中只有一两个数据是乱序的话，用这种算法就是最快的排序算法。如果你的数据清单中的数据是随机排列的，那么这种方法就成了最慢的算法了。</p>
+<p>快速排序的基本思想是，从序列中任选一个元素，但通常会直接选择序列的第一个元素作为一个标准，所有比该元素值小的元素全部移动到他的左边，比他大的都移动到他的右边。我们称这叫做一趟快速排序，位于该元素两边的子表继续进行快速排序算法直到整个序列都有序。该排序算法是目前为止，内部排序中效率最高的排序算法。</p>
+<p>交换排序Java代码：</p>
+<pre><code>public class ExchangeSort {
+
+    //冒泡排序
+    public static void bubbleSort(int[] array){
+        int temp = 0;
+        for(int i=0;i&lt;array.length-1;i++){
+            for(int j =0;j&lt;array.length-1-i;j++){
+                if(array[j]&gt;array[j+1]){
+                    //交换两个数组元素的值
+                    temp = array[j];
+                    array[j] = array[j+1];
+                    array[j+1] = temp;
+                }
+            }
+        }
+        //遍历输出数组元素
+        for(int value : array){
+            System.out.print(value + &quot;,&quot;);
+        }
+    }   
+
+    //快速排序的递归定义
+    public static void quickSort(int[] array,int low,int high){
+        if(low&lt;high){
+            int pos = oneQuickSort(array,low,high);
+            quickSort(array,low,pos-1);
+            quickSort(array,pos+1,high);
+        }
+    }
+
+    public static int oneQuickSort(int[] array,int low,int high){
+        //实现一次快速排序
+        int key = array[low];
+        int flag = 0;
+        while (low != high) {
+            if (flag == 0) {
+                //flag为0表示指针从high的一端开始移动
+                if (array[high] &lt; key) {
+                    array[low] = array[high];
+                    low++;
+                    flag = 1;
+                } else {
+                    high--;
+                }
+            } else {
+                //指针从low的一端开始移动
+                if (array[low] &gt; key) {
+                    array[high] = array[low];
+                    high--;
+                    flag = 0;
+                } else {
+                    low++;
+                }
+            }
+        }
+        array[low] = key;
+        return low;
+    }
+
+}
+</code></pre><h2 id="选择排序："><a href="#选择排序：" class="headerlink" title="选择排序："></a>选择排序：</h2><p>分为直接选择排序， 堆排序</p>
+<p>直接选择排序的基本思想是，每一趟会在n个元素中比较n-1次，选择出最大或者最小的一个元素放在整个序列的端点处。</p>
+<p>堆排序：首先，数组里面用层次遍历的顺序放一棵完全二叉树。从最后一个非终端结点往前面调整，直到到达根结点，这个时候除根节点以外的所有非终端节点都已经满足堆得条件了，于是需要调整根节点使得整个树满足堆得条件，于是从根节点开始，沿着它的儿子们往下面走（最大堆沿着最大的儿子走，最小堆沿着最小的儿子走）。 主程序里面，首先从最后一个非终端节点开始调整到根也调整完，形成一个heap， 然后将heap的根放到后面去（即：每次的树大小会变化，但是 root都是在1的位置，以方便计算儿子们的index，所以如果需要升序排列，则要逐步大顶堆。因为根节点被一个个放在后面去了。 降序排列则要建立小顶堆）</p>
+<p>选择排序Java代码：</p>
+<pre><code>public class SelectionSort {
+
+    //直接选择排序
+    public static void selectSort(int[] array){
+        for (int i=0;i&lt;array.length;i++){
+            for (int j=i+1;j&lt;array.length;j++){
+                if(array[i]&gt;array[j]){
+                    //发现比自己小的元素，则交换位置
+                    int temp = array[j];
+                    array[j]=array[i];
+                    array[i] = temp;
+                }
+            }
+        }
+        //输出排序后的数组内容
+        for (int key  : array){
+            System.out.print(key+&quot;,&quot;);
+        }
+    }
+
+    //堆排序
+    public static void heapSort(int[] arr){  
+        /*  
+        * 思路：首先要对用数组创建一个最大堆，然后把第一个数和最后一个数交换，然后对第一个数  
+        * 到倒数第二个数调整顺序，创建新的最大堆，然后把新的第一个数和倒数第二个数交换，以此类推  
+        * */  
+        int len = arr.length;  
+        for(int parent = (len-1)/2; parent&gt;=0;parent--){  
+            adjustHeap(arr,parent,len);  
+        }  
+        int lastLeaf = len-1;  
+
+        while(lastLeaf&gt;=1){  
+              swap(arr,0,lastLeaf);  
+            adjustHeap(arr,0,lastLeaf);  
+            lastLeaf--;  
+        }  
+
+
+    }
+
+    public static void adjustHeap(int[] arr, int parent,int len){  
+        /*  
+        * 思路：从最后一个父节点开始，如果有子节点大于父节点，那么把子节点和父节点交换，  
+        * 直到交换到叶子结点，然后对前一个父节点执行上述动作，直到对根节点执行完此操作  
+        * */  
+        while((parent*2+1)&lt;len){  
+            int left = parent*2+1;
+            int indexOfMax = left;  
+            if(parent*2+2&lt;len){  
+                int right = parent*2+2;  
+                if(arr[left]&lt;arr[right]){  
+                    indexOfMax = right;  
+                }  
+            }  
+            if(arr[parent]&lt;arr[indexOfMax]){  
+                swap(arr,indexOfMax,parent);  
+            }  
+            parent = parent*2+1;  
+        }  
+    }
+
+    public static void swap(int[] a,int i,int j){  
+        int temp = a[i];  
+        a[i]=a[j];  
+        a[j]=temp;  
+    }
+
+}
+</code></pre><p>7）归并排序：</p>
+<p>将两个或两个以上的有序表组合成一个新的有序表。归并排序要使用一个辅助数组，大小跟原数组相同，递归做法。每次将目标序列分解成两个序列，分别排序两个子序列之后，再将两个排序好的子序列merge到一起。</p>
+<p>归并排序Java代码：</p>
+<pre><code>public class MergeSort { 
+
+    public static void mergeSort(int[] arr){  
+        /*  
+         * 思路：先递归的调用sort函数把数组平均分为两组，然后用merge函数把分开的每个组排序并合并起来  
+         * */  
+        sort(arr,0,arr.length-1);  
+    }
+
+    public static void sort(int[] arr, int begin, int end){  
+        if(begin&gt;=end){  
+            return;  
+        }  
+        int meddle = (begin+end)/2;  
+        sort(arr,begin,meddle);  
+        sort(arr,meddle+1,end);  
+        merge(arr,begin,meddle,end);  
+    }
+
+    public static void merge(int[] arr, int begin, int meddle, int end){  
+        int[] newArr = new int[end-begin+1];  
+        //从begin到meddle，和meddle+1到end中，把小的数放进newArr中  
+        int newIndex=0;  
+        int i=begin;  
+        int j = meddle+1;  
+        while(i&lt;=meddle &amp;&amp; j&lt;=end){  
+            if(arr[i]&gt;arr[j]){  
+                newArr[newIndex++] = arr[j++];  
+            }  
+            else{  
+                newArr[newIndex++] = arr[i++];  
+            }  
+        }  
+        while(i&lt;=meddle){  
+            newArr[newIndex++] = arr[i++];  
+        }  
+        while(j&lt;=end){  
+            newArr[newIndex++] = arr[j++];  
+        }  
+        //更新把排序好的newArr更新到arr对应的位置中  
+        for(int k = begin;k&lt;=end;k++){  
+            arr[k] = newArr[k-begin];  
+        }  
+    }
+}
+</code></pre><p>8）基数排序：</p>
+<p>使用10个辅助队列，假设最大数的数字位数为x， 则一共做x次，从个位数开始往前，以第i位数字的大小为依据，将数据放进辅助队列。下次再以高一位开始的数字位为依据。</p>
+<p>基数排序的Java代码：</p>
+<pre><code>public class RadixSort {
+
+    public void radixSort(int[] items) {
+        radixSort(items, 10);//默认以10为基数
+    }
+
+    public void radixSort(int[] items, int radix) {
+        int maxLength = 0;
+        for (int i = 0; i &lt; items.length; i++) {
+            int itemLength = length(items[i], radix);
+            if (maxLength &lt; itemLength) {
+                maxLength = itemLength;
+            }
+        }
+
+        int[] counter = new int[radix];
+        int[] result = new int[items.length];
+
+        for (int i = 0, r = 1; i &lt; maxLength; i++, r *= radix) {
+            Arrays.fill(counter, 0);
+
+            // 内部就是一个计数排序
+            for (int j = 0; j &lt; items.length; j++) {
+                counter[(items[j] / r) % radix]++;
+            }
+            // 计数和
+            for (int j = 1; j &lt; radix; j++) {
+                counter[j] += counter[j - 1];//计算小于索引值的数的个数
+            }
+            // 整理出新序列
+            for (int j = items.length - 1; j &gt;= 0; j--) {
+                int item = items[j];
+                result[--counter[(item / r) % radix]] = item;
+            }
+
+            System.arraycopy(result, 0, items, 0, items.length);
+        }
+    }
+
+    private int length(int num, int radix) {
+        int l = 1;
+        for (; num &gt;= radix; num /= radix, l++);// 这里有个分号
+        return l;
+    }
+}
+</code></pre><p>总结：上述Java代码中，基本上用的都是int数组，如果想要应用其他的数组，只需要将int数组改成 Comparable接口数组，凡是实现了Comparable接口的都可以用。而在C++中，是用模板类来解决这个问题。</p>
 
       
     </div>
@@ -349,7 +663,7 @@
         <p><span>本文标题:</span><a href="/2018/02/20/排序算法/">排序算法</a></p>
         <p><span>文章作者:</span><a href="/" title="回到主页">HuangLangyou</a></p>
         <p><span>发布时间:</span>2018-02-20, 22:00:23</p>
-        <p><span>最后更新:</span>2018-03-22, 22:08:15</p>
+        <p><span>最后更新:</span>2018-04-07, 10:21:36</p>
         <p>
             <span>原始链接:</span><a class="post-url" href="/2018/02/20/排序算法/" title="排序算法">https://onlyyouhuang.github.io/2018/02/20/排序算法/</a>
             <span class="copy-path" data-clipboard-text="原文: https://onlyyouhuang.github.io/2018/02/20/排序算法/　　作者: HuangLangyou" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
@@ -385,7 +699,7 @@
 
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
-    
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#分类："><span class="toc-number">1.</span> <span class="toc-text">分类：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#选择排序算法的时候"><span class="toc-number">2.</span> <span class="toc-text">选择排序算法的时候</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#总结："><span class="toc-number">3.</span> <span class="toc-text">总结：</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#排序算法Java实现"><span class="toc-number"></span> <span class="toc-text">排序算法Java实现</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#插入排序："><span class="toc-number"></span> <span class="toc-text">插入排序：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#交换排序："><span class="toc-number"></span> <span class="toc-text">交换排序：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#选择排序："><span class="toc-number"></span> <span class="toc-text">选择排序：</span></a>
 </div>
 <style>
     .left-col .switch-btn {
@@ -476,7 +790,7 @@
         
     </div>
 
-    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/03/14/Oracle问题解决/">Oracle问题&解决方案</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/10/docker/">Docker命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/02/20/排序算法/">排序算法</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/22/Spring框架IOC容器和AOP解析/">Spring框架IOC容器和AOP解析</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/28/IDEA配置记录/">IDEA配置记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/01/10/hexo博客迁移-多机更新/">hexo博客迁移&多机更新</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/08/20/Java-BIO、NIO、AIO/">Java BIO、NIO、AIO</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/28/git命令/">git命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/17/游戏项目记录/">游戏项目记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/01/Android-NDK/">Android NDK</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/29/开发工具记录/">开发工具记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/21/Android-JS桥/">Android JS桥</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/05/18/Android-onTouch事件传递机制/">Android onTouch事件传递机制</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/22/Android-Studio/">Android Studio</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/16/Android-px-dp-sp/">Android px_dp_sp</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/15/Android-fragment/">Android fragment</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/08/Android-adb/">Android adb</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/07/Android-Html5/">Android_Html5</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/05/Java实现断点续传/">Java实现断点续传</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/31/淘宝SDK-for-Android/">淘宝SDK for Android</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/20/2016-3-10-Android面试/">2016-3-10 Android面试总结</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/14/个人博客搭建/">个人博客搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/14/hello-world/">Hello World</a></li></ul>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/04/04/JVM-GC与性能优化/">JVM GC与性能优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/04/数据库索引/">数据库索引</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/14/Oracle问题解决/">Oracle问题&解决方案</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/10/docker/">Docker命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/02/20/排序算法/">排序算法</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/22/Spring框架IOC容器和AOP解析/">Spring框架IOC容器和AOP解析</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/28/IDEA配置记录/">IDEA配置记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/01/10/hexo博客迁移-多机更新/">hexo博客迁移&多机更新</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/08/20/Java-BIO、NIO、AIO/">Java BIO、NIO、AIO</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/28/git命令/">git命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/17/游戏项目记录/">游戏项目记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/01/Android-NDK/">Android NDK</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/29/开发工具记录/">开发工具记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/21/Android-JS桥/">Android JS桥</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/05/18/Android-onTouch事件传递机制/">Android onTouch事件传递机制</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/22/Android-Studio/">Android Studio</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/16/Android-px-dp-sp/">Android px_dp_sp</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/15/Android-fragment/">Android fragment</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/08/Android-adb/">Android adb</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/07/Android-Html5/">Android_Html5</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/05/Java实现断点续传/">Java实现断点续传</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/31/淘宝SDK-for-Android/">淘宝SDK for Android</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/20/2016-3-10-Android面试/">2016-3-10 Android面试总结</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/14/个人博客搭建/">个人博客搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/14/hello-world/">Hello World</a></li></ul>
 
 
 
