@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html >
+<head>
+  <meta charset="utf-8">
+  
+  <title>ConcurrentHashMap精读(2) | Onlyyouhuang&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="ConcurrentHashMap源码基于jdk-1.6 内容 扩容机制 读不加锁、写加锁的实现 三种遍历  扩容机制首先明确，扩容的对象是segment.table，扩容步骤：  在put()方法中，如果count &amp;gt;= threshold，则调用rehash()进行扩容。 在rehash()方法中创建新newtable数组，长度为原来的两倍。所以即扩容成原来的两倍。 将oldTable中">
+<meta name="keywords" content="Java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ConcurrentHashMap精读(2)">
+<meta property="og:url" content="https://onlyyouhuang.github.io/2018/05/13/java-ConcurrentHashMap精读(2)/index.html">
+<meta property="og:site_name" content="Onlyyouhuang&#39;s blog">
+<meta property="og:description" content="ConcurrentHashMap源码基于jdk-1.6 内容 扩容机制 读不加锁、写加锁的实现 三种遍历  扩容机制首先明确，扩容的对象是segment.table，扩容步骤：  在put()方法中，如果count &amp;gt;= threshold，则调用rehash()进行扩容。 在rehash()方法中创建新newtable数组，长度为原来的两倍。所以即扩容成原来的两倍。 将oldTable中">
+<meta property="og:image" content="https://onlyyouhuang.github.io/img/java-concurrenthashmap-2-1.bmp">
+<meta property="og:image" content="https://onlyyouhuang.github.io/img/java-concurrenthashmap-2-2.bmp">
+<meta property="og:updated_time" content="2018-08-13T08:52:19.756Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ConcurrentHashMap精读(2)">
+<meta name="twitter:description" content="ConcurrentHashMap源码基于jdk-1.6 内容 扩容机制 读不加锁、写加锁的实现 三种遍历  扩容机制首先明确，扩容的对象是segment.table，扩容步骤：  在put()方法中，如果count &amp;gt;= threshold，则调用rehash()进行扩容。 在rehash()方法中创建新newtable数组，长度为原来的两倍。所以即扩容成原来的两倍。 将oldTable中">
+<meta name="twitter:image" content="https://onlyyouhuang.github.io/img/java-concurrenthashmap-2-1.bmp">
+  
+    <link rel="alternative" href="/atom.xml" title="Onlyyouhuang&#39;s blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+      <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+  
+  
+  
+      <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+      <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+    <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false,
+      }
+  </script>
+
+  
+      <script>
+          yiliaConfig.rootUrl = "/";
+      </script>
+  
+
+  
+
+  
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/img/avatar.jpg" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">HuangLangyou</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">Stay Hungry, Stay Foolish</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:315950352@qq.com" title="Email"></a></li>
+                            
+                                <li id="新浪微博"><a class="新浪微博" target="_blank" href="http://weibo.com/onlyyouhuang" title="新浪微博"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="https://github.com/onlyyouhuang" title="GitHub"></a></li>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/Android/" style="font-size: 16.67px;">Android</a> <a href="/tags/Anfroid/" style="font-size: 10px;">Anfroid</a> <a href="/tags/HTML5/" style="font-size: 10px;">HTML5</a> <a href="/tags/Html5/" style="font-size: 10px;">Html5</a> <a href="/tags/JVM/" style="font-size: 10px;">JVM</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/NDK/" style="font-size: 10px;">NDK</a> <a href="/tags/SDK/" style="font-size: 10px;">SDK</a> <a href="/tags/Spring/" style="font-size: 10px;">Spring</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/hexo/" style="font-size: 13.33px;">hexo</a> <a href="/tags/remoteService/" style="font-size: 10px;">remoteService</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/算法/" style="font-size: 10px;">算法</a> <a href="/tags/网络/" style="font-size: 10px;">网络</a> <a href="/tags/面试/" style="font-size: 10px;">面试</a>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">小码农</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">HuangLangyou</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/img/avatar.jpg" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">HuangLangyou</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">Stay Hungry, Stay Foolish</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:315950352@qq.com" title="Email"></a></li>
+                            
+                                <li id="新浪微博"><a class="新浪微博" target="_blank" href="http://weibo.com/onlyyouhuang" title="新浪微博"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="https://github.com/onlyyouhuang" title="GitHub"></a></li>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-java-ConcurrentHashMap精读(2)" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2018/05/13/java-ConcurrentHashMap精读(2)/" class="article-date">
+      <time datetime="2018-05-13T11:37:48.000Z" itemprop="datePublished">2018-05-13</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      ConcurrentHashMap精读(2)
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p><code>ConcurrentHashMap</code>源码基于jdk-1.6</p>
+<h2 id="内容"><a href="#内容" class="headerlink" title="内容"></a>内容</h2><ol>
+<li>扩容机制</li>
+<li>读不加锁、写加锁的实现</li>
+<li>三种遍历</li>
+</ol>
+<h2 id="扩容机制"><a href="#扩容机制" class="headerlink" title="扩容机制"></a>扩容机制</h2><p>首先明确，扩容的对象是<code>segment.table</code>，扩容步骤：</p>
+<ol>
+<li>在<code>put()</code>方法中，如果<code>count &gt;= threshold</code>，则调用<code>rehash()</code>进行扩容。</li>
+<li>在<code>rehash()</code>方法中创建新<code>newtable</code>数组，长度为原来的<code>两倍</code>。所以即扩容成原来的两倍。</li>
+<li>将<code>oldTable</code>中每个链表中的<code>Entry</code>转移到<code>newTable</code>。</li>
+</ol>
+<p>这里<code>segment</code>转移<code>Entry</code>与之前<code>HashMap</code>、<code>WeakHashMap</code>都不一样。<br><code>HashMap</code>和<code>WeakHashMap</code>是把每个<code>entry</code>移动到新的<code>table</code>中。</p>
+<h3 id="oldTable中entry对象转移到newTable的位置"><a href="#oldTable中entry对象转移到newTable的位置" class="headerlink" title="oldTable中entry对象转移到newTable的位置"></a>oldTable中entry对象转移到newTable的位置</h3><p>这里使用了一个性质：即<code>oldTable</code>中<code>entry</code>，只可能转移到<code>newTable</code>中两个位置。<br>解释：<br><code>oldTable</code>中<code>entry</code>对象，在<code>oldTable</code>中的位置为：<br><code>entry.hash &amp; (oldTable.length - 1)</code><br>而需要转移到<code>newTable</code>的位置为：<br><code>entry.hash &amp; (newTable.length - 1)</code></p>
+<p>又扩容为原来两倍，所以<code>newTable.length</code>是<code>oldTable.length</code>的两倍。我们记<code>oldTable.length = 2 ^ k</code>，则<code>newTable.length = 2 ^ (k + 1)</code>。<br>则在<code>oldTable</code>中的位置为：<br><code>entry.hash &amp; (2 ^ k)</code>。<br>在<code>newTable</code>中的位置为：<br><code>entry.hash &amp; (2 ^ (k + 1))</code>。<br>从上面可以看出，<br><code>oldTable</code>的位置是取<code>entry.hash</code>的低<code>k</code>位。<br><code>newTable</code>的位置是取<code>entry.hash</code>的低<code>k + 1</code>位。<br>所以<code>newTable</code>位置比<code>oldTable</code>的位置多了一位，这一位可能是<code>1</code>，也可能是0。<br>当为<code>0</code>时，在<code>newTable</code>中的位置为：<br>与<code>oldTable</code>中的位置相同。<br>当为<code>1</code>时，在<code>newTable</code>中的位置为：<br>在<code>oldTable</code>中的位置，基础上 + 2 ^ k。</p>
+<p><img src="/img/java-concurrenthashmap-2-1.bmp" alt=""></p>
+<h3 id="扩容实现"><a href="#扩容实现" class="headerlink" title="扩容实现"></a>扩容实现</h3><p>主要是转移的实现：<br><code>ConcurrentHashMap</code>利用上面<code>entry</code>在<code>oldTable</code>的下标和在<code>newTable</code>的下标的关系，采取一种<code>new Entry</code>尽量少的方法。将<code>oldTable[idx]</code>的单链表分为两端：</p>
+<ol>
+<li>前半段是在<code>newTable</code>的下标为两种混合的<code>entry</code>集合。</li>
+<li>后半段是在<code>newTable</code>的下标为只有一种的<code>entry</code>集合。</li>
+</ol>
+<p>然后分别对两个半段进行处理：</p>
+<ol>
+<li>对于混合的，则遍历每个，然后转移到<code>newTable</code>合适的单链表中。</li>
+<li>对于单一的，则直接挂到目标<code>newTable[index]</code>上。</li>
+</ol>
+<p><img src="/img/java-concurrenthashmap-2-2.bmp" alt=""></p>
+<h3 id="rehash"><a href="#rehash" class="headerlink" title="rehash()"></a>rehash()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">rehash</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            HashEntry&lt;K,V&gt;[] oldTable = table;</span><br><span class="line">            <span class="keyword">int</span> oldCapacity = oldTable.length;</span><br><span class="line">	    <span class="comment">// 旧segment table长度大于等于2^30 直接返回</span></span><br><span class="line">            <span class="keyword">if</span> (oldCapacity &gt;= MAXIMUM_CAPACITY)</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">	    <span class="comment">// 新的table 长度为原来的一倍</span></span><br><span class="line">            HashEntry&lt;K,V&gt;[] newTable = HashEntry.newArray(oldCapacity&lt;&lt;<span class="number">1</span>);</span><br><span class="line">	    <span class="comment">// 新的阀值</span></span><br><span class="line">            threshold = (<span class="keyword">int</span>)(newTable.length * loadFactor);</span><br><span class="line">	    <span class="comment">// 长度掩码</span></span><br><span class="line">            <span class="keyword">int</span> sizeMask = newTable.length - <span class="number">1</span>;</span><br><span class="line">	    <span class="comment">// 遍历segment 的oldTable中每一条链</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; oldCapacity ; i++) &#123;</span><br><span class="line">                <span class="comment">// We need to guarantee that any existing reads of old Map can</span></span><br><span class="line">                <span class="comment">//  proceed. So we cannot yet null out each bin.</span></span><br><span class="line">                HashEntry&lt;K,V&gt; e = oldTable[i];</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    HashEntry&lt;K,V&gt; next = e.next;</span><br><span class="line">		    <span class="comment">// e.hash 存放的是wang/jekins 再散列后的hash值</span></span><br><span class="line">                    <span class="keyword">int</span> idx = e.hash &amp; sizeMask;</span><br><span class="line"></span><br><span class="line">                    <span class="comment">//  Single node on list</span></span><br><span class="line">		    <span class="comment">// 链表中只有这一个entry</span></span><br><span class="line">                    <span class="keyword">if</span> (next == <span class="keyword">null</span>)</span><br><span class="line">                        newTable[idx] = e; <span class="comment">// 直接设置</span></span><br><span class="line"></span><br><span class="line">                    <span class="keyword">else</span> &#123;</span><br><span class="line">                        <span class="comment">// Reuse trailing consecutive sequence at same slot</span></span><br><span class="line">                        HashEntry&lt;K,V&gt; lastRun = e;</span><br><span class="line">                        <span class="keyword">int</span> lastIdx = idx;</span><br><span class="line">			<span class="comment">// 遍历单链表，将单链表分为两半</span></span><br><span class="line">			<span class="comment">// 后半部分 在newTable中的下标相同</span></span><br><span class="line">                        <span class="keyword">for</span> (HashEntry&lt;K,V&gt; last = next;</span><br><span class="line">                             last != <span class="keyword">null</span>;</span><br><span class="line">                             last = last.next) &#123;</span><br><span class="line">                            <span class="keyword">int</span> k = last.hash &amp; sizeMask;</span><br><span class="line">			    <span class="comment">// 当前这个entry 不在上一个entry插入的链表中</span></span><br><span class="line">                            <span class="keyword">if</span> (k != lastIdx) &#123;</span><br><span class="line">                                lastIdx = k;</span><br><span class="line">                                lastRun = last;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                        newTable[lastIdx] = lastRun;</span><br><span class="line"></span><br><span class="line">                        <span class="comment">// Clone all remaining nodes</span></span><br><span class="line">                        <span class="keyword">for</span> (HashEntry&lt;K,V&gt; p = e; p != lastRun; p = p.next) &#123;</span><br><span class="line">                            <span class="keyword">int</span> k = p.hash &amp; sizeMask;</span><br><span class="line">                            HashEntry&lt;K,V&gt; n = newTable[k];</span><br><span class="line">                            newTable[k] = <span class="keyword">new</span> HashEntry&lt;K,V&gt;(p.key, p.hash,</span><br><span class="line">                                                             n, p.value);</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            table = newTable;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>如果<code>oldTable &gt;= 2 ^ 30</code>，则不进行扩容，直接返回。</li>
+<li>创建<code>newTable</code>，数组长度为原来的两倍。</li>
+<li>遍历<code>oldTable</code>中每个<code>entry</code>单链表。</li>
+<li>按上面方法将当前遍历的单链表分为两段。</li>
+<li>将后半部分的表头，赋值给<code>newTable[lastIdx]</code>。</li>
+<li>遍历前半部分链表，创建其副本，并且插入到<code>newTable</code>目标位置。</li>
+<li><code>table = newTable</code>。</li>
+</ol>
+<h2 id="读不加锁、写加锁的实现"><a href="#读不加锁、写加锁的实现" class="headerlink" title="读不加锁、写加锁的实现"></a>读不加锁、写加锁的实现</h2><p>当一个线程在读数据(<code>遍历或者调用get()</code>)，即调用<code>get()</code>，其它线程可能会出现三种修改操作：</p>
+<ol>
+<li><code>put()</code>，插入。</li>
+<li><code>remove()</code>，移除。</li>
+<li><code>clear()</code>，移除这个<code>map</code>。</li>
+</ol>
+<h3 id="put"><a href="#put" class="headerlink" title="put()"></a>put()</h3><p>即一个线程读数据，另外一个线程调用<code>put()</code>。会出现三种情况：</p>
+<ol>
+<li>写线程顺利插入单链表头部，线程读取的数据，在链表插入链表非头部，或者其它单链表上，则读取成功。</li>
+<li>写线程顺利插入单链表头部，线程读取的数据，在链表插入链表头部，但是<code>put()</code>没有发生重排序，所以读取成功。</li>
+<li>写线程顺利插入单链表头部，线程读取的数据，在链表插入链表头部，但是<code>put()</code>发生了重排序，所以<code>value = null</code>，则调用<code>readValueUnderLock(e)</code>，加锁读取。</li>
+</ol>
+<p>在<code>put</code>中，<code>tab[index] = new HashEntry&lt;K,V&gt;(key, hash, first, value);</code>会发生重排序，一条<code>new</code>赋值语句，包含三条操作：</p>
+<ol>
+<li>为<code>new</code>的对象分配内存空间。</li>
+<li>初始化对象</li>
+<li>将对象引用，赋值给目标引用变量。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">HashEntry(K key, <span class="keyword">int</span> hash, HashEntry&lt;K,V&gt; next, V value) &#123;</span><br><span class="line">           <span class="keyword">this</span>.key = key;</span><br><span class="line">           <span class="keyword">this</span>.hash = hash;</span><br><span class="line">           <span class="keyword">this</span>.next = next;</span><br><span class="line">    <span class="comment">// volatile写 后面的语句还是会与volatile写重排序</span></span><br><span class="line">           <span class="keyword">this</span>.value = value; <span class="comment">// 这条赋值语句 可以和外面的交换 即table[index] = ..</span></span><br><span class="line">                        <span class="comment">// 造成 get() 方法当v == null 的时候需要加锁获取</span></span><br><span class="line">       &#125;</span><br><span class="line">tab[index] = <span class="keyword">new</span> HashEntry&lt;K,V&gt;(key, hash, first, value);</span><br></pre></td></tr></table></figure>
+<p>这里由于<code>next</code>，<code>key</code>，<code>hash</code>都是<code>final</code>域，所以这三个都禁止与<code>table[idx] = ...</code>重排序。<br>而<code>value</code>是<code>volatile</code>，<code>volatile</code>写并不会禁止，它后面的与它重排序。当这种情况出现时，如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">table[idx] = entry ;</span><br><span class="line">entry.value = value;</span><br></pre></td></tr></table></figure></p>
+<p>所以造成<code>entry</code>对象溢出，在没有初始化完全，就被其它线程使用，造成<code>value = null</code>。<br>所以最后加锁获取。此时已经初始化完全。</p>
+<p>在<code>JDK1.7</code>中没有使用<code>加锁获取</code>机制，因为插入的时候使用了<code>putOderedObject()</code>方法。<br><code>putOrderedObject()</code>方法阻止前面的写与<code>put</code>方法写的重排序。</p>
+<h3 id="remove"><a href="#remove" class="headerlink" title="remove()"></a>remove()</h3><p>即一个线程读数据，另外一个线程调用<code>put()</code>。这里读线程不加锁而不出错，做法：</p>
+<ol>
+<li><code>table[idx]</code>引用一直没有变化。</li>
+<li><code>remove()</code>将<code>target</code>的<code>next</code>结点引用赋值给<code>newFirst</code>，然后从这个冲突链表的第一个结点开始遍历(直到<code>target</code>之前的一个)，每次创建复制结点的值，头插法插入到<code>newFirst</code>单链表中。即复制<code>target</code><br>之前的所有结点。</li>
+<li>最后让<code>table[idx]</code>指向新链表的表头，即<code>newFirst</code>。</li>
+</ol>
+<p>所以读线程可能会在读取旧链的数据，而不出错。因为向<code>table[idx]</code>修改引用时，其它线程读取<code>table[idx]</code>只会得到两种结果，新链或者旧链，两者都不算出错。</p>
+<h3 id="clear"><a href="#clear" class="headerlink" title="clear()"></a>clear()</h3><p><code>clear()</code>会把所有<code>segment</code>的所有<code>table</code>中的数组项全部置为<code>null</code>。和<code>remove()</code>类似。</p>
+<h2 id="三种遍历"><a href="#三种遍历" class="headerlink" title="三种遍历"></a>三种遍历</h2><p>和<code>HashMap</code>一样具有三种遍历方式：</p>
+<ol>
+<li>遍历<code>entry</code>，使用<code>map.entrySet()</code>获取迭代器(<code>EntryIterator</code>对象)。</li>
+<li>遍历<code>key</code>， 使用<code>map.keySet()</code>获取迭代器(<code>KeyIterator</code>对象)。</li>
+<li>遍历<code>value</code>，使用<code>map.values()</code>获取迭代器(<code>ValueIterator</code>对象)。</li>
+</ol>
+<p>主要还是由<code>HashIterator</code>类实现三个方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">hasNext</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function">HashEntry <span class="title">nextEntry</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure></p>
+<h3 id="成员变量"><a href="#成员变量" class="headerlink" title="成员变量"></a>成员变量</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">       <span class="comment">// segment数组中下一个下标idx</span></span><br><span class="line">       <span class="keyword">int</span> nextSegmentIndex;</span><br><span class="line"><span class="comment">// segment table中下一个entry的下标</span></span><br><span class="line">       <span class="keyword">int</span> nextTableIndex;</span><br><span class="line"><span class="comment">// 当前使用的table</span></span><br><span class="line">       HashEntry&lt;K,V&gt;[] currentTable;</span><br><span class="line"><span class="comment">// 下一个访问的entry</span></span><br><span class="line">       HashEntry&lt;K, V&gt; nextEntry;</span><br><span class="line">       HashEntry&lt;K, V&gt; lastReturned;</span><br></pre></td></tr></table></figure>
+<ol>
+<li><code>nextSegmentIndex</code>：当前或者下一个遍历的<code>segment</code>数组的下标。</li>
+<li><code>nextTableIndex</code>：当前或者下一个遍历的<code>segment.table</code>数组的下标。</li>
+<li><code>currentTable</code>：当前正在遍历的<code>table</code>。</li>
+<li><code>nextEntry</code>：下一个访问的<code>entry</code>。</li>
+<li><code>lastReturned</code>：在<code>nextEntry()</code>中返回的<code>entry</code>。</li>
+</ol>
+<h3 id="构造方法"><a href="#构造方法" class="headerlink" title="构造方法"></a>构造方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">  HashIterator() &#123;</span><br><span class="line"><span class="comment">// 从最后一段开始遍历</span></span><br><span class="line">       nextSegmentIndex = segments.length - <span class="number">1</span>;</span><br><span class="line">       nextTableIndex = -<span class="number">1</span>;</span><br><span class="line">       advance();</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>从<code>nextSegmentIndex = segments.length - 1</code>可以看出，<code>ConcurrentHashMap</code>遍历是从最后一个<code>segment</code>开始遍历。</p>
+<h3 id="advance"><a href="#advance" class="headerlink" title="advance()"></a>advance()</h3><p><code>advance()</code>方法是遍历的核心，负责查找下一个<code>entry</code>。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 寻找下一个可用的entry</span></span><br><span class="line">       <span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">advance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 当前table[idx]链表还没有遍历完 则指向下一个</span></span><br><span class="line">           <span class="keyword">if</span> (nextEntry != <span class="keyword">null</span> &amp;&amp; (nextEntry = nextEntry.next) != <span class="keyword">null</span>)</span><br><span class="line">               <span class="keyword">return</span>;</span><br><span class="line">    <span class="comment">// 当前currentTable[idx]遍历完 则使用--i下标的currentTable</span></span><br><span class="line">           <span class="keyword">while</span> (nextTableIndex &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">               <span class="keyword">if</span> ( (nextEntry = currentTable[nextTableIndex--]) != <span class="keyword">null</span>)</span><br><span class="line">                   <span class="keyword">return</span>;</span><br><span class="line">           &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// segment[nextSegmentIndex] 遍历完 则使用上一个segment</span></span><br><span class="line">           <span class="keyword">while</span> (nextSegmentIndex &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">               Segment&lt;K,V&gt; seg = segments[nextSegmentIndex--];</span><br><span class="line">               <span class="keyword">if</span> (seg.count != <span class="number">0</span>) &#123;</span><br><span class="line">                   currentTable = seg.table;</span><br><span class="line">	    <span class="comment">// 从table数组最后一项开始遍历</span></span><br><span class="line">                   <span class="keyword">for</span> (<span class="keyword">int</span> j = currentTable.length - <span class="number">1</span>; j &gt;= <span class="number">0</span>; --j) &#123;</span><br><span class="line">                       <span class="keyword">if</span> ( (nextEntry = currentTable[j]) != <span class="keyword">null</span>) &#123;</span><br><span class="line">                           nextTableIndex = j - <span class="number">1</span>;</span><br><span class="line">                           <span class="keyword">return</span>;</span><br><span class="line">                       &#125;</span><br><span class="line">                   &#125;</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br></pre></td></tr></table></figure></p>
+<ol>
+<li>如果当前<code>entry</code>，即<code>nextEntry</code>不为<code>null</code>且它的<code>next</code>域不为<code>null</code>，则在当前单链表中获取下一个<code>entry</code>。</li>
+<li>当前链表已经遍历完，则向<code>table</code>数组中的前一个单链表获取。</li>
+<li><code>table</code>数组已经遍历完，则向<code>segment</code>数组的前一个的<code>segment</code>的<code>table</code>获取。<code>table</code>也是从后往前的顺序获取。</li>
+</ol>
+<h3 id="hasNext"><a href="#hasNext" class="headerlink" title="hasNext()"></a>hasNext()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">       <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasNext</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       <span class="keyword">return</span> nextEntry != <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>判断是否遍历完。</p>
+<h3 id="nextEntry"><a href="#nextEntry" class="headerlink" title="nextEntry()"></a>nextEntry()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">HashEntry&lt;K,V&gt; <span class="title">nextEntry</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (nextEntry == <span class="keyword">null</span>)</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException();</span><br><span class="line">            lastReturned = nextEntry;</span><br><span class="line">            advance();</span><br><span class="line">            <span class="keyword">return</span> lastReturned;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<p>获取<code>nextEntry</code>。获取后，会调用<code>advance()</code>进行下一个查询。</p>
+<h3 id="remove-1"><a href="#remove-1" class="headerlink" title="remove()"></a>remove()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (lastReturned == <span class="keyword">null</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException();</span><br><span class="line">    ConcurrentHashMap.<span class="keyword">this</span>.remove(lastReturned.key);</span><br><span class="line">    lastReturned = <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>注意</code>：<code>ConcurrentHashMap</code>遍历顺序，是从最后一个<code>segment</code>的最后一个<code>table</code>数组项，向前遍历。</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2018/05/13/java-ConcurrentHashMap精读(2)/">ConcurrentHashMap精读(2)</a></p>
+        <p><span>文章作者:</span><a href="/" title="回到主页">HuangLangyou</a></p>
+        <p><span>发布时间:</span>2018-05-13, 19:37:48</p>
+        <p><span>最后更新:</span>2018-08-13, 16:52:19</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2018/05/13/java-ConcurrentHashMap精读(2)/" title="ConcurrentHashMap精读(2)">https://onlyyouhuang.github.io/2018/05/13/java-ConcurrentHashMap精读(2)/</a>
+            <span class="copy-path" data-clipboard-text="原文: https://onlyyouhuang.github.io/2018/05/13/java-ConcurrentHashMap精读(2)/　　作者: HuangLangyou" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script src="/js/clipboard.min.js"></script>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2018/05/15/java-LinkedHashMap/">
+                    Java-LinkedHashMap
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2018/05/13/java-ConcurrentHashMap精读(1)/">
+                    ConcurrentHashMap精读(1)
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#内容"><span class="toc-number">1.</span> <span class="toc-text">内容</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#扩容机制"><span class="toc-number">2.</span> <span class="toc-text">扩容机制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#oldTable中entry对象转移到newTable的位置"><span class="toc-number">2.1.</span> <span class="toc-text">oldTable中entry对象转移到newTable的位置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#扩容实现"><span class="toc-number">2.2.</span> <span class="toc-text">扩容实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#rehash"><span class="toc-number">2.3.</span> <span class="toc-text">rehash()</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#读不加锁、写加锁的实现"><span class="toc-number">3.</span> <span class="toc-text">读不加锁、写加锁的实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#put"><span class="toc-number">3.1.</span> <span class="toc-text">put()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#remove"><span class="toc-number">3.2.</span> <span class="toc-text">remove()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#clear"><span class="toc-number">3.3.</span> <span class="toc-text">clear()</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三种遍历"><span class="toc-number">4.</span> <span class="toc-text">三种遍历</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#成员变量"><span class="toc-number">4.1.</span> <span class="toc-text">成员变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#构造方法"><span class="toc-number">4.2.</span> <span class="toc-text">构造方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#advance"><span class="toc-number">4.3.</span> <span class="toc-text">advance()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#hasNext"><span class="toc-number">4.4.</span> <span class="toc-text">hasNext()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#nextEntry"><span class="toc-number">4.5.</span> <span class="toc-text">nextEntry()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#remove-1"><span class="toc-number">4.6.</span> <span class="toc-text">remove()</span></a></li></ol></li></ol>
+</div>
+<style>
+    .left-col .switch-btn {
+        display: none;
+    }
+    .left-col .switch-area {
+        display: none;
+    }
+</style>
+
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+            $(".switch-btn, .switch-area").fadeOut(300);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+            $(".switch-btn, .switch-area").fadeIn(500);
+        }
+    })
+
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+        $(".switch-btn, .switch-area").show();
+    }
+</script>
+
+
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <li id="bds_twi"><a href="#" class="bds_twi" data-cmd="twi" title="分享到推特"></a></li>
+            <li id="bds_tsina"><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a></li>
+            <li id="bds_sqq"><a href="#" class="bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a></li>
+            <li id="bds_copy"><a href="#" class="bds_copy" data-cmd="copy" title="复制网址"></a></li>
+            <li id="bds_mail"><a href="#" class="bds_mail" data-cmd="mail" title="通过邮件分享"></a></li>
+            <li id="bds_weixin"><a href="#" class="bds_weixin" data-cmd="weixin" title="生成文章二维码"></a></li>
+            <li id="bds_more"><a href="#" class="bds_more" data-cmd="more"></i></a></li>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"ConcurrentHashMap精读(2)　| Onlyyouhuang's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2018/05/15/java-LinkedHashMap/" title="上一篇: Java-LinkedHashMap">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2018/05/13/java-ConcurrentHashMap精读(1)/" title="下一篇: ConcurrentHashMap精读(1)">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/05/15/Java-LinkedHashMap精读(2)/">Java-LinkedHashMap精读(2)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/15/Java-LinkedHashMap精读(1)/">Java-LinkedHashMap精读(1)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/15/java-LinkedHashMap/">Java-LinkedHashMap</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/13/java-ConcurrentHashMap精读(2)/">ConcurrentHashMap精读(2)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/13/java-ConcurrentHashMap精读(1)/">ConcurrentHashMap精读(1)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/11/java-hashtable/">java-hashtable</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/11/java-Hash-And-TreeMap/">TreeMap和hash解决冲突原理</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/10/Java-HashMap精读(2)/">Java-HashMap精读(2)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/10/Java-HashMap精读(1)/">Java-HashMap精读(1)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/08/java-ReentrantLock-2/">ReentrantLock精读(2)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/07/java-ReentrantLock-1/">ReentrantLock精读(1)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/06/java-Lock/">java-Lock的基本思想</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/06/Java-Synchronized/">Java-Synchronized 原理</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/07/java-base-3/">Java-基础(3)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/06/java-base-2/">Java-基础-并发包</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/05/java-base/">Java-基础</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/04/JVM-GC与性能优化/">JVM GC与性能优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/04/数据库索引/">数据库索引</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/14/Oracle问题解决/">Oracle问题&解决方案</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/10/docker/">Docker命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/02/20/排序算法/">排序算法</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/22/Spring框架IOC容器和AOP解析/">Spring框架IOC容器和AOP解析</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/28/IDEA配置记录/">IDEA配置记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/01/10/hexo博客迁移-多机更新/">hexo博客迁移&多机更新</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/08/20/Java-BIO、NIO、AIO/">Java BIO、NIO、AIO</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/28/git命令/">git命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/17/游戏项目记录/">游戏项目记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/01/Android-NDK/">Android NDK</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/29/开发工具记录/">开发工具记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/21/Android-JS桥/">Android JS桥</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/05/18/Android-onTouch事件传递机制/">Android onTouch事件传递机制</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/22/Android-Studio/">Android Studio</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/16/Android-px-dp-sp/">Android px_dp_sp</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/15/Android-fragment/">Android fragment</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/08/Android-adb/">Android adb</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/07/Android-Html5/">Android_Html5</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/05/Java实现断点续传/">Java实现断点续传</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/31/淘宝SDK-for-Android/">淘宝SDK for Android</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/20/2016-3-10-Android面试/">2016-3-10 Android面试总结</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/14/个人博客搭建/">个人博客搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/14/hello-world/">Hello World</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2018 HuangLangyou
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题">Yelee</a> by MOxFIVE
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" >本站到访数: 
+                            <span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>, </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit">本页阅读量: 
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.1.22/require.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+</body>
+</html>

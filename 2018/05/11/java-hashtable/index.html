@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html >
+<head>
+  <meta charset="utf-8">
+  
+  <title>java-hashtable | Onlyyouhuang&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="首先Hashtable源码基于jdk-1.7 内容 Hashtable的实现特点。 Hashtable与HashMap的区别 散列方法 扩容机制 遍历(fail-fast)  Hashtable的实现特点 不允许null-key和null-value。 必须实现hashCode()和equals()方法。 inital capcity和loadfact默认为11和0.75f。 遍历是及时失败的。">
+<meta name="keywords" content="Java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="java-hashtable">
+<meta property="og:url" content="https://onlyyouhuang.github.io/2018/05/11/java-hashtable/index.html">
+<meta property="og:site_name" content="Onlyyouhuang&#39;s blog">
+<meta property="og:description" content="首先Hashtable源码基于jdk-1.7 内容 Hashtable的实现特点。 Hashtable与HashMap的区别 散列方法 扩容机制 遍历(fail-fast)  Hashtable的实现特点 不允许null-key和null-value。 必须实现hashCode()和equals()方法。 inital capcity和loadfact默认为11和0.75f。 遍历是及时失败的。">
+<meta property="og:updated_time" content="2018-08-13T09:02:47.361Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="java-hashtable">
+<meta name="twitter:description" content="首先Hashtable源码基于jdk-1.7 内容 Hashtable的实现特点。 Hashtable与HashMap的区别 散列方法 扩容机制 遍历(fail-fast)  Hashtable的实现特点 不允许null-key和null-value。 必须实现hashCode()和equals()方法。 inital capcity和loadfact默认为11和0.75f。 遍历是及时失败的。">
+  
+    <link rel="alternative" href="/atom.xml" title="Onlyyouhuang&#39;s blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+      <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+  
+  
+  
+      <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+      <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+    <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false,
+      }
+  </script>
+
+  
+      <script>
+          yiliaConfig.rootUrl = "/";
+      </script>
+  
+
+  
+
+  
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/img/avatar.jpg" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">HuangLangyou</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">Stay Hungry, Stay Foolish</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:315950352@qq.com" title="Email"></a></li>
+                            
+                                <li id="新浪微博"><a class="新浪微博" target="_blank" href="http://weibo.com/onlyyouhuang" title="新浪微博"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="https://github.com/onlyyouhuang" title="GitHub"></a></li>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/Android/" style="font-size: 16.67px;">Android</a> <a href="/tags/Anfroid/" style="font-size: 10px;">Anfroid</a> <a href="/tags/HTML5/" style="font-size: 10px;">HTML5</a> <a href="/tags/Html5/" style="font-size: 10px;">Html5</a> <a href="/tags/JVM/" style="font-size: 10px;">JVM</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/NDK/" style="font-size: 10px;">NDK</a> <a href="/tags/SDK/" style="font-size: 10px;">SDK</a> <a href="/tags/Spring/" style="font-size: 10px;">Spring</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/hexo/" style="font-size: 13.33px;">hexo</a> <a href="/tags/remoteService/" style="font-size: 10px;">remoteService</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/算法/" style="font-size: 10px;">算法</a> <a href="/tags/网络/" style="font-size: 10px;">网络</a> <a href="/tags/面试/" style="font-size: 10px;">面试</a>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">小码农</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">HuangLangyou</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/img/avatar.jpg" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">HuangLangyou</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">Stay Hungry, Stay Foolish</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:315950352@qq.com" title="Email"></a></li>
+                            
+                                <li id="新浪微博"><a class="新浪微博" target="_blank" href="http://weibo.com/onlyyouhuang" title="新浪微博"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="https://github.com/onlyyouhuang" title="GitHub"></a></li>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-java-hashtable" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2018/05/11/java-hashtable/" class="article-date">
+      <time datetime="2018-05-11T08:31:03.000Z" itemprop="datePublished">2018-05-11</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      java-hashtable
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>首先<code>Hashtable</code>源码基于jdk-1.7</p>
+<h2 id="内容"><a href="#内容" class="headerlink" title="内容"></a>内容</h2><ol>
+<li><code>Hashtable</code>的实现特点。</li>
+<li><code>Hashtable</code>与<code>HashMap</code>的区别</li>
+<li>散列方法</li>
+<li>扩容机制</li>
+<li>遍历(<code>fail-fast</code>)</li>
+</ol>
+<h2 id="Hashtable的实现特点"><a href="#Hashtable的实现特点" class="headerlink" title="Hashtable的实现特点"></a>Hashtable的实现特点</h2><ol>
+<li>不允许<code>null-key</code>和<code>null-value</code>。</li>
+<li>必须实现<code>hashCode()</code>和<code>equals()</code>方法。</li>
+<li><code>inital capcity</code>和<code>loadfact</code>默认为<code>11</code>和<code>0.75f</code>。</li>
+<li>遍历是及时失败的。</li>
+<li>最大容量是<code>2^31-9</code>，即<code>Integer.MAX_VALUE - 8</code>。</li>
+</ol>
+<h2 id="Hashtable与HashMap的区别"><a href="#Hashtable与HashMap的区别" class="headerlink" title="Hashtable与HashMap的区别"></a>Hashtable与HashMap的区别</h2><ol>
+<li><code>HashMap</code>允许<code>null-key</code>和<code>null-value</code>，而<code>Hashtable</code>不允许。</li>
+<li><code>Hashtable</code>的<code>table</code>数组长度不为<code>2</code>的幂次方。</li>
+<li>两者散列方法不同。</li>
+<li><code>Hashtable</code>扩容，则扩容成原来的<code>2倍+1</code>。</li>
+<li><code>Hashtable</code>是同步的，<code>HashMap</code>不是同步的。</li>
+<li><code>Hashtable</code>最大容量是<code>2^31-9</code>，而<code>HashMap</code>是<code>2^30</code>。</li>
+<li><code>Hashtable</code>确认一个<code>entry</code>为目标<code>entry</code>使用<code>hash</code>相等，而且<code>key.equals(entry.key)</code>返回<code>true</code>。而<code>HashtMap</code>使用<code>hash</code>相等，而且<code>key</code>相等，或者<code>key.equals(entry.key)</code>返回<code>true</code>。</li>
+</ol>
+<h2 id="散列方法"><a href="#散列方法" class="headerlink" title="散列方法"></a>散列方法</h2><p>以<code>get()</code>方法为例：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> V <span class="title">get</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">        Entry tab[] = table;</span><br><span class="line">	<span class="comment">// 获取hashCode</span></span><br><span class="line">	<span class="keyword">int</span> hash = key.hashCode();</span><br><span class="line">	<span class="comment">// 获取目标下标</span></span><br><span class="line">	<span class="keyword">int</span> index = (hash &amp; <span class="number">0x7FFFFFFF</span>) % tab.length;</span><br><span class="line">	<span class="comment">// 遍历</span></span><br><span class="line">	<span class="keyword">for</span> (Entry&lt;K,V&gt; e = tab[index] ; e != <span class="keyword">null</span> ; e = e.next) &#123;</span><br><span class="line">            <span class="keyword">if</span> ((e.hash == hash) &amp;&amp; e.key.equals(key)) &#123;</span><br><span class="line">                <span class="keyword">return</span> e.value;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>所以确定下标的方法如下：<br><code>int index = (hash &amp; 0x7FFFFFFF) % tab.length;</code><br>即直接对<code>hashCode</code>的值取<code>table</code>长度的余数。</p>
+<p>这里没有<code>table</code>的长度不是<code>2</code>的幂次方，而且没有使用<code>HashMap</code>类似的<code>干扰函数</code>，<br>所以<code>Hashtable</code>的冲突率肯定比<code>HashMap</code>高，但是减少了计算量。</p>
+<h2 id="扩容机制"><a href="#扩容机制" class="headerlink" title="扩容机制"></a>扩容机制</h2><p><code>Hashtable</code>扩容与<code>HashMap</code>类似，只是容量为原来的<code>2倍+1</code>。</p>
+<h2 id="遍历"><a href="#遍历" class="headerlink" title="遍历"></a>遍历</h2><h3 id="四种遍历"><a href="#四种遍历" class="headerlink" title="四种遍历"></a>四种遍历</h3><ol>
+<li><code>entrySet()</code>：使用迭代器遍历<code>entry</code>。</li>
+<li><code>entryKey()</code>：使用迭代器遍历<code>key</code>。</li>
+<li><code>keys()</code>：使用<code>Enumeration</code>遍历<code>key</code>。</li>
+<li><code>elements()</code>：使用<code>Enumeration</code>遍历<code>value</code>。</li>
+</ol>
+<p><code>entrySet()</code>和<code>entryKey</code>使用<code>Iterator</code>接口进行遍历。<br><code>keys()</code>和<code>elements()</code>使用<code>Enumeration</code>接口进行遍历。</p>
+<p>这四种都是由<code>Enumerator</code>类实现的。<br><code>Enumerator</code>类实现了<code>Enumeration</code>和<code>Iterator</code>接口。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">Enumerator</span>&lt;<span class="title">T</span>&gt; <span class="keyword">implements</span> <span class="title">Enumeration</span>&lt;<span class="title">T</span>&gt;, <span class="title">Iterator</span>&lt;<span class="title">T</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="Enumeration接口"><a href="#Enumeration接口" class="headerlink" title="Enumeration接口"></a>Enumeration接口</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Enumeration</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">hasMoreElements</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function">E <span class="title">nextElement</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Iterator接口"><a href="#Iterator接口" class="headerlink" title="Iterator接口"></a>Iterator接口</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Iterator</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">hasNext</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function">E <span class="title">next</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p><code>Enumerator</code>类主要实现了<code>Enumerator</code>接口的方法，<code>Iterator</code>接口的方法调用<code>Enumerator</code>的实现完成。</p>
+<h3 id="成员变量"><a href="#成员变量" class="headerlink" title="成员变量"></a>成员变量</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Entry[] table = Hashtable.<span class="keyword">this</span>.table;</span><br><span class="line"><span class="keyword">int</span> index = table.length;</span><br><span class="line">Entry&lt;K,V&gt; entry = <span class="keyword">null</span>;</span><br><span class="line">Entry&lt;K,V&gt; lastReturned = <span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">int</span> type;</span><br><span class="line"><span class="keyword">boolean</span> iterator;</span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">int</span> expectedModCount = modCount;</span><br></pre></td></tr></table></figure>
+<ol>
+<li><code>table</code>：数组。</li>
+<li><code>index</code>：当前遍历的冲突链表。</li>
+<li><code>entry</code>：当前正在访问的。</li>
+<li><code>lastReturned</code>：上一次返回的<code>entry</code>。</li>
+<li><code>type</code>：遍历的类型，<code>key</code>、<code>value</code>和<code>entry</code>三种。</li>
+<li><code>iterator</code>：标志<code>Enumeration</code>是否作为一个<code>Iterator</code>进行遍历。</li>
+<li><code>expectedModCount</code>：预期的修改数，如果与<code>modCount</code>不相同，则抛出<code>ConcurrentModificationException</code>异常。</li>
+</ol>
+<h3 id="hasMoreElements"><a href="#hasMoreElements" class="headerlink" title="hasMoreElements()"></a>hasMoreElements()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasMoreElements</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            Entry&lt;K,V&gt; e = entry;</span><br><span class="line">            <span class="keyword">int</span> i = index;</span><br><span class="line">            Entry[] t = table;</span><br><span class="line">            <span class="comment">/* Use locals for faster loop iteration */</span></span><br><span class="line">            <span class="keyword">while</span> (e == <span class="keyword">null</span> &amp;&amp; i &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                e = t[--i];</span><br><span class="line">            &#125;</span><br><span class="line">            entry = e;</span><br><span class="line">            index = i;</span><br><span class="line">            <span class="keyword">return</span> e != <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<p>从<code>table</code>数组中的最后一个开始遍历。</p>
+<h3 id="nextElement"><a href="#nextElement" class="headerlink" title="nextElement()"></a>nextElement()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> T <span class="title">nextElement</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            Entry&lt;K,V&gt; et = entry;</span><br><span class="line">            <span class="keyword">int</span> i = index;</span><br><span class="line">            Entry[] t = table;</span><br><span class="line">            <span class="comment">/* Use locals for faster loop iteration */</span></span><br><span class="line">            <span class="keyword">while</span> (et == <span class="keyword">null</span> &amp;&amp; i &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                et = t[--i];</span><br><span class="line">            &#125;</span><br><span class="line">            entry = et;</span><br><span class="line">            index = i;</span><br><span class="line">            <span class="keyword">if</span> (et != <span class="keyword">null</span>) &#123;</span><br><span class="line">                Entry&lt;K,V&gt; e = lastReturned = entry;</span><br><span class="line">                entry = e.next;</span><br><span class="line">                <span class="keyword">return</span> type == KEYS ? (T)e.key : (type == VALUES ? (T)e.value : (T)e);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException(<span class="string">"Hashtable Enumerator"</span>);</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="hasNext"><a href="#hasNext" class="headerlink" title="hasNext()"></a>hasNext()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasNext</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> hasMoreElements();</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<p>迭代器的方法。</p>
+<h3 id="next"><a href="#next" class="headerlink" title="next()"></a>next()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> T <span class="title">next</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (modCount != expectedModCount)</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> ConcurrentModificationException();</span><br><span class="line">            <span class="keyword">return</span> nextElement();</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<p>迭代器的方法。</p>
+<p>注意：<code>Iterator</code>接口比<code>Enumeration</code>接口多了一个<code>remove()</code>方法。</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2018/05/11/java-hashtable/">java-hashtable</a></p>
+        <p><span>文章作者:</span><a href="/" title="回到主页">HuangLangyou</a></p>
+        <p><span>发布时间:</span>2018-05-11, 16:31:03</p>
+        <p><span>最后更新:</span>2018-08-13, 17:02:47</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2018/05/11/java-hashtable/" title="java-hashtable">https://onlyyouhuang.github.io/2018/05/11/java-hashtable/</a>
+            <span class="copy-path" data-clipboard-text="原文: https://onlyyouhuang.github.io/2018/05/11/java-hashtable/　　作者: HuangLangyou" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script src="/js/clipboard.min.js"></script>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2018/05/13/java-ConcurrentHashMap精读(1)/">
+                    ConcurrentHashMap精读(1)
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2018/05/11/java-Hash-And-TreeMap/">
+                    TreeMap和hash解决冲突原理
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#内容"><span class="toc-number">1.</span> <span class="toc-text">内容</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Hashtable的实现特点"><span class="toc-number">2.</span> <span class="toc-text">Hashtable的实现特点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Hashtable与HashMap的区别"><span class="toc-number">3.</span> <span class="toc-text">Hashtable与HashMap的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#散列方法"><span class="toc-number">4.</span> <span class="toc-text">散列方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#扩容机制"><span class="toc-number">5.</span> <span class="toc-text">扩容机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#遍历"><span class="toc-number">6.</span> <span class="toc-text">遍历</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#四种遍历"><span class="toc-number">6.1.</span> <span class="toc-text">四种遍历</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Enumeration接口"><span class="toc-number">6.2.</span> <span class="toc-text">Enumeration接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Iterator接口"><span class="toc-number">6.3.</span> <span class="toc-text">Iterator接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实现"><span class="toc-number">6.4.</span> <span class="toc-text">实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#成员变量"><span class="toc-number">6.5.</span> <span class="toc-text">成员变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#hasMoreElements"><span class="toc-number">6.6.</span> <span class="toc-text">hasMoreElements()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#nextElement"><span class="toc-number">6.7.</span> <span class="toc-text">nextElement()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#hasNext"><span class="toc-number">6.8.</span> <span class="toc-text">hasNext()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#next"><span class="toc-number">6.9.</span> <span class="toc-text">next()</span></a></li></ol></li></ol>
+</div>
+<style>
+    .left-col .switch-btn {
+        display: none;
+    }
+    .left-col .switch-area {
+        display: none;
+    }
+</style>
+
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+            $(".switch-btn, .switch-area").fadeOut(300);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+            $(".switch-btn, .switch-area").fadeIn(500);
+        }
+    })
+
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+        $(".switch-btn, .switch-area").show();
+    }
+</script>
+
+
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <li id="bds_twi"><a href="#" class="bds_twi" data-cmd="twi" title="分享到推特"></a></li>
+            <li id="bds_tsina"><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a></li>
+            <li id="bds_sqq"><a href="#" class="bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a></li>
+            <li id="bds_copy"><a href="#" class="bds_copy" data-cmd="copy" title="复制网址"></a></li>
+            <li id="bds_mail"><a href="#" class="bds_mail" data-cmd="mail" title="通过邮件分享"></a></li>
+            <li id="bds_weixin"><a href="#" class="bds_weixin" data-cmd="weixin" title="生成文章二维码"></a></li>
+            <li id="bds_more"><a href="#" class="bds_more" data-cmd="more"></i></a></li>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"java-hashtable　| Onlyyouhuang's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2018/05/13/java-ConcurrentHashMap精读(1)/" title="上一篇: ConcurrentHashMap精读(1)">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2018/05/11/java-Hash-And-TreeMap/" title="下一篇: TreeMap和hash解决冲突原理">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/05/15/Java-LinkedHashMap精读(2)/">Java-LinkedHashMap精读(2)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/15/Java-LinkedHashMap精读(1)/">Java-LinkedHashMap精读(1)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/15/java-LinkedHashMap/">Java-LinkedHashMap</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/13/java-ConcurrentHashMap精读(2)/">ConcurrentHashMap精读(2)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/13/java-ConcurrentHashMap精读(1)/">ConcurrentHashMap精读(1)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/11/java-hashtable/">java-hashtable</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/11/java-Hash-And-TreeMap/">TreeMap和hash解决冲突原理</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/10/Java-HashMap精读(2)/">Java-HashMap精读(2)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/10/Java-HashMap精读(1)/">Java-HashMap精读(1)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/08/java-ReentrantLock-2/">ReentrantLock精读(2)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/07/java-ReentrantLock-1/">ReentrantLock精读(1)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/06/java-Lock/">java-Lock的基本思想</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/06/Java-Synchronized/">Java-Synchronized 原理</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/07/java-base-3/">Java-基础(3)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/06/java-base-2/">Java-基础-并发包</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/05/java-base/">Java-基础</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/04/JVM-GC与性能优化/">JVM GC与性能优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/04/数据库索引/">数据库索引</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/14/Oracle问题解决/">Oracle问题&解决方案</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/10/docker/">Docker命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/02/20/排序算法/">排序算法</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/22/Spring框架IOC容器和AOP解析/">Spring框架IOC容器和AOP解析</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/28/IDEA配置记录/">IDEA配置记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/01/10/hexo博客迁移-多机更新/">hexo博客迁移&多机更新</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/08/20/Java-BIO、NIO、AIO/">Java BIO、NIO、AIO</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/28/git命令/">git命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/17/游戏项目记录/">游戏项目记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/01/Android-NDK/">Android NDK</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/29/开发工具记录/">开发工具记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/21/Android-JS桥/">Android JS桥</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/05/18/Android-onTouch事件传递机制/">Android onTouch事件传递机制</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/22/Android-Studio/">Android Studio</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/16/Android-px-dp-sp/">Android px_dp_sp</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/15/Android-fragment/">Android fragment</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/08/Android-adb/">Android adb</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/07/Android-Html5/">Android_Html5</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/05/Java实现断点续传/">Java实现断点续传</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/31/淘宝SDK-for-Android/">淘宝SDK for Android</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/20/2016-3-10-Android面试/">2016-3-10 Android面试总结</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/14/个人博客搭建/">个人博客搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/14/hello-world/">Hello World</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2018 HuangLangyou
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题">Yelee</a> by MOxFIVE
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" >本站到访数: 
+                            <span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>, </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit">本页阅读量: 
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.1.22/require.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+</body>
+</html>

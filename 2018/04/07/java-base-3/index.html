@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html >
+<head>
+  <meta charset="utf-8">
+  
+  <title>Java-基础(3) | Onlyyouhuang&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="终止线程方式 使用volatile共享变量 123456789101112131415161718public class ThreadFlag extends Thread&amp;#123;    public volatile boolean exit = false;    public void run()    &amp;#123;  	   while (!exit);    &amp;#125;    p">
+<meta name="keywords" content="Java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java-基础(3)">
+<meta property="og:url" content="https://onlyyouhuang.github.io/2018/04/07/java-base-3/index.html">
+<meta property="og:site_name" content="Onlyyouhuang&#39;s blog">
+<meta property="og:description" content="终止线程方式 使用volatile共享变量 123456789101112131415161718public class ThreadFlag extends Thread&amp;#123;    public volatile boolean exit = false;    public void run()    &amp;#123;  	   while (!exit);    &amp;#125;    p">
+<meta property="og:image" content="https://onlyyouhuang.github.io/img/java-base-3-1.bmp">
+<meta property="og:image" content="https://onlyyouhuang.github.io/img/java-base-3-2.bmp">
+<meta property="og:updated_time" content="2018-08-13T08:57:23.774Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java-基础(3)">
+<meta name="twitter:description" content="终止线程方式 使用volatile共享变量 123456789101112131415161718public class ThreadFlag extends Thread&amp;#123;    public volatile boolean exit = false;    public void run()    &amp;#123;  	   while (!exit);    &amp;#125;    p">
+<meta name="twitter:image" content="https://onlyyouhuang.github.io/img/java-base-3-1.bmp">
+  
+    <link rel="alternative" href="/atom.xml" title="Onlyyouhuang&#39;s blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+      <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+  
+  
+  
+      <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+      <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+    <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <script src="//cdn.bootcss.com/jquery/1.9.1/jquery.min.js"></script>
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false,
+      }
+  </script>
+
+  
+      <script>
+          yiliaConfig.rootUrl = "/";
+      </script>
+  
+
+  
+
+  
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/img/avatar.jpg" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">HuangLangyou</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">Stay Hungry, Stay Foolish</p>
+        
+                
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:315950352@qq.com" title="Email"></a></li>
+                            
+                                <li id="新浪微博"><a class="新浪微博" target="_blank" href="http://weibo.com/onlyyouhuang" title="新浪微博"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="https://github.com/onlyyouhuang" title="GitHub"></a></li>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/Android/" style="font-size: 16.67px;">Android</a> <a href="/tags/Anfroid/" style="font-size: 10px;">Anfroid</a> <a href="/tags/HTML5/" style="font-size: 10px;">HTML5</a> <a href="/tags/Html5/" style="font-size: 10px;">Html5</a> <a href="/tags/JVM/" style="font-size: 10px;">JVM</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/NDK/" style="font-size: 10px;">NDK</a> <a href="/tags/SDK/" style="font-size: 10px;">SDK</a> <a href="/tags/Spring/" style="font-size: 10px;">Spring</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/hexo/" style="font-size: 13.33px;">hexo</a> <a href="/tags/remoteService/" style="font-size: 10px;">remoteService</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/算法/" style="font-size: 10px;">算法</a> <a href="/tags/网络/" style="font-size: 10px;">网络</a> <a href="/tags/面试/" style="font-size: 10px;">面试</a>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">小码农</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">HuangLangyou</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/img/avatar.jpg" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">HuangLangyou</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">Stay Hungry, Stay Foolish</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <li id="Email"><a class="Email" target="_blank" href="mailto:315950352@qq.com" title="Email"></a></li>
+                            
+                                <li id="新浪微博"><a class="新浪微博" target="_blank" href="http://weibo.com/onlyyouhuang" title="新浪微博"></a></li>
+                            
+                                <li id="GitHub"><a class="GitHub" target="_blank" href="https://github.com/onlyyouhuang" title="GitHub"></a></li>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-java-base-3" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2018/04/07/java-base-3/" class="article-date">
+      <time datetime="2018-04-07T13:43:55.000Z" itemprop="datePublished">2018-04-07</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Java-基础(3)
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <h3 id="终止线程方式"><a href="#终止线程方式" class="headerlink" title="终止线程方式"></a>终止线程方式</h3><ol>
+<li><p>使用volatile共享变量</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ThreadFlag</span> <span class="keyword">extends</span> <span class="title">Thread</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">volatile</span> <span class="keyword">boolean</span> exit = <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;  </span><br><span class="line">	   <span class="keyword">while</span> (!exit);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">	   ThreadFlag thread = <span class="keyword">new</span> ThreadFlag();</span><br><span class="line">	   thread.start();</span><br><span class="line">	   sleep(<span class="number">3000</span>); <span class="comment">// 主线程延迟3秒</span></span><br><span class="line">	   thread.exit = <span class="keyword">true</span>;  <span class="comment">// 终止线程thread</span></span><br><span class="line">	   thread.join();</span><br><span class="line">	   System.out.println(<span class="string">"线程退出!"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>当线程阻塞时，可以通过置中断状态取消线程，即调用<code>interrupt()</code>方法</p>
+</li>
+</ol>
+<h3 id="排序算法稳定性"><a href="#排序算法稳定性" class="headerlink" title="排序算法稳定性"></a>排序算法稳定性</h3><ol>
+<li>不稳定的排序算法：选择排序、快速排序、堆排序、希尔排序。</li>
+<li>稳定的排序算法：冒泡排序、归并排序、基数排序和插入排序。</li>
+</ol>
+<p>稳定排序的好处：如果多个字段需要排序，由于需要利用前面排序的结果，所以后面排序必须是稳定的，如果不稳定，则会出错。<br>比如：<br>字段1：1 2 2 2 3 4 5 6<br>字段2：5 7 6 2 9 7 5 3<br>首先对字段2排序：<br>字段1：2 6 1 5 2 2 4 3<br>字段2：2 3 5 5 6 7 7 8<br>再对字段1进行排序，由于字段1相等时，已经有序，为了保证这个有序关系，所以需要使用稳定的排序算法：<br>字段1：1 2 2 2 3 4 5 6<br>字段2：5 2 6 7 8 7 5 3</p>
+<h3 id="String"><a href="#String" class="headerlink" title="String"></a>String</h3><ol>
+<li><code>String</code>类不能被继承，因为被<code>final</code>修饰。</li>
+<li><code>String</code>类的<code>+</code>方法，通过构造一个新的<code>StringBuilder</code>对象，然后将两个<code>String</code>对象<code>append()</code>到后面。</li>
+<li><code>String</code>类的<code>hashCode</code>被重写，通过计算每个字符的<code>ASCII</code>*31相加获得，这样字符串相同的放到同一个<code>bucket</code>内。</li>
+<li><code>String</code>类的<code>toString()</code>被重写，返回<code>String</code>对象表示的字符串。</li>
+</ol>
+<h3 id="char能否存储汉字"><a href="#char能否存储汉字" class="headerlink" title="char能否存储汉字"></a>char能否存储汉字</h3><p>可以。因为<code>Java</code>中<code>char</code>使用<code>utf-16</code>进行编码，<code>utf-16</code>是一种变长编码，要么2个字节，要么4个字节表示。<br>所以当一个<code>utf-16</code>字符是2个字节时，则用1个<code>char</code>表示，如果一个<code>utf-16</code>字符是4个字节时，采用两个<code>char</code>表示。</p>
+<h3 id="接口能否继承多接口"><a href="#接口能否继承多接口" class="headerlink" title="接口能否继承多接口"></a>接口能否继承多接口</h3><p>接口可以继承多接口。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MultiInterface</span> <span class="keyword">extends</span> <span class="title">A</span>, <span class="title">B</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">c</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">A</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">a</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">B</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">b</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="实现线程的3种方式"><a href="#实现线程的3种方式" class="headerlink" title="实现线程的3种方式"></a>实现线程的3种方式</h3><ol>
+<li>继承<code>Thread</code>类，重写<code>run</code>方法。</li>
+<li>实现<code>Runnable</code>接口，重写<code>run</code>方法。</li>
+<li>实现<code>Callable</code>接口，提交到<code>ExecutorService</code>的线程池中，返回一个<code>future</code>。</li>
+</ol>
+<h3 id="实现线程安全的方式"><a href="#实现线程安全的方式" class="headerlink" title="实现线程安全的方式"></a>实现线程安全的方式</h3><ol>
+<li>使用不可变对象。</li>
+<li>使用<code>ThreadLocal</code>。</li>
+<li>加锁。</li>
+<li>使用无锁工具类(<code>ConcurrentHashmap, ConcurrentLinkedQueue</code>)。</li>
+</ol>
+<h3 id="ArrayList和LinkedList区别"><a href="#ArrayList和LinkedList区别" class="headerlink" title="ArrayList和LinkedList区别"></a>ArrayList和LinkedList区别</h3><p>1.ArrayList数组实现。<br>优点：随机访问，获取任意位置的元素 ，时间复杂度o(1)。<br>添加到最后，时间复杂度o(1)。<br>从中间插入，时间复杂度o(n)。<br>从中间删除，时间复杂度o(n)。</p>
+<ol>
+<li>LinkedList是双链表实现的。<br>优点：空间无限，比<code>ArrayList</code>耗内存。<br>获取操作，时间复杂度O(n)。<br>添加到尾部，时间度杂度o(1)。<br>删除操作，时间复杂度o(1)，因为是双链表。</li>
+</ol>
+<h3 id="Java-移位运算"><a href="#Java-移位运算" class="headerlink" title="Java 移位运算"></a>Java 移位运算</h3><ol>
+<li><code>&lt;&lt;</code>：带符号左移，无论正数还是负数， 移动后右侧都补0。</li>
+<li><code>&gt;&gt;</code>：带符号右移， 正数，移动后左侧补0， 负数移动后左侧补1。</li>
+<li><code>&gt;&gt;&gt;</code>：无符号右移，移动后，左侧不足补0。        </li>
+</ol>
+<h3 id="抽象类"><a href="#抽象类" class="headerlink" title="抽象类"></a>抽象类</h3><ol>
+<li>抽象类中可以有构造方法。</li>
+<li>抽象类中可以有普通属性，方法，静态属性和方法</li>
+<li>抽象类中可以有抽象方法</li>
+<li>如果一个类中有抽象方法，那么一定是抽线类。一个抽象类中可以没有抽象方法。</li>
+<li>抽象类中的方法必须由子类实现，如果子类没有实现，则子类也是一个抽象类。</li>
+</ol>
+<h3 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h3><ol>
+<li>接口中只有方法的声明，没有方法体。</li>
+<li>接口中可以有常量，因为会被默认加上<code>public static final</code>。</li>
+<li>接口中的方法必须是<code>public</code>的</li>
+<li>接口中没有构造方法，也不能实例化。</li>
+<li>接口可以实现多继承。</li>
+<li>接口中定义的类必须全部实现，如果实现类没有全部实现，则实现类定义为抽象类。</li>
+</ol>
+<h3 id="try-catch"><a href="#try-catch" class="headerlink" title="try catch"></a>try catch</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;<span class="keyword">finally</span>&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里<code>finally</code>中的返回值会覆盖<code>try</code>中的返回值，所以返回<code>1</code>。</p>
+<h3 id="java-异常类"><a href="#java-异常类" class="headerlink" title="java 异常类"></a>java 异常类</h3><p><img src="/img/java-base-3-1.bmp" alt=""></p>
+<p>运行时异常包括(<code>常见的</code>)：</p>
+<ol>
+<li><code>NullPointerException</code>(空指针异常)</li>
+<li><code>ClassNotFoundException</code>(类未找到异常)</li>
+<li><code>IndexOutOfBoundsException</code>(数组越界异常)</li>
+</ol>
+<p><code>IO</code>异常(<code>常见的</code>)：</p>
+<ol>
+<li><code>EOFException</code>：已经读到末尾了</li>
+<li><code>FileNotFoundException</code>：文件未找到。</li>
+</ol>
+<p><code>VirtualMachineError</code>，包括：</p>
+<ol>
+<li><code>StackOverFlowError</code></li>
+<li><code>OutOfMemoryError</code></li>
+</ol>
+<h3 id="final修饰的基本数据类型和类型转化"><a href="#final修饰的基本数据类型和类型转化" class="headerlink" title="final修饰的基本数据类型和类型转化"></a>final修饰的基本数据类型和类型转化</h3><ol>
+<li><code>final</code>修饰的基本数据类型是常量</li>
+<li>在基本运算操作中，<code>byte</code>，<code>short</code>的运算结果，会被向上转型为<code>int</code>，<code>float</code>也会向上转型为<code>double</code>，所以将运算结果赋值时，需要做强制类型转化，否则编译不通过。<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">       <span class="keyword">byte</span> b1 = <span class="number">1</span>, b2 = <span class="number">2</span>, b3, b6;</span><br><span class="line"><span class="keyword">final</span> <span class="keyword">byte</span> b4 = <span class="number">4</span>, b5 = <span class="number">6</span>;</span><br><span class="line">b6 = b4 + b5;<span class="comment">//编译通过 因为b4和b5是常量</span></span><br><span class="line">b3 = b1 + b2;<span class="comment">//编译不能通过 b1+b2被转型为int  而int不能赋值给byte变量</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h3 id="jvm参数"><a href="#jvm参数" class="headerlink" title="jvm参数"></a>jvm参数</h3><ol>
+<li><code>-Xms</code>：初始化堆的大小，堆内存的最小值</li>
+<li><code>-Xmx</code>：堆最大内存大小</li>
+<li><code>-Xmn</code>：年轻代的大小</li>
+</ol>
+<h3 id="super"><a href="#super" class="headerlink" title="super()"></a>super()</h3><p>如果在子类的方法中需要调用父类的构造方法，则可以使用<code>super()</code>，而且<code>super()</code>一定要写在子类构造方法的第一行。</p>
+<h3 id="类权限修饰符"><a href="#类权限修饰符" class="headerlink" title="类权限修饰符"></a>类权限修饰符</h3><p><code>public</code> &gt; <code>protected</code> &gt; <code>package</code> &gt; <code>private</code>。<br>所以从上面可以看出<code>protected</code>包含包访问权限。</p>
+<h3 id="接口继承"><a href="#接口继承" class="headerlink" title="接口继承"></a>接口继承</h3><p>一个接口可以继承多个接口。<br>但是一个类只能继承一个接口。</p>
+<h3 id="反射的作用"><a href="#反射的作用" class="headerlink" title="反射的作用"></a>反射的作用</h3><ol>
+<li>在运行期间判断一个对象所属的类。</li>
+<li>在运行期间构造一个类的对象。</li>
+<li>在运行期间判断一个类具有的成员变量和方法。</li>
+<li>在运行期间调用一个对象的方法。</li>
+</ol>
+<h3 id="static变量"><a href="#static变量" class="headerlink" title="static变量"></a>static变量</h3><p><code>static变量</code>不能用<code>this</code>引用。</p>
+<h3 id="静态内部类"><a href="#静态内部类" class="headerlink" title="静态内部类"></a>静态内部类</h3><p><code>静态内部类</code>不可以访问外部类的非静态方法和成员变量。<br><code>非静态内部类</code>可以直接访问外部类的的数据，包括私有数据。</p>
+<h3 id="关于System-out-println"><a href="#关于System-out-println" class="headerlink" title="关于System.out.println()"></a>关于System.out.println()</h3><ol>
+<li>System.out.println(100 + 5 + “is”) 打印<code>105is</code>。</li>
+<li>System.out.println(“is”+100 + 5)   打印is1005</li>
+</ol>
+<h3 id="重写-覆盖-方法的约束"><a href="#重写-覆盖-方法的约束" class="headerlink" title="重写(覆盖)方法的约束"></a>重写(覆盖)方法的约束</h3><ol>
+<li>方法名，参数列表相同。</li>
+<li>子类的返回值类型小于等于父类的返回值类型。</li>
+<li>子类声明抛出的异常小于等于父类声明抛出的异常。</li>
+<li>子类的权限大于等于父类的权限修饰符。</li>
+</ol>
+<h3 id="基本数据类型的转换和计算"><a href="#基本数据类型的转换和计算" class="headerlink" title="基本数据类型的转换和计算"></a>基本数据类型的转换和计算</h3><p>基本数据类型的优先级：<br>低———————————–&gt;高<br>byte,short,char -&gt; int -&gt; long -&gt; double -&gt; float -&gt; double</p>
+<p>在运算中，不同类型的数据先转化为同一类型，然后进行运算，转换规则如下：<br><img src="/img/java-base-3-2.bmp" alt=""></p>
+<h3 id="关于继承中无参构造方法"><a href="#关于继承中无参构造方法" class="headerlink" title="关于继承中无参构造方法"></a>关于继承中无参构造方法</h3><p>用<code>new</code>创建子类的对象时，若子类没有带参的构造方法，则先执行父类的无参构造方法，然后再执行自己的构造方法。</p>
+<h3 id="父类的私语变量和方法"><a href="#父类的私语变量和方法" class="headerlink" title="父类的私语变量和方法"></a>父类的私语变量和方法</h3><p>子类会继承父类的私有变量和方法，只是不能访问。</p>
+<h3 id="Integer的valueOf和直接int赋值"><a href="#Integer的valueOf和直接int赋值" class="headerlink" title="Integer的valueOf和直接int赋值"></a>Integer的valueOf和直接int赋值</h3><p><code>Integer</code>直接<code>int</code>赋值和<code>valueOf(int)</code>获取的<code>Integer</code>对象时：</p>
+<ol>
+<li>如果<code>int</code>数值，在<code>-128~127</code>之间，则直接返回同一个对象(缓存对象)。</li>
+<li>如果<code>int</code>数值的数值超过这个范围，则新建一个对象。</li>
+</ol>
+<h3 id="继承和实现的顺序"><a href="#继承和实现的顺序" class="headerlink" title="继承和实现的顺序"></a>继承和实现的顺序</h3><p>一个类如果同时继承一个类，和实现多个接口，则继承和实现的顺序：<br>继承在实现之前。</p>
+<h3 id="外部类的访问修饰符"><a href="#外部类的访问修饰符" class="headerlink" title="外部类的访问修饰符"></a>外部类的访问修饰符</h3><p><code>外部类</code>的修饰符只能是<code>public</code>和默认包权限。</p>
+<h3 id="abstract关键字的使用"><a href="#abstract关键字的使用" class="headerlink" title="abstract关键字的使用"></a>abstract关键字的使用</h3><p><code>abstract</code>关键字不可以与<code>final</code>、<code>static</code>、<code>synchronized</code>一起使用。<br>但是可以与<code>protected</code>一起使用。</p>
+<h3 id="枚举"><a href="#枚举" class="headerlink" title="枚举"></a>枚举</h3><ol>
+<li>从jdk1.6开始 switch支持枚举</li>
+<li>枚举可以显示继承</li>
+<li>枚举创建是线程安全的</li>
+</ol>
+<h3 id="String-”abc”创建多少个对象"><a href="#String-”abc”创建多少个对象" class="headerlink" title="String=”abc”创建多少个对象"></a>String=”abc”创建多少个对象</h3><ol>
+<li><code>String=new String(&quot;abc&quot;)</code>，这条语句会创建2个对象，分别是<code>&quot;abc&quot;</code>会在常量池中创建一个对象，<code>new</code>又回在堆里面创建一个对象。</li>
+<li><code>String=&quot;abc&quot;</code>会在常量池中创建一个对象。</li>
+<li><code>String=&quot;ab&quot;+&quot;cd&quot;</code>会创建<code>三个</code>对象，即首先在常量池创建<code>ab</code>和<code>cd</code>两个对象，最后在常量池中创建<code>abcd</code>这个对象。</li>
+</ol>
+<p>所以当执行<code>String s=&quot;abc&quot;</code>时，首先会在常量池中寻找”abc”是否在常量池中，如果不再则在常量池中创建一个<code>&quot;abc&quot;</code>，否则则存在直接获取这个字符串对象。</p>
+<h3 id="接口访问权限"><a href="#接口访问权限" class="headerlink" title="接口访问权限"></a>接口访问权限</h3><p>接口访问权限只能为<code>public</code>或者<code>default</code>。<br>接口方法只能为为<code>public</code>。</p>
+<h3 id="abstract访问权限"><a href="#abstract访问权限" class="headerlink" title="abstract访问权限"></a>abstract访问权限</h3><ol>
+<li><code>abstract</code>不能与<code>final</code>一起修饰一个类。</li>
+<li><code>abstract</code>不能与<code>private</code>、<code>static</code>、<code>final</code>或者<code>native</code>并列修饰一个方法。</li>
+</ol>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2018/04/07/java-base-3/">Java-基础(3)</a></p>
+        <p><span>文章作者:</span><a href="/" title="回到主页">HuangLangyou</a></p>
+        <p><span>发布时间:</span>2018-04-07, 21:43:55</p>
+        <p><span>最后更新:</span>2018-08-13, 16:57:23</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2018/04/07/java-base-3/" title="Java-基础(3)">https://onlyyouhuang.github.io/2018/04/07/java-base-3/</a>
+            <span class="copy-path" data-clipboard-text="原文: https://onlyyouhuang.github.io/2018/04/07/java-base-3/　　作者: HuangLangyou" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script src="/js/clipboard.min.js"></script>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2018/05/06/Java-Synchronized/">
+                    Java-Synchronized 原理
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2018/04/06/java-base-2/">
+                    Java-基础-并发包
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#终止线程方式"><span class="toc-number">1.</span> <span class="toc-text">终止线程方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#排序算法稳定性"><span class="toc-number">2.</span> <span class="toc-text">排序算法稳定性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#String"><span class="toc-number">3.</span> <span class="toc-text">String</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#char能否存储汉字"><span class="toc-number">4.</span> <span class="toc-text">char能否存储汉字</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#接口能否继承多接口"><span class="toc-number">5.</span> <span class="toc-text">接口能否继承多接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实现线程的3种方式"><span class="toc-number">6.</span> <span class="toc-text">实现线程的3种方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实现线程安全的方式"><span class="toc-number">7.</span> <span class="toc-text">实现线程安全的方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ArrayList和LinkedList区别"><span class="toc-number">8.</span> <span class="toc-text">ArrayList和LinkedList区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Java-移位运算"><span class="toc-number">9.</span> <span class="toc-text">Java 移位运算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#抽象类"><span class="toc-number">10.</span> <span class="toc-text">抽象类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#接口"><span class="toc-number">11.</span> <span class="toc-text">接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#try-catch"><span class="toc-number">12.</span> <span class="toc-text">try catch</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#java-异常类"><span class="toc-number">13.</span> <span class="toc-text">java 异常类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#final修饰的基本数据类型和类型转化"><span class="toc-number">14.</span> <span class="toc-text">final修饰的基本数据类型和类型转化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#jvm参数"><span class="toc-number">15.</span> <span class="toc-text">jvm参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#super"><span class="toc-number">16.</span> <span class="toc-text">super()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#类权限修饰符"><span class="toc-number">17.</span> <span class="toc-text">类权限修饰符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#接口继承"><span class="toc-number">18.</span> <span class="toc-text">接口继承</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#反射的作用"><span class="toc-number">19.</span> <span class="toc-text">反射的作用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#static变量"><span class="toc-number">20.</span> <span class="toc-text">static变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#静态内部类"><span class="toc-number">21.</span> <span class="toc-text">静态内部类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#关于System-out-println"><span class="toc-number">22.</span> <span class="toc-text">关于System.out.println()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#重写-覆盖-方法的约束"><span class="toc-number">23.</span> <span class="toc-text">重写(覆盖)方法的约束</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#基本数据类型的转换和计算"><span class="toc-number">24.</span> <span class="toc-text">基本数据类型的转换和计算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#关于继承中无参构造方法"><span class="toc-number">25.</span> <span class="toc-text">关于继承中无参构造方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#父类的私语变量和方法"><span class="toc-number">26.</span> <span class="toc-text">父类的私语变量和方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Integer的valueOf和直接int赋值"><span class="toc-number">27.</span> <span class="toc-text">Integer的valueOf和直接int赋值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#继承和实现的顺序"><span class="toc-number">28.</span> <span class="toc-text">继承和实现的顺序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#外部类的访问修饰符"><span class="toc-number">29.</span> <span class="toc-text">外部类的访问修饰符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#abstract关键字的使用"><span class="toc-number">30.</span> <span class="toc-text">abstract关键字的使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#枚举"><span class="toc-number">31.</span> <span class="toc-text">枚举</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#String-”abc”创建多少个对象"><span class="toc-number">32.</span> <span class="toc-text">String=”abc”创建多少个对象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#接口访问权限"><span class="toc-number">33.</span> <span class="toc-text">接口访问权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#abstract访问权限"><span class="toc-number">34.</span> <span class="toc-text">abstract访问权限</span></a></li></ol>
+</div>
+<style>
+    .left-col .switch-btn {
+        display: none;
+    }
+    .left-col .switch-area {
+        display: none;
+    }
+</style>
+
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+            $(".switch-btn, .switch-area").fadeOut(300);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+            $(".switch-btn, .switch-area").fadeIn(500);
+        }
+    })
+
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+        $(".switch-btn, .switch-area").show();
+    }
+</script>
+
+
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <li id="bds_twi"><a href="#" class="bds_twi" data-cmd="twi" title="分享到推特"></a></li>
+            <li id="bds_tsina"><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a></li>
+            <li id="bds_sqq"><a href="#" class="bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a></li>
+            <li id="bds_copy"><a href="#" class="bds_copy" data-cmd="copy" title="复制网址"></a></li>
+            <li id="bds_mail"><a href="#" class="bds_mail" data-cmd="mail" title="通过邮件分享"></a></li>
+            <li id="bds_weixin"><a href="#" class="bds_weixin" data-cmd="weixin" title="生成文章二维码"></a></li>
+            <li id="bds_more"><a href="#" class="bds_more" data-cmd="more"></i></a></li>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"Java-基础(3)　| Onlyyouhuang's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2018/05/06/Java-Synchronized/" title="上一篇: Java-Synchronized 原理">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2018/04/06/java-base-2/" title="下一篇: Java-基础-并发包">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/05/15/Java-LinkedHashMap精读(2)/">Java-LinkedHashMap精读(2)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/15/Java-LinkedHashMap精读(1)/">Java-LinkedHashMap精读(1)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/15/java-LinkedHashMap/">Java-LinkedHashMap</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/13/java-ConcurrentHashMap精读(2)/">ConcurrentHashMap精读(2)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/13/java-ConcurrentHashMap精读(1)/">ConcurrentHashMap精读(1)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/11/java-hashtable/">java-hashtable</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/11/java-Hash-And-TreeMap/">TreeMap和hash解决冲突原理</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/10/Java-HashMap精读(2)/">Java-HashMap精读(2)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/10/Java-HashMap精读(1)/">Java-HashMap精读(1)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/08/java-ReentrantLock-2/">ReentrantLock精读(2)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/07/java-ReentrantLock-1/">ReentrantLock精读(1)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/06/java-Lock/">java-Lock的基本思想</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/06/Java-Synchronized/">Java-Synchronized 原理</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/07/java-base-3/">Java-基础(3)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/06/java-base-2/">Java-基础-并发包</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/05/java-base/">Java-基础</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/04/JVM-GC与性能优化/">JVM GC与性能优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/04/数据库索引/">数据库索引</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/14/Oracle问题解决/">Oracle问题&解决方案</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/10/docker/">Docker命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/02/20/排序算法/">排序算法</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/22/Spring框架IOC容器和AOP解析/">Spring框架IOC容器和AOP解析</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/28/IDEA配置记录/">IDEA配置记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/01/10/hexo博客迁移-多机更新/">hexo博客迁移&多机更新</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/08/20/Java-BIO、NIO、AIO/">Java BIO、NIO、AIO</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/28/git命令/">git命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/17/游戏项目记录/">游戏项目记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/01/Android-NDK/">Android NDK</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/29/开发工具记录/">开发工具记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/21/Android-JS桥/">Android JS桥</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/05/18/Android-onTouch事件传递机制/">Android onTouch事件传递机制</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/22/Android-Studio/">Android Studio</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/16/Android-px-dp-sp/">Android px_dp_sp</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/15/Android-fragment/">Android fragment</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/08/Android-adb/">Android adb</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/07/Android-Html5/">Android_Html5</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/05/Java实现断点续传/">Java实现断点续传</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/31/淘宝SDK-for-Android/">淘宝SDK for Android</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/20/2016-3-10-Android面试/">2016-3-10 Android面试总结</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/14/个人博客搭建/">个人博客搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/14/hello-world/">Hello World</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2018 HuangLangyou
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题">Yelee</a> by MOxFIVE
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" >本站到访数: 
+                            <span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>, </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit">本页阅读量: 
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+    </div>
+    
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.1.22/require.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+</body>
+</html>

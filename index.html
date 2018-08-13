@@ -155,7 +155,7 @@
                 
                 <section class="switch-part switch-part2">
                     <div class="widget tagcloud" id="js-tagcloud">
-                        <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/Anfroid/" style="font-size: 10px;">Anfroid</a> <a href="/tags/HTML5/" style="font-size: 10px;">HTML5</a> <a href="/tags/Html5/" style="font-size: 10px;">Html5</a> <a href="/tags/JVM/" style="font-size: 10px;">JVM</a> <a href="/tags/Java/" style="font-size: 16.67px;">Java</a> <a href="/tags/NDK/" style="font-size: 10px;">NDK</a> <a href="/tags/SDK/" style="font-size: 10px;">SDK</a> <a href="/tags/Spring/" style="font-size: 10px;">Spring</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/hexo/" style="font-size: 13.33px;">hexo</a> <a href="/tags/remoteService/" style="font-size: 10px;">remoteService</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/算法/" style="font-size: 10px;">算法</a> <a href="/tags/网络/" style="font-size: 10px;">网络</a> <a href="/tags/面试/" style="font-size: 10px;">面试</a>
+                        <a href="/tags/Android/" style="font-size: 16.67px;">Android</a> <a href="/tags/Anfroid/" style="font-size: 10px;">Anfroid</a> <a href="/tags/HTML5/" style="font-size: 10px;">HTML5</a> <a href="/tags/Html5/" style="font-size: 10px;">Html5</a> <a href="/tags/JVM/" style="font-size: 10px;">JVM</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/NDK/" style="font-size: 10px;">NDK</a> <a href="/tags/SDK/" style="font-size: 10px;">SDK</a> <a href="/tags/Spring/" style="font-size: 10px;">Spring</a> <a href="/tags/docker/" style="font-size: 10px;">docker</a> <a href="/tags/hexo/" style="font-size: 13.33px;">hexo</a> <a href="/tags/remoteService/" style="font-size: 10px;">remoteService</a> <a href="/tags/数据库/" style="font-size: 10px;">数据库</a> <a href="/tags/算法/" style="font-size: 10px;">算法</a> <a href="/tags/网络/" style="font-size: 10px;">网络</a> <a href="/tags/面试/" style="font-size: 10px;">面试</a>
                     </div>
                 </section>
                 
@@ -231,11 +231,11 @@
 </nav>
       <div class="body-wrap">
   
-    <article id="post-JVM-GC与性能优化" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-Java-LinkedHashMap精读(2)" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2018/04/04/JVM-GC与性能优化/" class="article-date">
-      <time datetime="2018-04-03T16:18:34.000Z" itemprop="datePublished">2018-04-04</time>
+      <a href="/2018/05/15/Java-LinkedHashMap精读(2)/" class="article-date">
+      <time datetime="2018-05-15T07:44:25.000Z" itemprop="datePublished">2018-05-15</time>
 </a>
     </div>
   
@@ -248,7 +248,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/04/04/JVM-GC与性能优化/">JVM GC与性能优化</a>
+      <a class="article-title" href="/2018/05/15/Java-LinkedHashMap精读(2)/">Java-LinkedHashMap精读(2)</a>
     </h1>
   
 
@@ -258,8 +258,68 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-              <p><em>JVM GC</em><br>
-          
+        <p>首先<code>LinkedHashMap</code>源码基于1.7</p>
+<h2 id="内容"><a href="#内容" class="headerlink" title="内容"></a>内容</h2><ol>
+<li>三种遍历</li>
+<li>其它重写的方法</li>
+</ol>
+<h2 id="三种遍历"><a href="#三种遍历" class="headerlink" title="三种遍历"></a>三种遍历</h2><p><code>HashMap</code>有三种遍历方式：</p>
+<ol>
+<li><code>entrySet()</code>获取迭代器，遍历<code>Entry</code>。</li>
+<li><code>keySet()</code>获取迭代器，遍历<code>Key</code>。</li>
+<li><code>values()</code>获取迭代器，遍历<code>value</code>。</li>
+</ol>
+<p>三种遍历的顺寻，都是无序的，从<code>table[0]</code>开始遍历每一条冲突单链表。</p>
+<p><code>LinkedHashMap</code>也有三种遍历方式，和上面一样:</p>
+<ol>
+<li><code>entrySet()</code>获取迭代器，遍历<code>Entry</code>。</li>
+<li><code>keySet()</code>获取迭代器，遍历<code>Key</code>。</li>
+<li><code>values()</code>获取迭代器，遍历<code>value</code>。</li>
+</ol>
+<p>为了让其遍历按照<code>header</code>双链表的顺序，增加了<code>LinkedHashIterator</code>类，并且<br>让<code>EntryIterator</code>、<code>KeyIterator</code>和<code>ValueIterator</code>都继承自<code>LinkedHashIterator</code>。<br>在<code>HashMap</code>中，<code>EntryIterator</code>、<code>KeyIterator</code>和<code>ValueIterator</code>都继承自<code>HashIterator</code>。<br>所以在<code>LinkedHashMap</code>，遍历的核心类为<code>LinkedHashIterator</code>。</p>
+<h3 id="成员变量"><a href="#成员变量" class="headerlink" title="成员变量"></a>成员变量</h3><p><code>LinkedHashIterator</code>实现了<code>Iterator</code>接口。<code>Iterator</code>接口包含三个方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasNext</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> T <span class="title">next</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure></p>
+<p><code>LinkedHashIterator</code>包含了三个成员变量：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Entry&lt;K,V&gt; nextEntry    = header.after;</span><br><span class="line">       Entry&lt;K,V&gt; lastReturned = <span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">int</span> expectedModCount = modCount;</span><br></pre></td></tr></table></figure></p>
+<ol>
+<li><code>nextEntry</code>：下一个遍历的<code>entry</code>。初始为<code>header.next</code>。</li>
+<li><code>lastReturned</code>：上一个返回的<code>entry</code>。</li>
+<li><code>expectedModCount</code>：检测并发修改。采用及时失败策略。</li>
+</ol>
+<h3 id="hasNext"><a href="#hasNext" class="headerlink" title="hasNext()"></a>hasNext()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasNext</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> nextEntry != header;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<p><code>hasNext()</code>表示是否遍历结束。</p>
+<h3 id="remove"><a href="#remove" class="headerlink" title="remove()"></a>remove()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (lastReturned == <span class="keyword">null</span>)</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException();</span><br><span class="line">            <span class="keyword">if</span> (modCount != expectedModCount)</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> ConcurrentModificationException();</span><br><span class="line"></span><br><span class="line">            LinkedHashMap.<span class="keyword">this</span>.remove(lastReturned.key);</span><br><span class="line">            lastReturned = <span class="keyword">null</span>;</span><br><span class="line">            expectedModCount = modCount;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<p><code>remove()</code>方法移除<code>lastReturned</code>这个<code>entry</code>。步骤如下：</p>
+<ol>
+<li>如果<code>lastReturned = null</code>，则表明重复调用<code>remove()</code>，抛出<code>IllegalStateException</code>异常。</li>
+<li>如果<code>modCount != expectedModCount</code>，则表明发生了并发修改，则及时失败，抛出<code>ConcurrentModificationException</code>异常。</li>
+<li>调用<code>HashMap的remove()</code>进行移除。</li>
+<li>将<code>lastReturned</code>设置为<code>null</code>。</li>
+<li>更新<code>expectedModCount</code>。</li>
+</ol>
+<h3 id="nextEntry"><a href="#nextEntry" class="headerlink" title="nextEntry()"></a>nextEntry()</h3><p><code>nextEntry()</code>是<code>EntryIterator</code>、<code>KeyIterator</code>和<code>ValueIterator</code>的<code>next()</code>方法的前端：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">KeyIterator</span> <span class="keyword">extends</span> <span class="title">LinkedHashIterator</span>&lt;<span class="title">K</span>&gt; </span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> K <span class="title">next</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> nextEntry().getKey(); &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">ValueIterator</span> <span class="keyword">extends</span> <span class="title">LinkedHashIterator</span>&lt;<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> V <span class="title">next</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> nextEntry().value; &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">EntryIterator</span> <span class="keyword">extends</span> <span class="title">LinkedHashIterator</span>&lt;<span class="title">Map</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt;&gt; </span>&#123;</span><br><span class="line">        <span class="keyword">public</span> Map.<span class="function">Entry&lt;K,V&gt; <span class="title">next</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> nextEntry(); &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>nextEntry()</code>方法从<code>header</code>中取出下一个遍历的<code>entry</code>，赋值给<code>nextEntry</code>，然后返回当前这个<code>entry</code>。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Entry&lt;K,V&gt; <span class="title">nextEntry</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (modCount != expectedModCount)</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> ConcurrentModificationException();</span><br><span class="line">            <span class="keyword">if</span> (nextEntry == header)</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException();</span><br><span class="line"></span><br><span class="line">            Entry&lt;K,V&gt; e = lastReturned = nextEntry;</span><br><span class="line">            nextEntry = e.after;</span><br><span class="line">            <span class="keyword">return</span> e;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure></p>
+<ol>
+<li><code>modCount != expectedModCount</code>，则抛出<code>ConcurrentModificationException</code>异常。</li>
+<li><code>nextEntry == header</code>，则表明遍历结束，遍历时没有用<code>hasNext()</code>进行检查。</li>
+<li>取出下一个<code>entry</code>，赋值给<code>nextEntry</code>，返回当前的<code>entry</code>。</li>
+</ol>
+<h2 id="其它重写的方法"><a href="#其它重写的方法" class="headerlink" title="其它重写的方法"></a>其它重写的方法</h2><p><code>LinkedHashMap</code>中其它被重写的方法，基本都是需要遍历的方法，则重写后改用<code>header</code>双联表遍历效率更加高。重写的方法有：</p>
+<ol>
+<li><code>transfer()</code>方法在扩容的时候使用，需要遍历。</li>
+<li><code>containsValue()</code>：查找目标的<code>value</code>是否存在。这里只能使用遍历的方法判断。</li>
+</ol>
+<h3 id="transfer"><a href="#transfer" class="headerlink" title="transfer()"></a>transfer()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">transfer</span><span class="params">(HashMap.Entry[] newTable)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> newCapacity = newTable.length;</span><br><span class="line">	<span class="comment">// 从heade.after开始遍历 遍历整条双链表</span></span><br><span class="line">        <span class="keyword">for</span> (Entry&lt;K,V&gt; e = header.after; e != header; e = e.after) &#123;</span><br><span class="line">            <span class="keyword">int</span> index = indexFor(e.hash, newCapacity);</span><br><span class="line">            e.next = newTable[index];</span><br><span class="line">            newTable[index] = e;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>从<code>heade.after</code>开始遍历 遍历整条双链表</li>
+<li>对每个<code>entry</code>进行散列，找出在<code>newTable</code>中的下标</li>
+<li>将<code>entry</code>插入到目标<code>table</code>项的表头。</li>
+</ol>
+<h3 id="containsValue"><a href="#containsValue" class="headerlink" title="containsValue()"></a>containsValue()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">containsValue</span><span class="params">(Object value)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// Overridden to take advantage of faster iterator</span></span><br><span class="line">        <span class="keyword">if</span> (value==<span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">for</span> (Entry e = header.after; e != header; e = e.after)</span><br><span class="line">                <span class="keyword">if</span> (e.value==<span class="keyword">null</span>)</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">for</span> (Entry e = header.after; e != header; e = e.after)</span><br><span class="line">                <span class="keyword">if</span> (value.equals(e.value))</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>分为两种情况：</p>
+<ol>
+<li>如果<code>value</code>为<code>null</code>，则遍历<code>header</code>双链表，找出<code>value = null</code>的entry。如果存在返回<code>true</code>，否则返回<code>false</code>。</li>
+<li>如果<code>value</code>不为<code>null</code>，则遍历<code>header</code>双链表，找出<code>value.equals(e.value)</code>的entry。如果存在返回<code>true</code>，否则返回<code>false</code>。</li>
+</ol>
+
       
     </div>
     
@@ -269,13 +329,9 @@
 
       
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JVM/">JVM</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
     </div>
 
-      
-        <p class="article-more-link">
-          <a href="/2018/04/04/JVM-GC与性能优化/#more">more >></a>
-        </p>
       
       <div class="clearfix"></div>
     </div>
@@ -293,11 +349,11 @@
 
 
   
-    <article id="post-数据库索引" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-Java-LinkedHashMap精读(1)" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2018/04/04/数据库索引/" class="article-date">
-      <time datetime="2018-04-03T16:14:36.000Z" itemprop="datePublished">2018-04-04</time>
+      <a href="/2018/05/15/Java-LinkedHashMap精读(1)/" class="article-date">
+      <time datetime="2018-05-15T05:43:44.000Z" itemprop="datePublished">2018-05-15</time>
 </a>
     </div>
   
@@ -310,7 +366,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/04/04/数据库索引/">数据库索引</a>
+      <a class="article-title" href="/2018/05/15/Java-LinkedHashMap精读(1)/">Java-LinkedHashMap精读(1)</a>
     </h1>
   
 
@@ -320,8 +376,37 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-              <p><em>数据库索引</em><br>
-          
+        <p>首先<code>LinkedHashMap</code>源码基于1.7</p>
+<h2 id="内容"><a href="#内容" class="headerlink" title="内容"></a>内容</h2><ol>
+<li>成员变量</li>
+<li>HashMap中<code>Entry</code>类的扩展</li>
+<li>put()、get()和remove()方法的实现</li>
+</ol>
+<h2 id="成员变量"><a href="#成员变量" class="headerlink" title="成员变量"></a>成员变量</h2><p><code>LinkedHashMap</code>继承自<code>HashMap</code>，在此基础上增加了一个用于遍历的<code>双链表</code>。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 有序双链表头部</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">transient</span> Entry&lt;K,V&gt; header;</span><br><span class="line"><span class="comment">// 是否以访问顺序遍历</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">boolean</span> accessOrder;</span><br></pre></td></tr></table></figure></p>
+<ol>
+<li><code>header</code>：遍历双链表的表头。</li>
+<li><code>accessOrder</code>：是否以<code>访问顺序进行遍历</code>。</li>
+</ol>
+<h2 id="Entry类"><a href="#Entry类" class="headerlink" title="Entry类"></a>Entry类</h2><p><code>LinkedHashMap</code>中的<code>Entry</code>类继承自<code>HashMap</code>中的<code>Entry</code>类，每个<code>Entry</code>增加了<code>before</code>和<code>after</code>指针，形成一个<code>header</code>为表头的双链表。header的作用就是永远只是HashMap中所有成员的头（header.after）和尾(header.before)。LinkedHashMap就是通过header的双向链表来实现LRU算法的。header.after永远指向最近最不常使用的那个节点，删除的话，就是删除这个header.after对应的节点。相对的，header.before指向的就是刚刚使用过的那个节点。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Entry&lt;K,V&gt; before, after;</span><br></pre></td></tr></table></figure></p>
+<h3 id="recordAccess"><a href="#recordAccess" class="headerlink" title="recordAccess()"></a>recordAccess()</h3><p><code>recordAccess()</code>在<code>HashMap</code>中的<code>Entry</code>类中是空实现。<br>并且在<code>HashMap</code>中的<code>get()</code>和<code>put()</code>中被调用。<br><code>recordAccess()</code>方法实现当<code>accessOrder = true</code>时，将<code>entry</code>移动到<code>header</code>之前，即<code>header</code>双链表尾部。下面是在<code>LinkedHashMap</code>中的<code>Entry</code>类中被重写：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 在put和get出调用</span></span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">recordAccess</span><span class="params">(HashMap&lt;K,V&gt; m)</span> </span>&#123;</span><br><span class="line">            LinkedHashMap&lt;K,V&gt; lm = (LinkedHashMap&lt;K,V&gt;)m;</span><br><span class="line">	    <span class="comment">// accessOrder = true</span></span><br><span class="line">	    <span class="keyword">if</span> (lm.accessOrder) &#123;</span><br><span class="line">                lm.modCount++;</span><br><span class="line">		<span class="comment">// 从header双链表移除</span></span><br><span class="line">                remove();</span><br><span class="line">		<span class="comment">// 加入到header双链表尾部</span></span><br><span class="line">                addBefore(lm.header);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="recordRemoval"><a href="#recordRemoval" class="headerlink" title="recordRemoval()"></a>recordRemoval()</h3><p><code>recordRemoval()</code>在<code>HashMap</code>类中的<code>remove(key)</code>方法中被调用，即将目标<code>entry</code>从<code>header</code>双链表移除：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">recordRemoval</span><span class="params">(HashMap&lt;K,V&gt; m)</span> </span>&#123;</span><br><span class="line">            remove();</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="addEntry"><a href="#addEntry" class="headerlink" title="addEntry()"></a>addEntry()</h3><p><code>LinkedHashMap</code>重写了<code>addEntry()</code>方法增加了实现<code>LRU</code>缓存的方法。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">addEntry</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, <span class="keyword">int</span> bucketIndex)</span> </span>&#123;</span><br><span class="line">	<span class="comment">// 创建entry 插入到指定table的表头、插入到header双链表表尾</span></span><br><span class="line">        createEntry(hash, key, value, bucketIndex);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Remove eldest entry if instructed, else grow capacity if appropriate</span></span><br><span class="line">        Entry&lt;K,V&gt; eldest = header.after;</span><br><span class="line">	<span class="comment">// 如果removeEldstEntry() 返回true 表示删除最近最少被访问的entry</span></span><br><span class="line">        <span class="keyword">if</span> (removeEldestEntry(eldest)) &#123;</span><br><span class="line">            removeEntryForKey(eldest.key);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">	    <span class="comment">// 否则判断是否需要扩容</span></span><br><span class="line">            <span class="keyword">if</span> (size &gt;= threshold)</span><br><span class="line">                resize(<span class="number">2</span> * table.length);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<ol>
+<li><code>createEntry</code>：完成三个功能，创建entry，插入到目标<code>table</code>数组项的表头（头插法），插入到<code>header</code>双链表表尾。</li>
+<li>遍历<code>header</code>双链表，调用<code>removeEldestEntry()</code>方法决定是否清除双链表前面的<code>Entry</code>，<code>LRU</code>缓存的实现，默认<code>removeEldestEntry()</code>返回<code>false</code>，即不删除。</li>
+<li><code>size</code>是否大于等于 阀值，是则进行扩容。</li>
+</ol>
+<h2 id="put-、get-和remove-方法的实现"><a href="#put-、get-和remove-方法的实现" class="headerlink" title="put()、get()和remove()方法的实现"></a>put()、get()和remove()方法的实现</h2><h3 id="put"><a href="#put" class="headerlink" title="put()"></a>put()</h3><p><code>put()</code>方法使用的还是<code>HashMap</code>中的<code>put()</code>，但是由于重写了<code>Entry</code>类的<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> V <span class="title">put</span><span class="params">(K key, V value)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (key == <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">return</span> putForNullKey(value);</span><br><span class="line">        <span class="keyword">int</span> hash = hash(key.hashCode());</span><br><span class="line">        <span class="keyword">int</span> i = indexFor(hash, table.length);</span><br><span class="line">        <span class="keyword">for</span> (Entry&lt;K,V&gt; e = table[i]; e != <span class="keyword">null</span>; e = e.next) &#123;</span><br><span class="line">            Object k;</span><br><span class="line">            <span class="keyword">if</span> (e.hash == hash &amp;&amp; ((k = e.key) == key || key.equals(k))) &#123;</span><br><span class="line">	        <span class="comment">// 如果目标`key`的`entry`已经存在</span></span><br><span class="line">	        V oldValue = e.value;</span><br><span class="line">                e.value = value;		</span><br><span class="line">                e.recordAccess(<span class="keyword">this</span>);</span><br><span class="line">                <span class="keyword">return</span> oldValue;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        modCount++;</span><br><span class="line">        addEntry(hash, key, value, i);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>put()</code>会出现两种情况：</p>
+<ol>
+<li>如果目标<code>key</code>的<code>entry</code>已经存在，则直接修改<code>entry</code>的<code>value</code>对象。然后调用<code>recordAccess(this)</code>，如果<code>accessOrder = ture，则</code>将<code>entry</code>移动到<code>header</code>双链表尾部，否则不移动<code>entry</code>。</li>
+<li>如果目标<code>key</code>的<code>entry</code>不存在，则表明之前没有插入过，则调用<code>addEntry()</code>进行添加。由上面<code>addEntry()</code>可知，这个方法会将<code>entry</code>插入到<code>table</code>中，也会插入到<code>header</code>双链表尾部。</li>
+</ol>
+<h3 id="get"><a href="#get" class="headerlink" title="get()"></a>get()</h3><p><code>get()</code>方法在<code>LinkedHashMap</code>被重写了。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> V <span class="title">get</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 获取entry</span></span><br><span class="line">        Entry&lt;K,V&gt; e = (Entry&lt;K,V&gt;)getEntry(key);</span><br><span class="line">        <span class="keyword">if</span> (e == <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        e.recordAccess(<span class="keyword">this</span>);</span><br><span class="line">        <span class="keyword">return</span> e.value;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>从中可以看出，找到<code>entry</code>后，调用<code>recordAccess(this)</code>，如果<code>accessOrder = true</code>，则将<code>entry</code>移动到<code>header</code>双链表尾部，否则保持不变。</p>
+<h3 id="remove"><a href="#remove" class="headerlink" title="remove()"></a>remove()</h3><p><code>LinkedHashMap</code>没有重写<code>remove()</code>方法，直接使用<code>HashMap</code>中的<code>remove()</code>方法。而<code>HashMap</code>中的<code>remove()</code>方法，委托<code>removeEntryForKey()</code>实现：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> Entry&lt;K,V&gt; <span class="title">removeEntryForKey</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">      <span class="keyword">int</span> hash = (key == <span class="keyword">null</span>) ? <span class="number">0</span> : hash(key.hashCode());</span><br><span class="line">      <span class="keyword">int</span> i = indexFor(hash, table.length);</span><br><span class="line">      Entry&lt;K,V&gt; prev = table[i];</span><br><span class="line">      Entry&lt;K,V&gt; e = prev;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">while</span> (e != <span class="keyword">null</span>) &#123;</span><br><span class="line">          Entry&lt;K,V&gt; next = e.next;</span><br><span class="line">          Object k;</span><br><span class="line">          <span class="keyword">if</span> (e.hash == hash &amp;&amp;</span><br><span class="line">              ((k = e.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k)))) &#123;</span><br><span class="line">              modCount++;</span><br><span class="line">              size--;</span><br><span class="line">              <span class="keyword">if</span> (prev == e)</span><br><span class="line">                  table[i] = next;</span><br><span class="line">              <span class="keyword">else</span></span><br><span class="line">                  prev.next = next;</span><br><span class="line"><span class="comment">// linkedhashmap</span></span><br><span class="line">              e.recordRemoval(<span class="keyword">this</span>);</span><br><span class="line">              <span class="keyword">return</span> e;</span><br><span class="line">          &#125;</span><br><span class="line">          prev = e;</span><br><span class="line">          e = next;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">return</span> e;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure></p>
+<p>从中可以看出，当找到<code>entry</code>之后，则首先从<code>table</code>项的单链表中移除。然后再调用<code>e.recordRemoval(this);</code>，从<code>header</code>双链表中移除。</p>
+
       
     </div>
     
@@ -331,13 +416,9 @@
 
       
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/数据库/">数据库</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
     </div>
 
-      
-        <p class="article-more-link">
-          <a href="/2018/04/04/数据库索引/#more">more >></a>
-        </p>
       
       <div class="clearfix"></div>
     </div>
@@ -355,11 +436,11 @@
 
 
   
-    <article id="post-Oracle问题解决" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-java-LinkedHashMap" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2018/03/14/Oracle问题解决/" class="article-date">
-      <time datetime="2018-03-14T05:40:02.000Z" itemprop="datePublished">2018-03-14</time>
+      <a href="/2018/05/15/java-LinkedHashMap/" class="article-date">
+      <time datetime="2018-05-15T02:01:05.000Z" itemprop="datePublished">2018-05-15</time>
 </a>
     </div>
   
@@ -372,7 +453,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/03/14/Oracle问题解决/">Oracle问题&amp;解决方案</a>
+      <a class="article-title" href="/2018/05/15/java-LinkedHashMap/">Java-LinkedHashMap</a>
     </h1>
   
 
@@ -382,66 +463,23 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-              <p><em>记录使用Oracle过程中遇到的问题及解决方案</em><br>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
+        <h2 id="LinkedHashMap"><a href="#LinkedHashMap" class="headerlink" title="LinkedHashMap"></a>LinkedHashMap</h2><p><code>LinkedHashMap</code>与<code>HashMap</code>最大的不同就是，在遍历的时候是有序的，按照插入顺序或者访问顺序。<br>而<code>HashMap</code>是无序的，原因在于散列函数。</p>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p>首先<code>LinkedHashMap</code>继承了<code>HashMap</code>，然后为每个<code>entry</code>增加了两个成员，<code>before</code>和<code>after</code>，主要为了用它们将所有的<code>entry</code>链接在一个双链表内，<code>header</code>作为双链表头部。当<code>accessOrder</code>为<code>false</code>时，这是默认的情况，双链表的顺序即插入顺序。当<code>accessOrder</code>为<code>true</code>时，双链表的顺序为访问逆序。每次<code>get()</code>，就将目标<code>entry</code>移动到<code>header</code>之前，即双链表表尾部。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LinkedHashMap</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">HashMap</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; // 继承自<span class="title">HashMap</span></span></span><br></pre></td></tr></table></figure></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">transient</span> Entry&lt;K,V&gt; header; <span class="comment">//双链表表头</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">boolean</span> accessOrder; <span class="comment">// false 插入顺序; true 访问顺序</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">LinkedHashMap</span><span class="params">(<span class="keyword">int</span> initialCapacity, <span class="keyword">float</span> loadFactor)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(initialCapacity, loadFactor);</span><br><span class="line">        accessOrder = <span class="keyword">false</span>;</span><br><span class="line">    &#125; <span class="comment">// 构造函数，其它几个类似</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        header = <span class="keyword">new</span> Entry&lt;&gt;(-<span class="number">1</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>);</span><br><span class="line">        header.before = header.after = header;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在构造函数末尾被调用，初始化<code>header</code>。</p>
+<h3 id="get"><a href="#get" class="headerlink" title="get()"></a>get()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> V <span class="title">get</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">        Entry&lt;K,V&gt; e = (Entry&lt;K,V&gt;)getEntry(key);</span><br><span class="line">        <span class="keyword">if</span> (e == <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        e.recordAccess(<span class="keyword">this</span>);</span><br><span class="line">        <span class="keyword">return</span> e.value;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>getEntry</code>是父类<code>HashMap</code>的方法，在哈希表中查找目标的<code>entry</code>，找到之后调用<code>e.recoderAccess()</code>方法。这个方法是<code>entry</code>的方法，在这里被重写了。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">recordAccess</span><span class="params">(HashMap&lt;K,V&gt; m)</span> </span>&#123;</span><br><span class="line">            LinkedHashMap&lt;K,V&gt; lm = (LinkedHashMap&lt;K,V&gt;)m;</span><br><span class="line">            <span class="keyword">if</span> (lm.accessOrder) &#123;</span><br><span class="line">                lm.modCount++;</span><br><span class="line">                remove();</span><br><span class="line">                addBefore(lm.header);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure></p>
+<p>如果<code>accessOrder</code>为<code>false</code>，则什么都不做。如果<code>accessOrder</code>为<code>true</code>，即按照访问顺序。则将目标<code>entry</code>先从双链表移除，然后调用<code>addBefore()</code>将其插入到<code>header</code>之前。所以这样做之后，链表头部之后都是最近未访问过的，尾部都是刚刚访问过的，这可以实现缓存。</p>
+<h3 id="put"><a href="#put" class="headerlink" title="put()"></a>put()</h3><p>对于<code>put()</code>方法，使用的是<code>HashMap</code>的<code>put()</code>方法，只是在把<code>addEntry()</code>方法重写了。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> V <span class="title">put</span><span class="params">(K key, V value)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (key == <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">return</span> putForNullKey(value);</span><br><span class="line">        <span class="keyword">int</span> hash = hash(key.hashCode());</span><br><span class="line">        <span class="keyword">int</span> i = indexFor(hash, table.length);</span><br><span class="line">        <span class="keyword">for</span> (Entry&lt;K,V&gt; e = table[i]; e != <span class="keyword">null</span>; e = e.next) &#123;</span><br><span class="line">            Object k;</span><br><span class="line">            <span class="keyword">if</span> (e.hash == hash &amp;&amp; ((k = e.key) == key || key.equals(k))) &#123;</span><br><span class="line">                V oldValue = e.value;</span><br><span class="line">                e.value = value;</span><br><span class="line">                e.recordAccess(<span class="keyword">this</span>);</span><br><span class="line">                <span class="keyword">return</span> oldValue;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        modCount++;</span><br><span class="line">        addEntry(hash, key, value, i); <span class="comment">// 被LinkedHashMap重写</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">addEntry</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, <span class="keyword">int</span> bucketIndex)</span> </span>&#123;</span><br><span class="line">        createEntry(hash, key, value, bucketIndex);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Remove eldest entry if instructed, else grow capacity if appropriate</span></span><br><span class="line">        Entry&lt;K,V&gt; eldest = header.after;</span><br><span class="line">        <span class="keyword">if</span> (removeEldestEntry(eldest)) &#123;<span class="comment">//实现缓存算法</span></span><br><span class="line">            removeEntryForKey(eldest.key);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (size &gt;= threshold)</span><br><span class="line">                resize(<span class="number">2</span> * table.length);</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>createEntry()</code>方法把插入的<code>entry</code>插入到<code>header</code>双链表尾部，这样实现按插入顺序排序。<code>removeEldestEntry(eldest)</code>方法是为了实现缓存算法的，只要覆盖这个方法即可。</p>
+<h3 id="remove"><a href="#remove" class="headerlink" title="remove()"></a>remove()</h3><p>和<code>put()</code>一样，先调用<code>HashMap</code>的<code>remove()</code>方法，这样就从<code>hashmap</code>中删除了目标<code>entry</code>，但是在<code>header</code>双链表中还存在，所以这里重写了<code>entry</code>的<code>recordRemoval()</code>方法。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> V <span class="title">remove</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">        Entry&lt;K,V&gt; e = removeEntryForKey(key);</span><br><span class="line">        <span class="keyword">return</span> (e == <span class="keyword">null</span> ? <span class="keyword">null</span> : e.value);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> Entry&lt;K,V&gt; <span class="title">removeEntryForKey</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> hash = (key == <span class="keyword">null</span>) ? <span class="number">0</span> : hash(key.hashCode());</span><br><span class="line">        <span class="keyword">int</span> i = indexFor(hash, table.length);</span><br><span class="line">        Entry&lt;K,V&gt; prev = table[i];</span><br><span class="line">        Entry&lt;K,V&gt; e = prev;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (e != <span class="keyword">null</span>) &#123;</span><br><span class="line">            Entry&lt;K,V&gt; next = e.next;</span><br><span class="line">            Object k;</span><br><span class="line">            <span class="keyword">if</span> (e.hash == hash &amp;&amp;</span><br><span class="line">                ((k = e.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k)))) &#123;</span><br><span class="line">                modCount++;</span><br><span class="line">                size--;</span><br><span class="line">                <span class="keyword">if</span> (prev == e)</span><br><span class="line">                    table[i] = next;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                    prev.next = next;</span><br><span class="line">                e.recordRemoval(<span class="keyword">this</span>); <span class="comment">// 重写</span></span><br><span class="line">                <span class="keyword">return</span> e;</span><br><span class="line">            &#125;</span><br><span class="line">            prev = e;</span><br><span class="line">            e = next;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> e;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 从header双链表中删除</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">recordRemoval</span><span class="params">(HashMap&lt;K,V&gt; m)</span> </span>&#123;</span><br><span class="line">            remove();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            before.after = after;</span><br><span class="line">            after.before = before;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-      
-      
-        <p class="article-more-link">
-          <a href="/2018/03/14/Oracle问题解决/#more">more >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-docker" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2018/03/10/docker/" class="article-date">
-      <time datetime="2018-03-10T08:24:40.000Z" itemprop="datePublished">2018-03-10</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/03/10/docker/">Docker命令</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <p><em>记录Docker的使用</em><br>
-          
       
     </div>
     
@@ -451,13 +489,9 @@
 
       
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/">docker</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
     </div>
 
-      
-        <p class="article-more-link">
-          <a href="/2018/03/10/docker/#more">more >></a>
-        </p>
       
       <div class="clearfix"></div>
     </div>
@@ -475,11 +509,11 @@
 
 
   
-    <article id="post-排序算法" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-java-ConcurrentHashMap精读(2)" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2018/02/20/排序算法/" class="article-date">
-      <time datetime="2018-02-20T14:00:23.000Z" itemprop="datePublished">2018-02-20</time>
+      <a href="/2018/05/13/java-ConcurrentHashMap精读(2)/" class="article-date">
+      <time datetime="2018-05-13T11:37:48.000Z" itemprop="datePublished">2018-05-13</time>
 </a>
     </div>
   
@@ -492,7 +526,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/02/20/排序算法/">排序算法</a>
+      <a class="article-title" href="/2018/05/13/java-ConcurrentHashMap精读(2)/">ConcurrentHashMap精读(2)</a>
     </h1>
   
 
@@ -502,8 +536,103 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-              <p><em>排序算法知识点记录</em><br>
-          
+        <p><code>ConcurrentHashMap</code>源码基于jdk-1.6</p>
+<h2 id="内容"><a href="#内容" class="headerlink" title="内容"></a>内容</h2><ol>
+<li>扩容机制</li>
+<li>读不加锁、写加锁的实现</li>
+<li>三种遍历</li>
+</ol>
+<h2 id="扩容机制"><a href="#扩容机制" class="headerlink" title="扩容机制"></a>扩容机制</h2><p>首先明确，扩容的对象是<code>segment.table</code>，扩容步骤：</p>
+<ol>
+<li>在<code>put()</code>方法中，如果<code>count &gt;= threshold</code>，则调用<code>rehash()</code>进行扩容。</li>
+<li>在<code>rehash()</code>方法中创建新<code>newtable</code>数组，长度为原来的<code>两倍</code>。所以即扩容成原来的两倍。</li>
+<li>将<code>oldTable</code>中每个链表中的<code>Entry</code>转移到<code>newTable</code>。</li>
+</ol>
+<p>这里<code>segment</code>转移<code>Entry</code>与之前<code>HashMap</code>、<code>WeakHashMap</code>都不一样。<br><code>HashMap</code>和<code>WeakHashMap</code>是把每个<code>entry</code>移动到新的<code>table</code>中。</p>
+<h3 id="oldTable中entry对象转移到newTable的位置"><a href="#oldTable中entry对象转移到newTable的位置" class="headerlink" title="oldTable中entry对象转移到newTable的位置"></a>oldTable中entry对象转移到newTable的位置</h3><p>这里使用了一个性质：即<code>oldTable</code>中<code>entry</code>，只可能转移到<code>newTable</code>中两个位置。<br>解释：<br><code>oldTable</code>中<code>entry</code>对象，在<code>oldTable</code>中的位置为：<br><code>entry.hash &amp; (oldTable.length - 1)</code><br>而需要转移到<code>newTable</code>的位置为：<br><code>entry.hash &amp; (newTable.length - 1)</code></p>
+<p>又扩容为原来两倍，所以<code>newTable.length</code>是<code>oldTable.length</code>的两倍。我们记<code>oldTable.length = 2 ^ k</code>，则<code>newTable.length = 2 ^ (k + 1)</code>。<br>则在<code>oldTable</code>中的位置为：<br><code>entry.hash &amp; (2 ^ k)</code>。<br>在<code>newTable</code>中的位置为：<br><code>entry.hash &amp; (2 ^ (k + 1))</code>。<br>从上面可以看出，<br><code>oldTable</code>的位置是取<code>entry.hash</code>的低<code>k</code>位。<br><code>newTable</code>的位置是取<code>entry.hash</code>的低<code>k + 1</code>位。<br>所以<code>newTable</code>位置比<code>oldTable</code>的位置多了一位，这一位可能是<code>1</code>，也可能是0。<br>当为<code>0</code>时，在<code>newTable</code>中的位置为：<br>与<code>oldTable</code>中的位置相同。<br>当为<code>1</code>时，在<code>newTable</code>中的位置为：<br>在<code>oldTable</code>中的位置，基础上 + 2 ^ k。</p>
+<p><img src="/img/java-concurrenthashmap-2-1.bmp" alt=""></p>
+<h3 id="扩容实现"><a href="#扩容实现" class="headerlink" title="扩容实现"></a>扩容实现</h3><p>主要是转移的实现：<br><code>ConcurrentHashMap</code>利用上面<code>entry</code>在<code>oldTable</code>的下标和在<code>newTable</code>的下标的关系，采取一种<code>new Entry</code>尽量少的方法。将<code>oldTable[idx]</code>的单链表分为两端：</p>
+<ol>
+<li>前半段是在<code>newTable</code>的下标为两种混合的<code>entry</code>集合。</li>
+<li>后半段是在<code>newTable</code>的下标为只有一种的<code>entry</code>集合。</li>
+</ol>
+<p>然后分别对两个半段进行处理：</p>
+<ol>
+<li>对于混合的，则遍历每个，然后转移到<code>newTable</code>合适的单链表中。</li>
+<li>对于单一的，则直接挂到目标<code>newTable[index]</code>上。</li>
+</ol>
+<p><img src="/img/java-concurrenthashmap-2-2.bmp" alt=""></p>
+<h3 id="rehash"><a href="#rehash" class="headerlink" title="rehash()"></a>rehash()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">rehash</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            HashEntry&lt;K,V&gt;[] oldTable = table;</span><br><span class="line">            <span class="keyword">int</span> oldCapacity = oldTable.length;</span><br><span class="line">	    <span class="comment">// 旧segment table长度大于等于2^30 直接返回</span></span><br><span class="line">            <span class="keyword">if</span> (oldCapacity &gt;= MAXIMUM_CAPACITY)</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">	    <span class="comment">// 新的table 长度为原来的一倍</span></span><br><span class="line">            HashEntry&lt;K,V&gt;[] newTable = HashEntry.newArray(oldCapacity&lt;&lt;<span class="number">1</span>);</span><br><span class="line">	    <span class="comment">// 新的阀值</span></span><br><span class="line">            threshold = (<span class="keyword">int</span>)(newTable.length * loadFactor);</span><br><span class="line">	    <span class="comment">// 长度掩码</span></span><br><span class="line">            <span class="keyword">int</span> sizeMask = newTable.length - <span class="number">1</span>;</span><br><span class="line">	    <span class="comment">// 遍历segment 的oldTable中每一条链</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; oldCapacity ; i++) &#123;</span><br><span class="line">                <span class="comment">// We need to guarantee that any existing reads of old Map can</span></span><br><span class="line">                <span class="comment">//  proceed. So we cannot yet null out each bin.</span></span><br><span class="line">                HashEntry&lt;K,V&gt; e = oldTable[i];</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    HashEntry&lt;K,V&gt; next = e.next;</span><br><span class="line">		    <span class="comment">// e.hash 存放的是wang/jekins 再散列后的hash值</span></span><br><span class="line">                    <span class="keyword">int</span> idx = e.hash &amp; sizeMask;</span><br><span class="line"></span><br><span class="line">                    <span class="comment">//  Single node on list</span></span><br><span class="line">		    <span class="comment">// 链表中只有这一个entry</span></span><br><span class="line">                    <span class="keyword">if</span> (next == <span class="keyword">null</span>)</span><br><span class="line">                        newTable[idx] = e; <span class="comment">// 直接设置</span></span><br><span class="line"></span><br><span class="line">                    <span class="keyword">else</span> &#123;</span><br><span class="line">                        <span class="comment">// Reuse trailing consecutive sequence at same slot</span></span><br><span class="line">                        HashEntry&lt;K,V&gt; lastRun = e;</span><br><span class="line">                        <span class="keyword">int</span> lastIdx = idx;</span><br><span class="line">			<span class="comment">// 遍历单链表，将单链表分为两半</span></span><br><span class="line">			<span class="comment">// 后半部分 在newTable中的下标相同</span></span><br><span class="line">                        <span class="keyword">for</span> (HashEntry&lt;K,V&gt; last = next;</span><br><span class="line">                             last != <span class="keyword">null</span>;</span><br><span class="line">                             last = last.next) &#123;</span><br><span class="line">                            <span class="keyword">int</span> k = last.hash &amp; sizeMask;</span><br><span class="line">			    <span class="comment">// 当前这个entry 不在上一个entry插入的链表中</span></span><br><span class="line">                            <span class="keyword">if</span> (k != lastIdx) &#123;</span><br><span class="line">                                lastIdx = k;</span><br><span class="line">                                lastRun = last;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                        newTable[lastIdx] = lastRun;</span><br><span class="line"></span><br><span class="line">                        <span class="comment">// Clone all remaining nodes</span></span><br><span class="line">                        <span class="keyword">for</span> (HashEntry&lt;K,V&gt; p = e; p != lastRun; p = p.next) &#123;</span><br><span class="line">                            <span class="keyword">int</span> k = p.hash &amp; sizeMask;</span><br><span class="line">                            HashEntry&lt;K,V&gt; n = newTable[k];</span><br><span class="line">                            newTable[k] = <span class="keyword">new</span> HashEntry&lt;K,V&gt;(p.key, p.hash,</span><br><span class="line">                                                             n, p.value);</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            table = newTable;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>如果<code>oldTable &gt;= 2 ^ 30</code>，则不进行扩容，直接返回。</li>
+<li>创建<code>newTable</code>，数组长度为原来的两倍。</li>
+<li>遍历<code>oldTable</code>中每个<code>entry</code>单链表。</li>
+<li>按上面方法将当前遍历的单链表分为两段。</li>
+<li>将后半部分的表头，赋值给<code>newTable[lastIdx]</code>。</li>
+<li>遍历前半部分链表，创建其副本，并且插入到<code>newTable</code>目标位置。</li>
+<li><code>table = newTable</code>。</li>
+</ol>
+<h2 id="读不加锁、写加锁的实现"><a href="#读不加锁、写加锁的实现" class="headerlink" title="读不加锁、写加锁的实现"></a>读不加锁、写加锁的实现</h2><p>当一个线程在读数据(<code>遍历或者调用get()</code>)，即调用<code>get()</code>，其它线程可能会出现三种修改操作：</p>
+<ol>
+<li><code>put()</code>，插入。</li>
+<li><code>remove()</code>，移除。</li>
+<li><code>clear()</code>，移除这个<code>map</code>。</li>
+</ol>
+<h3 id="put"><a href="#put" class="headerlink" title="put()"></a>put()</h3><p>即一个线程读数据，另外一个线程调用<code>put()</code>。会出现三种情况：</p>
+<ol>
+<li>写线程顺利插入单链表头部，线程读取的数据，在链表插入链表非头部，或者其它单链表上，则读取成功。</li>
+<li>写线程顺利插入单链表头部，线程读取的数据，在链表插入链表头部，但是<code>put()</code>没有发生重排序，所以读取成功。</li>
+<li>写线程顺利插入单链表头部，线程读取的数据，在链表插入链表头部，但是<code>put()</code>发生了重排序，所以<code>value = null</code>，则调用<code>readValueUnderLock(e)</code>，加锁读取。</li>
+</ol>
+<p>在<code>put</code>中，<code>tab[index] = new HashEntry&lt;K,V&gt;(key, hash, first, value);</code>会发生重排序，一条<code>new</code>赋值语句，包含三条操作：</p>
+<ol>
+<li>为<code>new</code>的对象分配内存空间。</li>
+<li>初始化对象</li>
+<li>将对象引用，赋值给目标引用变量。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">HashEntry(K key, <span class="keyword">int</span> hash, HashEntry&lt;K,V&gt; next, V value) &#123;</span><br><span class="line">           <span class="keyword">this</span>.key = key;</span><br><span class="line">           <span class="keyword">this</span>.hash = hash;</span><br><span class="line">           <span class="keyword">this</span>.next = next;</span><br><span class="line">    <span class="comment">// volatile写 后面的语句还是会与volatile写重排序</span></span><br><span class="line">           <span class="keyword">this</span>.value = value; <span class="comment">// 这条赋值语句 可以和外面的交换 即table[index] = ..</span></span><br><span class="line">                        <span class="comment">// 造成 get() 方法当v == null 的时候需要加锁获取</span></span><br><span class="line">       &#125;</span><br><span class="line">tab[index] = <span class="keyword">new</span> HashEntry&lt;K,V&gt;(key, hash, first, value);</span><br></pre></td></tr></table></figure>
+<p>这里由于<code>next</code>，<code>key</code>，<code>hash</code>都是<code>final</code>域，所以这三个都禁止与<code>table[idx] = ...</code>重排序。<br>而<code>value</code>是<code>volatile</code>，<code>volatile</code>写并不会禁止，它后面的与它重排序。当这种情况出现时，如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">table[idx] = entry ;</span><br><span class="line">entry.value = value;</span><br></pre></td></tr></table></figure></p>
+<p>所以造成<code>entry</code>对象溢出，在没有初始化完全，就被其它线程使用，造成<code>value = null</code>。<br>所以最后加锁获取。此时已经初始化完全。</p>
+<p>在<code>JDK1.7</code>中没有使用<code>加锁获取</code>机制，因为插入的时候使用了<code>putOderedObject()</code>方法。<br><code>putOrderedObject()</code>方法阻止前面的写与<code>put</code>方法写的重排序。</p>
+<h3 id="remove"><a href="#remove" class="headerlink" title="remove()"></a>remove()</h3><p>即一个线程读数据，另外一个线程调用<code>put()</code>。这里读线程不加锁而不出错，做法：</p>
+<ol>
+<li><code>table[idx]</code>引用一直没有变化。</li>
+<li><code>remove()</code>将<code>target</code>的<code>next</code>结点引用赋值给<code>newFirst</code>，然后从这个冲突链表的第一个结点开始遍历(直到<code>target</code>之前的一个)，每次创建复制结点的值，头插法插入到<code>newFirst</code>单链表中。即复制<code>target</code><br>之前的所有结点。</li>
+<li>最后让<code>table[idx]</code>指向新链表的表头，即<code>newFirst</code>。</li>
+</ol>
+<p>所以读线程可能会在读取旧链的数据，而不出错。因为向<code>table[idx]</code>修改引用时，其它线程读取<code>table[idx]</code>只会得到两种结果，新链或者旧链，两者都不算出错。</p>
+<h3 id="clear"><a href="#clear" class="headerlink" title="clear()"></a>clear()</h3><p><code>clear()</code>会把所有<code>segment</code>的所有<code>table</code>中的数组项全部置为<code>null</code>。和<code>remove()</code>类似。</p>
+<h2 id="三种遍历"><a href="#三种遍历" class="headerlink" title="三种遍历"></a>三种遍历</h2><p>和<code>HashMap</code>一样具有三种遍历方式：</p>
+<ol>
+<li>遍历<code>entry</code>，使用<code>map.entrySet()</code>获取迭代器(<code>EntryIterator</code>对象)。</li>
+<li>遍历<code>key</code>， 使用<code>map.keySet()</code>获取迭代器(<code>KeyIterator</code>对象)。</li>
+<li>遍历<code>value</code>，使用<code>map.values()</code>获取迭代器(<code>ValueIterator</code>对象)。</li>
+</ol>
+<p>主要还是由<code>HashIterator</code>类实现三个方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">hasNext</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function">HashEntry <span class="title">nextEntry</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure></p>
+<h3 id="成员变量"><a href="#成员变量" class="headerlink" title="成员变量"></a>成员变量</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">       <span class="comment">// segment数组中下一个下标idx</span></span><br><span class="line">       <span class="keyword">int</span> nextSegmentIndex;</span><br><span class="line"><span class="comment">// segment table中下一个entry的下标</span></span><br><span class="line">       <span class="keyword">int</span> nextTableIndex;</span><br><span class="line"><span class="comment">// 当前使用的table</span></span><br><span class="line">       HashEntry&lt;K,V&gt;[] currentTable;</span><br><span class="line"><span class="comment">// 下一个访问的entry</span></span><br><span class="line">       HashEntry&lt;K, V&gt; nextEntry;</span><br><span class="line">       HashEntry&lt;K, V&gt; lastReturned;</span><br></pre></td></tr></table></figure>
+<ol>
+<li><code>nextSegmentIndex</code>：当前或者下一个遍历的<code>segment</code>数组的下标。</li>
+<li><code>nextTableIndex</code>：当前或者下一个遍历的<code>segment.table</code>数组的下标。</li>
+<li><code>currentTable</code>：当前正在遍历的<code>table</code>。</li>
+<li><code>nextEntry</code>：下一个访问的<code>entry</code>。</li>
+<li><code>lastReturned</code>：在<code>nextEntry()</code>中返回的<code>entry</code>。</li>
+</ol>
+<h3 id="构造方法"><a href="#构造方法" class="headerlink" title="构造方法"></a>构造方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">  HashIterator() &#123;</span><br><span class="line"><span class="comment">// 从最后一段开始遍历</span></span><br><span class="line">       nextSegmentIndex = segments.length - <span class="number">1</span>;</span><br><span class="line">       nextTableIndex = -<span class="number">1</span>;</span><br><span class="line">       advance();</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>从<code>nextSegmentIndex = segments.length - 1</code>可以看出，<code>ConcurrentHashMap</code>遍历是从最后一个<code>segment</code>开始遍历。</p>
+<h3 id="advance"><a href="#advance" class="headerlink" title="advance()"></a>advance()</h3><p><code>advance()</code>方法是遍历的核心，负责查找下一个<code>entry</code>。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 寻找下一个可用的entry</span></span><br><span class="line">       <span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">advance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 当前table[idx]链表还没有遍历完 则指向下一个</span></span><br><span class="line">           <span class="keyword">if</span> (nextEntry != <span class="keyword">null</span> &amp;&amp; (nextEntry = nextEntry.next) != <span class="keyword">null</span>)</span><br><span class="line">               <span class="keyword">return</span>;</span><br><span class="line">    <span class="comment">// 当前currentTable[idx]遍历完 则使用--i下标的currentTable</span></span><br><span class="line">           <span class="keyword">while</span> (nextTableIndex &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">               <span class="keyword">if</span> ( (nextEntry = currentTable[nextTableIndex--]) != <span class="keyword">null</span>)</span><br><span class="line">                   <span class="keyword">return</span>;</span><br><span class="line">           &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// segment[nextSegmentIndex] 遍历完 则使用上一个segment</span></span><br><span class="line">           <span class="keyword">while</span> (nextSegmentIndex &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">               Segment&lt;K,V&gt; seg = segments[nextSegmentIndex--];</span><br><span class="line">               <span class="keyword">if</span> (seg.count != <span class="number">0</span>) &#123;</span><br><span class="line">                   currentTable = seg.table;</span><br><span class="line">	    <span class="comment">// 从table数组最后一项开始遍历</span></span><br><span class="line">                   <span class="keyword">for</span> (<span class="keyword">int</span> j = currentTable.length - <span class="number">1</span>; j &gt;= <span class="number">0</span>; --j) &#123;</span><br><span class="line">                       <span class="keyword">if</span> ( (nextEntry = currentTable[j]) != <span class="keyword">null</span>) &#123;</span><br><span class="line">                           nextTableIndex = j - <span class="number">1</span>;</span><br><span class="line">                           <span class="keyword">return</span>;</span><br><span class="line">                       &#125;</span><br><span class="line">                   &#125;</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br></pre></td></tr></table></figure></p>
+<ol>
+<li>如果当前<code>entry</code>，即<code>nextEntry</code>不为<code>null</code>且它的<code>next</code>域不为<code>null</code>，则在当前单链表中获取下一个<code>entry</code>。</li>
+<li>当前链表已经遍历完，则向<code>table</code>数组中的前一个单链表获取。</li>
+<li><code>table</code>数组已经遍历完，则向<code>segment</code>数组的前一个的<code>segment</code>的<code>table</code>获取。<code>table</code>也是从后往前的顺序获取。</li>
+</ol>
+<h3 id="hasNext"><a href="#hasNext" class="headerlink" title="hasNext()"></a>hasNext()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">       <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasNext</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       <span class="keyword">return</span> nextEntry != <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>判断是否遍历完。</p>
+<h3 id="nextEntry"><a href="#nextEntry" class="headerlink" title="nextEntry()"></a>nextEntry()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">HashEntry&lt;K,V&gt; <span class="title">nextEntry</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (nextEntry == <span class="keyword">null</span>)</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException();</span><br><span class="line">            lastReturned = nextEntry;</span><br><span class="line">            advance();</span><br><span class="line">            <span class="keyword">return</span> lastReturned;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<p>获取<code>nextEntry</code>。获取后，会调用<code>advance()</code>进行下一个查询。</p>
+<h3 id="remove-1"><a href="#remove-1" class="headerlink" title="remove()"></a>remove()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (lastReturned == <span class="keyword">null</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException();</span><br><span class="line">    ConcurrentHashMap.<span class="keyword">this</span>.remove(lastReturned.key);</span><br><span class="line">    lastReturned = <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>注意</code>：<code>ConcurrentHashMap</code>遍历顺序，是从最后一个<code>segment</code>的最后一个<code>table</code>数组项，向前遍历。</p>
+
       
     </div>
     
@@ -513,13 +642,9 @@
 
       
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/算法/">算法</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
     </div>
 
-      
-        <p class="article-more-link">
-          <a href="/2018/02/20/排序算法/#more">more >></a>
-        </p>
       
       <div class="clearfix"></div>
     </div>
@@ -537,11 +662,11 @@
 
 
   
-    <article id="post-Spring框架IOC容器和AOP解析" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-java-ConcurrentHashMap精读(1)" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2018/01/22/Spring框架IOC容器和AOP解析/" class="article-date">
-      <time datetime="2018-01-22T13:14:43.000Z" itemprop="datePublished">2018-01-22</time>
+      <a href="/2018/05/13/java-ConcurrentHashMap精读(1)/" class="article-date">
+      <time datetime="2018-05-13T10:34:26.000Z" itemprop="datePublished">2018-05-13</time>
 </a>
     </div>
   
@@ -554,7 +679,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/01/22/Spring框架IOC容器和AOP解析/">Spring框架IOC容器和AOP解析</a>
+      <a class="article-title" href="/2018/05/13/java-ConcurrentHashMap精读(1)/">ConcurrentHashMap精读(1)</a>
     </h1>
   
 
@@ -564,8 +689,61 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-              <p><em>Spring的两大特征——IOC和AOP</em><br>
-          
+        <p><code>ConcurrentHashMap</code>源码基于jdk-1.6</p>
+<h2 id="内容"><a href="#内容" class="headerlink" title="内容"></a>内容</h2><ol>
+<li>默认参数</li>
+<li><code>HashEntry</code>类</li>
+<li><code>Segment</code>类</li>
+<li>散列方法</li>
+<li><code>null</code>key和<code>null</code>value</li>
+<li><code>put()</code>和<code>get()</code>过程</li>
+</ol>
+<h2 id="默认参数"><a href="#默认参数" class="headerlink" title="默认参数"></a>默认参数</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> DEFAULT_INITIAL_CAPACITY = <span class="number">16</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">float</span> DEFAULT_LOAD_FACTOR = <span class="number">0.75f</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> DEFAULT_CONCURRENCY_LEVEL = <span class="number">16</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MAXIMUM_CAPACITY = <span class="number">1</span> &lt;&lt; <span class="number">30</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MAX_SEGMENTS = <span class="number">1</span> &lt;&lt; <span class="number">16</span>; <span class="comment">// slightly conservative</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> RETRIES_BEFORE_LOCK = <span class="number">2</span>;</span><br></pre></td></tr></table></figure>
+<ol>
+<li><code>DEFAULT_INITIAL_CAPACITY</code>：每一个<code>segment</code>中的<code>table</code>数组的默认长度，16。</li>
+<li><code>DEFAULT_LOAD_FACTOR</code>：每个<code>segment</code>的默认负载因子，0.75。</li>
+<li><code>DEFAULT_CONCURRENCY_LEVEL</code>：默认线程并发度，即有多少<code>segment</code>。默认16段。</li>
+<li><code>MAXIMUM_CAPACITY</code>：每个<code>segment</code>的最大容量，默认<code>2^30</code>。</li>
+<li><code>MAX_SEGMENTS</code>：<code>segment</code>数组最大的长度，为<code>2^16</code>。</li>
+<li><code>RETRIES_BEFORE_LOCK</code>：在<code>size()</code>和<code>containValue()</code>中使用。默认这个数值为<code>2</code>，表示在<code>size()</code>和<code>containValue()</code>中最多遍历的次数，查过这个次数则加锁遍历。因为<code>ConcurrentHashMap</code>是线程安全的，所以在当前线程执行<code>size()</code>或者<code>containValue()</code>方法，其它线程也在操作这个<code>map</code>，造成<code>map</code>状态变化。</li>
+</ol>
+<h2 id="HashEntry"><a href="#HashEntry" class="headerlink" title="HashEntry"></a>HashEntry</h2><p><code>成员变量</code>：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> K key;</span><br><span class="line"><span class="keyword">final</span> <span class="keyword">int</span> hash;</span><br><span class="line"><span class="keyword">volatile</span> V value;</span><br><span class="line"><span class="keyword">final</span> HashEntry&lt;K,V&gt; next;</span><br></pre></td></tr></table></figure></p>
+<p>我们可以看出除了<code>value</code>之外都是，都是<code>final</code>变量，而<code>value</code>是<code>volatile</code>修饰的。原因如下：</p>
+<ol>
+<li><code>next</code>域为<code>final</code>的，主要为了<code>put()</code>在表头插入，这样在两个线程<code>get()</code>和<code>put()</code>才不会出错。</li>
+<li><code>value</code>域为<code>volatile</code>的，主要为了在一个线程<code>put()</code>或者<code>replace()</code>修改了<code>value</code>之后，<code>get()</code>线程马上可见。</li>
+</ol>
+<h2 id="Segment"><a href="#Segment" class="headerlink" title="Segment"></a>Segment</h2><p><code>Segment</code>类继承自<code>ReentractLock</code>，所以<code>Segment</code>也称为分段锁。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Segment</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">ReentrantLock</span> <span class="keyword">implements</span> <span class="title">Serializable</span></span></span><br></pre></td></tr></table></figure></p>
+<h3 id="成员变量"><a href="#成员变量" class="headerlink" title="成员变量"></a>成员变量</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// volatile</span></span><br><span class="line">       <span class="keyword">transient</span> <span class="keyword">volatile</span> <span class="keyword">int</span> count;</span><br><span class="line">       <span class="keyword">transient</span> <span class="keyword">int</span> modCount;</span><br><span class="line"><span class="comment">// 阀值</span></span><br><span class="line">       <span class="keyword">transient</span> <span class="keyword">int</span> threshold;</span><br><span class="line"><span class="comment">// table</span></span><br><span class="line">       <span class="keyword">transient</span> <span class="keyword">volatile</span> HashEntry&lt;K,V&gt;[] table;</span><br><span class="line"><span class="comment">// 负载因子</span></span><br><span class="line">       <span class="keyword">final</span> <span class="keyword">float</span> loadFactor;</span><br></pre></td></tr></table></figure>
+<ol>
+<li><code>count</code>：当前<code>segment</code>中<code>entry</code>的数量，是一个<code>volatile</code>变量。每次在<code>get()</code>最开始都会读取<code>count</code>，在<code>put()</code>释放锁之前，都会写入<code>count</code>。所以这构造<code>volatile</code>变量的先行性原则。</li>
+<li><code>modCount</code>：记录这个段修改的操作次数。</li>
+<li><code>threshold</code>：<code>segment</code>的阀值，在每次<code>put</code>开始时，如果<code>count++ &gt; threshold</code>，则进行扩容。<code>threshold = table.length * loadFactor</code>。</li>
+<li><code>table[]</code>：哈希数组，是一个<code>volatile</code>类型的引用，主要为了多线程的可见性。</li>
+<li><code>loadFactor</code>：负载因子。</li>
+</ol>
+<h2 id="散列方法"><a href="#散列方法" class="headerlink" title="散列方法"></a>散列方法</h2><p>每个<code>HashEntry</code>对象中存放都是<code>key.hashCode()</code>再散列后的值。<br><code>ConcurrentHashMap</code>中将散列后的高<code>32 - segmentShift</code>位作为<code>segment</code>数组的索引，将低<code>segmentShift &amp; (table.length - 1)</code>作为<code>segment.table</code>数组的索引。<br>关于散列方法，<code>ConcurrentHashMap</code>使用的<code>hash()</code>方法是<code>Wang/Jenkins hash</code>方法的变种：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">hash</span><span class="params">(<span class="keyword">int</span> h)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// Spread bits to regularize both segment and index locations,</span></span><br><span class="line">        <span class="comment">// using variant of single-word Wang/Jenkins hash.</span></span><br><span class="line">        h += (h &lt;&lt;  <span class="number">15</span>) ^ <span class="number">0xffffcd7d</span>;</span><br><span class="line">        h ^= (h &gt;&gt;&gt; <span class="number">10</span>);</span><br><span class="line">        h += (h &lt;&lt;   <span class="number">3</span>);</span><br><span class="line">        h ^= (h &gt;&gt;&gt;  <span class="number">6</span>);</span><br><span class="line">        h += (h &lt;&lt;   <span class="number">2</span>) + (h &lt;&lt; <span class="number">14</span>);</span><br><span class="line">        <span class="keyword">return</span> h ^ (h &gt;&gt;&gt; <span class="number">16</span>);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>Wang/Jenkins hash</code>具有两个特点：</p>
+<ol>
+<li>雪崩性：每改变<code>key.hashCode()</code>中的任意一位，都会造成至少一半以上的位发生变化。</li>
+<li>可逆性。</li>
+</ol>
+<p>这里使用了<code>雪崩性</code>，使散列更加均匀。下面是确定在<code>segment</code>数组下标：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> V <span class="title">put</span><span class="params">(K key, V value)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (value == <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</span><br><span class="line">        <span class="keyword">int</span> hash = hash(key.hashCode());</span><br><span class="line">        <span class="keyword">return</span> segmentFor(hash).put(key, hash, value, <span class="keyword">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 确定在segment数组的下标</span></span><br><span class="line">    <span class="function"><span class="keyword">final</span> Segment&lt;K,V&gt; <span class="title">segmentFor</span><span class="params">(<span class="keyword">int</span> hash)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> segments[(hash &gt;&gt;&gt; segmentShift) &amp; segmentMask];</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>下面是确定在<code>table</code>数组下标的过程：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// hash 是调用`hash()`方法之后的数值</span></span><br><span class="line"><span class="keyword">int</span> index = hash &amp; (tab.length - <span class="number">1</span>);</span><br></pre></td></tr></table></figure></p>
+<h2 id="null-key和null-value"><a href="#null-key和null-value" class="headerlink" title="null key和null value"></a>null key和null value</h2><p><code>ConcurrentHashMap</code>，插入<code>key = null</code>或者<code>value = null</code>时，都会抛出<code>NullPointerException</code>异常。<br>以<code>put()</code>为例：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> V <span class="title">put</span><span class="params">(K key, V value)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (value == <span class="keyword">null</span>)<span class="comment">//1</span></span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</span><br><span class="line">        <span class="keyword">int</span> hash = hash(key.hashCode());<span class="comment">//2</span></span><br><span class="line">        <span class="keyword">return</span> segmentFor(hash).put(key, hash, value, <span class="keyword">false</span>);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<ol>
+<li><code>value = null</code>，则抛出<code>NullPointerException</code>异常。</li>
+<li><code>hash(key.hashCode())</code>：当<code>key = null</code>时，调用<code>key.hashCode()</code>抛出<code>NullPointerException</code>异常。</li>
+</ol>
+<h2 id="put-和get-过程"><a href="#put-和get-过程" class="headerlink" title="put()和get()过程"></a>put()和get()过程</h2><p><code>put()</code>和<code>get()</code>过程很类似：</p>
+<ol>
+<li>检查<code>key == null</code> 或者 <code>value == null</code>。</li>
+<li>计算<code>key</code>的<code>hash()</code>再散列值，调用<code>hash(key.hashCode())</code>。</li>
+<li>确定<code>segment</code>数组的<code>segment</code>，然后调用<code>segment.put()</code>或者<code>segment.get()</code>。</li>
+<li>进入<code>segment</code>方法，最后确定<code>segment</code>中<code>table</code>数组的项。</li>
+<li>各自的操作。</li>
+</ol>
+
       
     </div>
     
@@ -575,13 +753,9 @@
 
       
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Spring/">Spring</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
     </div>
 
-      
-        <p class="article-more-link">
-          <a href="/2018/01/22/Spring框架IOC容器和AOP解析/#more">more >></a>
-        </p>
       
       <div class="clearfix"></div>
     </div>
@@ -599,11 +773,11 @@
 
 
   
-    <article id="post-IDEA配置记录" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-java-hashtable" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2017/03/28/IDEA配置记录/" class="article-date">
-      <time datetime="2017-03-28T07:54:22.000Z" itemprop="datePublished">2017-03-28</time>
+      <a href="/2018/05/11/java-hashtable/" class="article-date">
+      <time datetime="2018-05-11T08:31:03.000Z" itemprop="datePublished">2018-05-11</time>
 </a>
     </div>
   
@@ -616,7 +790,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2017/03/28/IDEA配置记录/">IDEA配置记录</a>
+      <a class="article-title" href="/2018/05/11/java-hashtable/">java-hashtable</a>
     </h1>
   
 
@@ -626,66 +800,64 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-              <p><em>记录IntelliJ IDEA使用过程中需要注意的配置。</em><br>
-          
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
+        <p>首先<code>Hashtable</code>源码基于jdk-1.7</p>
+<h2 id="内容"><a href="#内容" class="headerlink" title="内容"></a>内容</h2><ol>
+<li><code>Hashtable</code>的实现特点。</li>
+<li><code>Hashtable</code>与<code>HashMap</code>的区别</li>
+<li>散列方法</li>
+<li>扩容机制</li>
+<li>遍历(<code>fail-fast</code>)</li>
+</ol>
+<h2 id="Hashtable的实现特点"><a href="#Hashtable的实现特点" class="headerlink" title="Hashtable的实现特点"></a>Hashtable的实现特点</h2><ol>
+<li>不允许<code>null-key</code>和<code>null-value</code>。</li>
+<li>必须实现<code>hashCode()</code>和<code>equals()</code>方法。</li>
+<li><code>inital capcity</code>和<code>loadfact</code>默认为<code>11</code>和<code>0.75f</code>。</li>
+<li>遍历是及时失败的。</li>
+<li>最大容量是<code>2^31-9</code>，即<code>Integer.MAX_VALUE - 8</code>。</li>
+</ol>
+<h2 id="Hashtable与HashMap的区别"><a href="#Hashtable与HashMap的区别" class="headerlink" title="Hashtable与HashMap的区别"></a>Hashtable与HashMap的区别</h2><ol>
+<li><code>HashMap</code>允许<code>null-key</code>和<code>null-value</code>，而<code>Hashtable</code>不允许。</li>
+<li><code>Hashtable</code>的<code>table</code>数组长度不为<code>2</code>的幂次方。</li>
+<li>两者散列方法不同。</li>
+<li><code>Hashtable</code>扩容，则扩容成原来的<code>2倍+1</code>。</li>
+<li><code>Hashtable</code>是同步的，<code>HashMap</code>不是同步的。</li>
+<li><code>Hashtable</code>最大容量是<code>2^31-9</code>，而<code>HashMap</code>是<code>2^30</code>。</li>
+<li><code>Hashtable</code>确认一个<code>entry</code>为目标<code>entry</code>使用<code>hash</code>相等，而且<code>key.equals(entry.key)</code>返回<code>true</code>。而<code>HashtMap</code>使用<code>hash</code>相等，而且<code>key</code>相等，或者<code>key.equals(entry.key)</code>返回<code>true</code>。</li>
+</ol>
+<h2 id="散列方法"><a href="#散列方法" class="headerlink" title="散列方法"></a>散列方法</h2><p>以<code>get()</code>方法为例：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> V <span class="title">get</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">        Entry tab[] = table;</span><br><span class="line">	<span class="comment">// 获取hashCode</span></span><br><span class="line">	<span class="keyword">int</span> hash = key.hashCode();</span><br><span class="line">	<span class="comment">// 获取目标下标</span></span><br><span class="line">	<span class="keyword">int</span> index = (hash &amp; <span class="number">0x7FFFFFFF</span>) % tab.length;</span><br><span class="line">	<span class="comment">// 遍历</span></span><br><span class="line">	<span class="keyword">for</span> (Entry&lt;K,V&gt; e = tab[index] ; e != <span class="keyword">null</span> ; e = e.next) &#123;</span><br><span class="line">            <span class="keyword">if</span> ((e.hash == hash) &amp;&amp; e.key.equals(key)) &#123;</span><br><span class="line">                <span class="keyword">return</span> e.value;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>所以确定下标的方法如下：<br><code>int index = (hash &amp; 0x7FFFFFFF) % tab.length;</code><br>即直接对<code>hashCode</code>的值取<code>table</code>长度的余数。</p>
+<p>这里没有<code>table</code>的长度不是<code>2</code>的幂次方，而且没有使用<code>HashMap</code>类似的<code>干扰函数</code>，<br>所以<code>Hashtable</code>的冲突率肯定比<code>HashMap</code>高，但是减少了计算量。</p>
+<h2 id="扩容机制"><a href="#扩容机制" class="headerlink" title="扩容机制"></a>扩容机制</h2><p><code>Hashtable</code>扩容与<code>HashMap</code>类似，只是容量为原来的<code>2倍+1</code>。</p>
+<h2 id="遍历"><a href="#遍历" class="headerlink" title="遍历"></a>遍历</h2><h3 id="四种遍历"><a href="#四种遍历" class="headerlink" title="四种遍历"></a>四种遍历</h3><ol>
+<li><code>entrySet()</code>：使用迭代器遍历<code>entry</code>。</li>
+<li><code>entryKey()</code>：使用迭代器遍历<code>key</code>。</li>
+<li><code>keys()</code>：使用<code>Enumeration</code>遍历<code>key</code>。</li>
+<li><code>elements()</code>：使用<code>Enumeration</code>遍历<code>value</code>。</li>
+</ol>
+<p><code>entrySet()</code>和<code>entryKey</code>使用<code>Iterator</code>接口进行遍历。<br><code>keys()</code>和<code>elements()</code>使用<code>Enumeration</code>接口进行遍历。</p>
+<p>这四种都是由<code>Enumerator</code>类实现的。<br><code>Enumerator</code>类实现了<code>Enumeration</code>和<code>Iterator</code>接口。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">Enumerator</span>&lt;<span class="title">T</span>&gt; <span class="keyword">implements</span> <span class="title">Enumeration</span>&lt;<span class="title">T</span>&gt;, <span class="title">Iterator</span>&lt;<span class="title">T</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="Enumeration接口"><a href="#Enumeration接口" class="headerlink" title="Enumeration接口"></a>Enumeration接口</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Enumeration</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">hasMoreElements</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function">E <span class="title">nextElement</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Iterator接口"><a href="#Iterator接口" class="headerlink" title="Iterator接口"></a>Iterator接口</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Iterator</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">hasNext</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function">E <span class="title">next</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p><code>Enumerator</code>类主要实现了<code>Enumerator</code>接口的方法，<code>Iterator</code>接口的方法调用<code>Enumerator</code>的实现完成。</p>
+<h3 id="成员变量"><a href="#成员变量" class="headerlink" title="成员变量"></a>成员变量</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Entry[] table = Hashtable.<span class="keyword">this</span>.table;</span><br><span class="line"><span class="keyword">int</span> index = table.length;</span><br><span class="line">Entry&lt;K,V&gt; entry = <span class="keyword">null</span>;</span><br><span class="line">Entry&lt;K,V&gt; lastReturned = <span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">int</span> type;</span><br><span class="line"><span class="keyword">boolean</span> iterator;</span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">int</span> expectedModCount = modCount;</span><br></pre></td></tr></table></figure>
+<ol>
+<li><code>table</code>：数组。</li>
+<li><code>index</code>：当前遍历的冲突链表。</li>
+<li><code>entry</code>：当前正在访问的。</li>
+<li><code>lastReturned</code>：上一次返回的<code>entry</code>。</li>
+<li><code>type</code>：遍历的类型，<code>key</code>、<code>value</code>和<code>entry</code>三种。</li>
+<li><code>iterator</code>：标志<code>Enumeration</code>是否作为一个<code>Iterator</code>进行遍历。</li>
+<li><code>expectedModCount</code>：预期的修改数，如果与<code>modCount</code>不相同，则抛出<code>ConcurrentModificationException</code>异常。</li>
+</ol>
+<h3 id="hasMoreElements"><a href="#hasMoreElements" class="headerlink" title="hasMoreElements()"></a>hasMoreElements()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasMoreElements</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            Entry&lt;K,V&gt; e = entry;</span><br><span class="line">            <span class="keyword">int</span> i = index;</span><br><span class="line">            Entry[] t = table;</span><br><span class="line">            <span class="comment">/* Use locals for faster loop iteration */</span></span><br><span class="line">            <span class="keyword">while</span> (e == <span class="keyword">null</span> &amp;&amp; i &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                e = t[--i];</span><br><span class="line">            &#125;</span><br><span class="line">            entry = e;</span><br><span class="line">            index = i;</span><br><span class="line">            <span class="keyword">return</span> e != <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<p>从<code>table</code>数组中的最后一个开始遍历。</p>
+<h3 id="nextElement"><a href="#nextElement" class="headerlink" title="nextElement()"></a>nextElement()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> T <span class="title">nextElement</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            Entry&lt;K,V&gt; et = entry;</span><br><span class="line">            <span class="keyword">int</span> i = index;</span><br><span class="line">            Entry[] t = table;</span><br><span class="line">            <span class="comment">/* Use locals for faster loop iteration */</span></span><br><span class="line">            <span class="keyword">while</span> (et == <span class="keyword">null</span> &amp;&amp; i &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                et = t[--i];</span><br><span class="line">            &#125;</span><br><span class="line">            entry = et;</span><br><span class="line">            index = i;</span><br><span class="line">            <span class="keyword">if</span> (et != <span class="keyword">null</span>) &#123;</span><br><span class="line">                Entry&lt;K,V&gt; e = lastReturned = entry;</span><br><span class="line">                entry = e.next;</span><br><span class="line">                <span class="keyword">return</span> type == KEYS ? (T)e.key : (type == VALUES ? (T)e.value : (T)e);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException(<span class="string">"Hashtable Enumerator"</span>);</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="hasNext"><a href="#hasNext" class="headerlink" title="hasNext()"></a>hasNext()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasNext</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> hasMoreElements();</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<p>迭代器的方法。</p>
+<h3 id="next"><a href="#next" class="headerlink" title="next()"></a>next()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> T <span class="title">next</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (modCount != expectedModCount)</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> ConcurrentModificationException();</span><br><span class="line">            <span class="keyword">return</span> nextElement();</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<p>迭代器的方法。</p>
+<p>注意：<code>Iterator</code>接口比<code>Enumeration</code>接口多了一个<code>remove()</code>方法。</p>
 
-      
-      
-        <p class="article-more-link">
-          <a href="/2017/03/28/IDEA配置记录/#more">more >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-hexo博客迁移-多机更新" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2017/01/10/hexo博客迁移-多机更新/" class="article-date">
-      <time datetime="2017-01-10T07:32:56.000Z" itemprop="datePublished">2017-01-10</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/01/10/hexo博客迁移-多机更新/">hexo博客迁移&amp;多机更新</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-          
-              <p><em>记录hexo博客迁移和多级更新过程</em><br>
-          
       
     </div>
     
@@ -695,13 +867,9 @@
 
       
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hexo/">hexo</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
     </div>
 
-      
-        <p class="article-more-link">
-          <a href="/2017/01/10/hexo博客迁移-多机更新/#more">more >></a>
-        </p>
       
       <div class="clearfix"></div>
     </div>
@@ -719,11 +887,11 @@
 
 
   
-    <article id="post-Java-BIO、NIO、AIO" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-java-Hash-And-TreeMap" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/08/20/Java-BIO、NIO、AIO/" class="article-date">
-      <time datetime="2016-08-20T13:35:26.000Z" itemprop="datePublished">2016-08-20</time>
+      <a href="/2018/05/11/java-Hash-And-TreeMap/" class="article-date">
+      <time datetime="2018-05-11T02:45:47.000Z" itemprop="datePublished">2018-05-11</time>
 </a>
     </div>
   
@@ -736,7 +904,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/08/20/Java-BIO、NIO、AIO/">Java BIO、NIO、AIO</a>
+      <a class="article-title" href="/2018/05/11/java-Hash-And-TreeMap/">TreeMap和hash解决冲突原理</a>
     </h1>
   
 
@@ -746,8 +914,30 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-              <p><em>关于BIO、NIO、AIO的各路大神讲解整理</em><br>
-          
+        <h2 id="hash解决冲突原理"><a href="#hash解决冲突原理" class="headerlink" title="hash解决冲突原理"></a>hash解决冲突原理</h2><ol>
+<li>开放地址法</li>
+<li>拉链法</li>
+<li>再散列法</li>
+</ol>
+<h3 id="开放地址法"><a href="#开放地址法" class="headerlink" title="开放地址法"></a>开放地址法</h3><ol>
+<li>线性探测法：如果散列的值为<code>d</code>，且<code>d</code>位置已经被占用(<code>即冲突</code>)，则以步长为<code>1</code>进行探测，直到找到第一个没有被占用的位置。</li>
+<li>线性补偿探测法：其它与<code>线性探测</code>一样，步长为<code>q</code>，自定义。</li>
+<li>随机探测：步长为一个随机数。</li>
+</ol>
+<h3 id="拉链法"><a href="#拉链法" class="headerlink" title="拉链法"></a>拉链法</h3><p>将所有冲突的关键字<code>key</code>表示的对象，都放在一个单链表中。<br>缺点：指针需要额外的内存。</p>
+<h3 id="再散列法"><a href="#再散列法" class="headerlink" title="再散列法"></a>再散列法</h3><p>当发生冲突时，采用另外一个散列方法确定位置。可以采用多个散列方法解决冲突。</p>
+<h2 id="红黑树性质"><a href="#红黑树性质" class="headerlink" title="红黑树性质"></a>红黑树性质</h2><ol>
+<li>红黑树的节点不是红色就是黑色</li>
+<li>根节点为黑色</li>
+<li>叶子节点认为是黑色</li>
+<li>红节点的两个孩子都为黑节点</li>
+<li>从一个节点，开始到所有叶子结点的路径上，黑色节点的数目相同。</li>
+</ol>
+<h2 id="TreeMap"><a href="#TreeMap" class="headerlink" title="TreeMap"></a>TreeMap</h2><ol>
+<li><code>TreeMap</code>可以传入一个比较器。</li>
+<li><code>TreeMap</code>没有比较器的情况下，默认升序。</li>
+</ol>
+
       
     </div>
     
@@ -757,13 +947,9 @@
 
       
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/网络/">网络</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
     </div>
 
-      
-        <p class="article-more-link">
-          <a href="/2016/08/20/Java-BIO、NIO、AIO/#more">more >></a>
-        </p>
       
       <div class="clearfix"></div>
     </div>
@@ -781,11 +967,11 @@
 
 
   
-    <article id="post-git命令" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-Java-HashMap精读(2)" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/07/28/git命令/" class="article-date">
-      <time datetime="2016-07-28T02:50:52.000Z" itemprop="datePublished">2016-07-28</time>
+      <a href="/2018/05/10/Java-HashMap精读(2)/" class="article-date">
+      <time datetime="2018-05-10T12:42:48.000Z" itemprop="datePublished">2018-05-10</time>
 </a>
     </div>
   
@@ -798,7 +984,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/28/git命令/">git命令</a>
+      <a class="article-title" href="/2018/05/10/Java-HashMap精读(2)/">Java-HashMap精读(2)</a>
     </h1>
   
 
@@ -808,8 +994,68 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-              <p><em>git命令记录。</em><br>
-          
+        <p>首先<code>HashMap</code>源码基于1.7</p>
+<h2 id="内容"><a href="#内容" class="headerlink" title="内容"></a>内容</h2><ol>
+<li><code>Key=null</code>或者<code>Value=null</code>的情况</li>
+<li>当<code>get()</code>查找的时候，判断目标<code>entry</code>的条件</li>
+<li>三种遍历以及及时失败策略</li>
+</ol>
+<h2 id="Key-null或者Value-null的情况"><a href="#Key-null或者Value-null的情况" class="headerlink" title="Key=null或者Value=null的情况"></a><code>Key=null</code>或者<code>Value=null</code>的情况</h2><p>在<code>HashMap</code>中添加键值对时，允许<code>key</code>或者<code>value</code>为<code>null</code>，或者都为<code>null</code>。<br>当<code>key</code>为<code>null</code>时，第一次添加会直接将键值对对应的<code>entry</code>插入到<code>table[0]</code>单链表中。<br>而当第二次或者第三次，<code>key</code>为<code>null</code>时，则是直接更新<code>key=null</code>那个<code>entry</code>的<code>value</code>的值。</p>
+<h3 id="put-入口"><a href="#put-入口" class="headerlink" title="put()入口"></a>put()入口</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> V <span class="title">put</span><span class="params">(K key, V value)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (key == <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">return</span> putForNullKey(value);</span><br><span class="line">        .</span><br><span class="line">	.</span><br><span class="line">	.</span><br></pre></td></tr></table></figure>
+<p>然后调用<code>putForNullKey(value)</code>方法。</p>
+<h3 id="putForNullKey-value"><a href="#putForNullKey-value" class="headerlink" title="putForNullKey(value)"></a>putForNullKey(value)</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> V <span class="title">putForNullKey</span><span class="params">(V value)</span> </span>&#123;</span><br><span class="line">	<span class="comment">// 从table[0]从查找key=null的entry</span></span><br><span class="line">	<span class="keyword">for</span> (Entry&lt;K,V&gt; e = table[<span class="number">0</span>]; e != <span class="keyword">null</span>; e = e.next) &#123;</span><br><span class="line">	    <span class="comment">// key = null</span></span><br><span class="line">	    <span class="keyword">if</span> (e.key == <span class="keyword">null</span>) &#123;</span><br><span class="line">	       	<span class="comment">// 更新      </span></span><br><span class="line">                V oldValue = e.value;</span><br><span class="line">                e.value = value;</span><br><span class="line">                e.recordAccess(<span class="keyword">this</span>);</span><br><span class="line">                <span class="keyword">return</span> oldValue;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">	<span class="comment">// table[0]链表中没有以key=null的entry</span></span><br><span class="line">        modCount++;</span><br><span class="line">	<span class="comment">// 构造直接插入</span></span><br><span class="line">        addEntry(<span class="number">0</span>, <span class="keyword">null</span>, value, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>遍历<code>table[0]</code>的单链表，查找<code>key=null</code>的<code>entry</code>。</li>
+<li>找到了<code>key=null</code>的<code>entry</code>，则更新<code>value</code>，返回旧的<code>value</code>。</li>
+<li>没有找到，则构造一个新的<code>key = null</code>的<code>entry</code>，插入到<code>table[0]</code>链表表头。</li>
+</ol>
+<h2 id="当get-查找的时候，判断目标entry的条件"><a href="#当get-查找的时候，判断目标entry的条件" class="headerlink" title="当get()查找的时候，判断目标entry的条件"></a>当get()查找的时候，判断目标entry的条件</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> V <span class="title">get</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (key == <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">return</span> getForNullKey();</span><br><span class="line">        <span class="keyword">int</span> hash = hash(key.hashCode());</span><br><span class="line">        <span class="keyword">for</span> (Entry&lt;K,V&gt; e = table[indexFor(hash, table.length)];</span><br><span class="line">             e != <span class="keyword">null</span>;</span><br><span class="line">             e = e.next) &#123;</span><br><span class="line">            Object k;</span><br><span class="line">	    <span class="comment">// 判断是目标engtry的条件</span></span><br><span class="line">            <span class="keyword">if</span> (e.hash == hash &amp;&amp; ((k = e.key) == key || key.equals(k)))</span><br><span class="line">                <span class="keyword">return</span> e.value;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>锁上面可以看出：</p>
+<ol>
+<li><code>e.hash() = hash(key.HashCode())</code>，<code>entry</code>的<code>hash</code>值是<code>put</code>的时候放上去的。</li>
+<li><code>e.key == key</code>，即目标<code>entry</code>的<code>key</code>对象的引用值要与查找<code>key</code>相同，或者<code>entrty.key.eqauls(key)</code>。</li>
+</ol>
+<h2 id="三种遍历"><a href="#三种遍历" class="headerlink" title="三种遍历"></a>三种遍历</h2><p><code>HashMap</code>中有三种遍历方式：</p>
+<ol>
+<li>遍历<code>entry</code>，使用<code>map.entrySet()</code>获取迭代器(<code>EntryIterator</code>对象)。</li>
+<li>遍历<code>key</code>， 使用<code>map.keySet()</code>获取迭代器(<code>KeyIterator</code>对象)。</li>
+<li>遍历<code>value</code>，使用<code>map.values()</code>获取迭代器(<code>ValueIterator</code>对象)。</li>
+</ol>
+<h3 id="类关系图"><a href="#类关系图" class="headerlink" title="类关系图"></a>类关系图</h3><p><img src="/img/java-hashmap-2-2.bmp" alt=""></p>
+<p>所以<code>EntryIterator</code>、<code>KeyIterator</code>和<code>VauleIterator</code>都继承<code>HashIterator</code>类。<br>遍历的主体是由<code>HashIterator</code>完成的。子类仅仅调用<code>nextEntry()</code>方法，实现自己的<code>next()</code>方法。<br><code>EntryIterator</code>遍历<code>Entry</code>，所以<code>next()</code>方法返回<code>Entry</code>。<br><code>KeyIterator</code>遍历<code>Key</code>，所以<code>next()</code>方法返回<code>K</code>。<br><code>VauleIterator</code>遍历<code>Value</code>，所以<code>next()</code>方法返回<code>V</code>。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// EntryIterator</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">EntryIterator</span> <span class="keyword">extends</span> <span class="title">HashIterator</span>&lt;<span class="title">Map</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt;&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> Map.<span class="function">Entry&lt;K,V&gt; <span class="title">next</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> nextEntry();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// keyIterator</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">KeyIterator</span> <span class="keyword">extends</span> <span class="title">HashIterator</span>&lt;<span class="title">K</span>&gt; </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> K <span class="title">next</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> nextEntry().getKey();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// ValueIterator</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">ValueIterator</span> <span class="keyword">extends</span> <span class="title">HashIterator</span>&lt;<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> V <span class="title">next</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> nextEntry().value;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="HashIterator"><a href="#HashIterator" class="headerlink" title="HashIterator"></a>HashIterator</h3><p><code>HashIterator</code>类实现了<code>Iterator</code>接口。<code>Iterator</code>包含三个方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Iterator</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">hasNext</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function">E <span class="title">next</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>HashIterator</code>实现了<code>hasNext()</code>和<code>remove()</code>，但是实现了子类<code>next()</code>方法的前端<code>nextEntry()</code>。</p>
+<h3 id="成员变量"><a href="#成员变量" class="headerlink" title="成员变量"></a>成员变量</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">       <span class="comment">// 下一个遍历的entry</span></span><br><span class="line">Entry&lt;K,V&gt; next;        <span class="comment">// next entry to return</span></span><br><span class="line">       <span class="keyword">int</span> expectedModCount;   <span class="comment">// For fast-fail</span></span><br><span class="line"><span class="comment">// 当前遍历时的bucket下标</span></span><br><span class="line">       <span class="keyword">int</span> index;              <span class="comment">// current slot</span></span><br><span class="line"><span class="comment">// 当前的entry</span></span><br><span class="line">       Entry&lt;K,V&gt; current;     <span class="comment">// current entry</span></span><br></pre></td></tr></table></figure>
+<ol>
+<li><code>next</code>：表示下一个要遍历的<code>Entry</code>。</li>
+<li><code>expectedModCount</code>：当<code>expectedModCount</code>与<code>HashMap</code>中的<code>volatile</code>变量<code>modCount</code>不相同时，说明发生了并发修改，抛出<code>ConcurrentModificationException</code>。及时失败策略。</li>
+<li><code>index</code>：当前正在遍历的链表表头，所在<code>table</code>的下标。</li>
+<li><code>current</code>：当前的entry。</li>
+</ol>
+<h3 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">HashIterator() &#123;</span><br><span class="line">	    <span class="comment">// fail - fast </span></span><br><span class="line">            expectedModCount = modCount;</span><br><span class="line">            <span class="keyword">if</span> (size &gt; <span class="number">0</span>) &#123; <span class="comment">// advance to first entry</span></span><br><span class="line">                Entry[] t = table;</span><br><span class="line">		<span class="comment">// 找到第一个不为null的entry 赋值给next</span></span><br><span class="line">                <span class="keyword">while</span> (index &lt; t.length &amp;&amp; (next = t[index++]) == <span class="keyword">null</span>)</span><br><span class="line">                    ;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li><code>expectedModCount</code>设置为<code>modCount</code>。</li>
+<li>找出第一个不为<code>null</code>的<code>entry</code>。</li>
+</ol>
+<h3 id="hasNext"><a href="#hasNext" class="headerlink" title="hasNext()"></a>hasNext()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">hasNext</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> next != <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>判断<code>next</code>是否为<code>null</code>，作为遍历是否继续的条件。</p>
+<h3 id="nextEntry"><a href="#nextEntry" class="headerlink" title="nextEntry()"></a>nextEntry()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> Entry&lt;K,V&gt; <span class="title">nextEntry</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	    <span class="comment">// modCount volatile变量</span></span><br><span class="line">	    <span class="comment">// 当前线程遍历时  其它线程正在修改(添加 删除)</span></span><br><span class="line">	    <span class="comment">// 抛出ConcurrentModificationException</span></span><br><span class="line">            <span class="keyword">if</span> (modCount != expectedModCount)</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> ConcurrentModificationException();</span><br><span class="line">            Entry&lt;K,V&gt; e = next;</span><br><span class="line">	    <span class="comment">// 没有检查hasNext() 造成的错误</span></span><br><span class="line">            <span class="keyword">if</span> (e == <span class="keyword">null</span>)</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException();</span><br><span class="line"></span><br><span class="line">	    <span class="comment">// 遍历寻找下一个entry 赋值给entry</span></span><br><span class="line">            <span class="keyword">if</span> ((next = e.next) == <span class="keyword">null</span>) &#123;</span><br><span class="line">                Entry[] t = table;</span><br><span class="line">                <span class="keyword">while</span> (index &lt; t.length &amp;&amp; (next = t[index++]) == <span class="keyword">null</span>)</span><br><span class="line">                    ;</span><br><span class="line">            &#125;</span><br><span class="line">	    <span class="comment">// 返回entry</span></span><br><span class="line">            current = e;</span><br><span class="line">            <span class="keyword">return</span> e;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<p><code>nextEntry()</code>设置让<code>next</code>指向下一个<code>entry</code>，然后返回当前对象。</p>
+<ol>
+<li>判断<code>expectedModCount</code>是否等于<code>modCount</code>，不相等说明出现了当前线程在遍历，其它线程在修改的情况，所以抛出<code>ConcurrentModificationException</code>，即采用及时失败策略。</li>
+<li>否则，判断<code>next</code>所指对象是否为<code>null</code>，如果为<code>null</code>则说明没有用<code>hasNext()</code>检查，且已遍历完，所以抛出<code>NoSuchElementException</code>异常。</li>
+<li>寻找下一个非<code>null</code>的<code>entry</code>赋值给<code>next</code>，没有则将<code>next</code>赋值为<code>null</code>。</li>
+<li>返回<code>cuurent</code>。</li>
+</ol>
+<h3 id="remove"><a href="#remove" class="headerlink" title="remove()"></a>remove()</h3><p><code>remove()</code>用于删除<code>current</code>的<code>entry</code>，一般在<code>next()</code>方法之后调用。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       	    <span class="comment">// null</span></span><br><span class="line">	    <span class="keyword">if</span> (current == <span class="keyword">null</span>)</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException();</span><br><span class="line"> 	    <span class="comment">// 并发异常	</span></span><br><span class="line">	    <span class="keyword">if</span> (modCount != expectedModCount)</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> ConcurrentModificationException();</span><br><span class="line">            Object k = current.key;</span><br><span class="line">            current = <span class="keyword">null</span>;</span><br><span class="line">	    <span class="comment">// 删除</span></span><br><span class="line">            HashMap.<span class="keyword">this</span>.removeEntryForKey(k);</span><br><span class="line">            expectedModCount = modCount;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure></p>
+<ol>
+<li><code>current = null</code>，则抛出<code>IllegalStateException</code>异常。可连续调用两次<code>remove()</code>方法会出现这种情况。</li>
+<li>和<code>nextEntry()</code>一样，<code>expectedModCount</code>和预期值不相同，则抛出<code>ConcurrentModificationException</code>。</li>
+<li>调用<code>removeEntryForKey()</code>方法移除。</li>
+<li>更新<code>expectedModCount</code>的值。</li>
+</ol>
+<h3 id="三种遍历的比较"><a href="#三种遍历的比较" class="headerlink" title="三种遍历的比较"></a>三种遍历的比较</h3><p>如果需要遍历<code>Key</code>和<code>Value</code>，则直接使用<code>EntryIterator</code>，比较合适。<br>如果采用<code>KeyIterator</code>，则在遍历每个<code>Key</code>的同时，需要调用<code>map.get(key)</code>获取<code>value</code>，这相比<code>EntryIterator</code>会慢很多，每次都增加了查找的时间。<code>ValueIterator</code>不能遍历两个。<br>所以一般遍历<code>key</code>和<code>Value</code>使用第一种。<br>只遍历<code>Key</code>时，采用<code>KeyIterator</code>。<br>只遍历<code>Value</code>时，采用<code>ValueIterator</code>。</p>
+
       
     </div>
     
@@ -818,10 +1064,232 @@
       
 
       
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+    </div>
+
       
-        <p class="article-more-link">
-          <a href="/2016/07/28/git命令/#more">more >></a>
-        </p>
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-Java-HashMap精读(1)" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2018/05/10/Java-HashMap精读(1)/" class="article-date">
+      <time datetime="2018-05-10T10:29:49.000Z" itemprop="datePublished">2018-05-10</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/05/10/Java-HashMap精读(1)/">Java-HashMap精读(1)</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>首先<code>HashMap</code>源码基于jdk-1.7</p>
+<h2 id="内容"><a href="#内容" class="headerlink" title="内容"></a>内容</h2><ol>
+<li>初始化参数</li>
+<li>散列方法</li>
+<li>扩容机制</li>
+<li><code>HashMap</code>常见面试题(<code>即实现的注意点</code>)</li>
+</ol>
+<h2 id="初始化参数"><a href="#初始化参数" class="headerlink" title="初始化参数"></a>初始化参数</h2><p><code>HashMap</code>中有三个重要的参数：初始容量，负载因子和最大容量。<br>其中<code>初始容量和负载因子</code>尤为重要，影响着<code>HashMap</code>的性能。</p>
+<ol>
+<li>默认<code>DEFAULT_INITIAL_CAPACITY = 16</code>。即<code>table</code>数组的长度，如果在构造方法中指定自定义，则会被向上格式化为<code>2</code>的幂次方。</li>
+<li>默认<code>DEFAULT_LOAD_FACTOR = 0.75f</code>。</li>
+<li>最大容量<code>MAXIMUM_CAPACITY = 1 &lt;&lt; 30</code>。</li>
+</ol>
+<h2 id="散列方法"><a href="#散列方法" class="headerlink" title="散列方法"></a>散列方法</h2><p>包含两个方法<code>hash(int)</code>和<code>indexFor(int hash, int length)</code>。<br>先看<code>indexFor()</code>方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">indexFor</span><span class="params">(<span class="keyword">int</span> h, <span class="keyword">int</span> length)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> h &amp; (length-<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>1.<code>h</code>：一般是<code>hash()</code>的返回值，即对象<code>hashCode()</code>的返回值经过处理得到的值。<br>2.<code>length</code>：<code>table[]</code>数组的长度。由于长度就是容量，所以是2的幂次方。<code>length - 1</code>就是掩码。</p>
+<p>那么<code>h &amp; (length-1)</code>，取的就是<code>h</code>的低几位的值，把这几位作为在<code>table</code>数组的目标位置。<br>想象一下，如果<code>hash()</code>返回值就是对象<code>hashCode()</code>的值，则相当于它的位置由低位确定，高位没有作用，直接取低几位的冲突必然很高。举个例子，比如<code>table[]</code>数组长度为<code>16</code>，则<code>length - 1</code>为<code>15</code>，即二进制<code>1111</code>如下：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">       <span class="number">10100101</span> <span class="number">11000100</span> <span class="number">00100101</span></span><br><span class="line">&amp;      <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00001111</span></span><br><span class="line">---------------------------------</span><br><span class="line">       <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000101</span>  <span class="comment">// 全部归零留下低4位</span></span><br></pre></td></tr></table></figure></p>
+<p>为了让高位在确定位置时，起到贡献，使用了<code>干扰函数</code>的方法，下面是Jdk1.8<code>HashMap</code>中的<code>hash()</code>方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">hash</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> h;</span><br><span class="line">        <span class="keyword">return</span> (key == <span class="keyword">null</span>) ? <span class="number">0</span> : (h = key.hashCode()) ^ (h &gt;&gt;&gt; <span class="number">16</span>);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>这个<code>hash()</code>方法首先将对象的哈希值右移16位，在与原来的哈希值相<code>^</code>。例子：<br><img src="/img/java-hashmap-2-1.bmp" alt=""></p>
+<p>这里高16位与低16位进行了<code>异或</code>运算，使最后取低几位(<code>h &amp; (leng - 1)</code>)的时候，同时考虑了<code>高16位</code>和<code>低16位</code>的特征，使结果更具有随机性。使对象更加均匀得散列到<code>table</code>中。<br><code>jdk1.7HashMap</code>中的<code>hash()</code>方法进行了四次<code>干扰函数</code>的处理，但是本质上和<code>jdk1.8</code>中的一样。<br><code>jdk1.8</code>中主要是认为进行四次<code>干扰</code>计算，占用<code>cpu</code>运行时间太长了，为了效率，改为一次<code>干扰</code>。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// jdk1.7 四次干扰	</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">hash</span><span class="params">(<span class="keyword">int</span> h)</span> </span>&#123;</span><br><span class="line">        h ^= (h &gt;&gt;&gt; <span class="number">20</span>) ^ (h &gt;&gt;&gt; <span class="number">12</span>);</span><br><span class="line">        <span class="keyword">return</span> h ^ (h &gt;&gt;&gt; <span class="number">7</span>) ^ (h &gt;&gt;&gt; <span class="number">4</span>);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>注意</code>：<code>Entry</code>对象对象中的<code>hash</code>，是对<code>key.hashCode()</code>进行再散列后的值，即<code>hash(key.hashCode())</code>。</p>
+<h2 id="扩容机制"><a href="#扩容机制" class="headerlink" title="扩容机制"></a>扩容机制</h2><p>扩容机制指的是：<br>当进行<code>put()</code>等添加操作时，如果增加后的容量大于等于阈值(<code>threshold</code>)时，则进行扩容，扩容一般把<code>table</code>数组扩展成原来的<code>两倍</code>大小。阈值的值取，<code>threshold = capacity*loadFactor</code>。<br><code>capacity</code>为<code>table</code>数组的长度，<code>loadFactor</code>一般为<code>0.75f</code>。</p>
+<h3 id="扩容入口"><a href="#扩容入口" class="headerlink" title="扩容入口"></a>扩容入口</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">addEntry</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, <span class="keyword">int</span> bucketIndex)</span> </span>&#123;</span><br><span class="line">        Entry&lt;K,V&gt; e = table[bucketIndex];</span><br><span class="line">        table[bucketIndex] = <span class="keyword">new</span> Entry&lt;&gt;(hash, key, value, e);</span><br><span class="line">	<span class="comment">// 如果超过阈值 则扩容</span></span><br><span class="line">	<span class="keyword">if</span> (size++ &gt;= threshold)</span><br><span class="line">	    <span class="comment">// 扩容成原来的两倍</span></span><br><span class="line">            resize(<span class="number">2</span> * table.length);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="完成扩容"><a href="#完成扩容" class="headerlink" title="完成扩容"></a>完成扩容</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">resize</span><span class="params">(<span class="keyword">int</span> newCapacity)</span> </span>&#123;</span><br><span class="line">        Entry[] oldTable = table;</span><br><span class="line">        <span class="keyword">int</span> oldCapacity = oldTable.length;</span><br><span class="line">	<span class="comment">// 如果旧容量 = 2 ^ 30 则将阈值设置为2^31-1 然后返回</span></span><br><span class="line">        <span class="keyword">if</span> (oldCapacity == MAXIMUM_CAPACITY) &#123;</span><br><span class="line">            threshold = Integer.MAX_VALUE;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">	</span><br><span class="line">        Entry[] newTable = <span class="keyword">new</span> Entry[newCapacity];</span><br><span class="line">	<span class="comment">// 转移</span></span><br><span class="line">	transfer(newTable);</span><br><span class="line">        table = newTable;</span><br><span class="line">	<span class="comment">// 更新阈值</span></span><br><span class="line">        threshold = (<span class="keyword">int</span>)(newCapacity * loadFactor);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>扩容步骤：</p>
+<ol>
+<li>确定<code>newTable</code>的长度，如果旧容量为<code>MAXIMUM_CAPACITY</code>，则不进行扩容，仅仅将阈值置为<code>2 ^ 31 - 1</code>。返回。</li>
+<li>否则，以新的容量创建<code>newTable</code>数组。</li>
+<li>遍历整个旧的<code>table</code>，首先找到每个<code>entry</code>在<code>newTable</code>中的位置，然后插入到目标链表的头部。</li>
+<li>将<code>newTable</code>赋值给<code>table</code>。</li>
+<li>更新<code>threshold</code>。</li>
+</ol>
+<h2 id="HashMap常见面试题-即实现的注意点"><a href="#HashMap常见面试题-即实现的注意点" class="headerlink" title="HashMap常见面试题(即实现的注意点)"></a>HashMap常见面试题(即实现的注意点)</h2><ol>
+<li>散列方法(干扰函数)</li>
+<li>为什么<code>HashMap</code>使用<code>2</code>的幂次方作为容量?(与散列方法配套使用)</li>
+<li>如何扩容？</li>
+<li><code>HashMap</code>和<code>Hashtable</code>的区别？(散列方法，线程安全，初始化参数)</li>
+<li>为什么使用头插法?(效率高)</li>
+<li>并发<code>put</code>导致冲突链表成环，以及<code>元素丢失</code>问题？</li>
+</ol>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+    </div>
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-java-ReentrantLock-2" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2018/05/08/java-ReentrantLock-2/" class="article-date">
+      <time datetime="2018-05-08T06:10:53.000Z" itemprop="datePublished">2018-05-08</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/05/08/java-ReentrantLock-2/">ReentrantLock精读(2)</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p>首先<code>ReentrantLock</code>源码基于jdk-1.7</p>
+<h2 id="内容"><a href="#内容" class="headerlink" title="内容"></a>内容</h2><ol>
+<li>成员变量</li>
+<li>构造方法</li>
+<li>获取锁</li>
+<li>释放锁</li>
+<li>其它方法</li>
+</ol>
+<h2 id="成员变量"><a href="#成员变量" class="headerlink" title="成员变量"></a>成员变量</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Sync sync;</span><br></pre></td></tr></table></figure>
+<p><code>ReentrantLock</code>只有一个成员变量，就是<code>sync</code>。<br>这里有两种<code>sync</code>，<code>NonfairSync</code>和<code>FairSync</code>。<br>代表公平锁和不公平锁。</p>
+<h2 id="构造方法"><a href="#构造方法" class="headerlink" title="构造方法"></a>构造方法</h2><p>有两个构造方法：</p>
+<ol>
+<li><code>无参数</code>构造方法：默认是不公平的获取锁。</li>
+<li><code>带参数</code>的构造方法：指定公平性。</li>
+</ol>
+<h3 id="无参数构造方法"><a href="#无参数构造方法" class="headerlink" title="无参数构造方法"></a>无参数构造方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ReentrantLock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        sync = <span class="keyword">new</span> NonfairSync();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>这里的<code>sync</code>是<code>NonfairSync</code>的对象，所以默认<code>无参数</code>的是一个<code>非公平锁</code>。</p>
+<h3 id="带参数的构造方法"><a href="#带参数的构造方法" class="headerlink" title="带参数的构造方法"></a>带参数的构造方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ReentrantLock</span><span class="params">(<span class="keyword">boolean</span> fair)</span> </span>&#123;</span><br><span class="line">        sync = fair ? <span class="keyword">new</span> FairSync() : <span class="keyword">new</span> NonfairSync();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>这里根据<code>fair</code>的值，确定公平性。<br>当<code>fair = true</code>，<code>sync</code>是<code>FairSync</code>，即采用公平锁。<br>否则，<code>sync</code>是<code>NonfairSync</code>，采用非公平锁。</p>
+<h2 id="获取锁"><a href="#获取锁" class="headerlink" title="获取锁"></a>获取锁</h2><p>获取锁的方法，有以下4种：</p>
+<ol>
+<li><code>lock()</code></li>
+<li><code>lockInterruptibly()</code></li>
+<li><code>tryLock()</code></li>
+<li><code>tryLock()</code>的<code>timeout</code>版本</li>
+</ol>
+<h3 id="lock"><a href="#lock" class="headerlink" title="lock()"></a>lock()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">lock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        sync.lock();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>分为三种情况：</p>
+<ol>
+<li>如果独占锁还没有其它线程获取，则直接获取，然后返回。</li>
+<li>如果独占锁已经并获取，但是是当前线程获取的，所以将<code>state+1</code>，可重入性。</li>
+<li>如果独占锁被其它线程获取，则调用<code>acquire(1)</code>，阻塞等待获取。</li>
+</ol>
+<p><code>lock()</code>的特点：忽略中断。公平性由<code>tryAcquire()</code>即在构造方法中指定。</p>
+<h3 id="lockInterruptibly"><a href="#lockInterruptibly" class="headerlink" title="lockInterruptibly()"></a>lockInterruptibly()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">lockInterruptibly</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        sync.acquireInterruptibly(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>其它都和<code>lock()</code>一样，唯一的区别：<br>能够响应中断过，并且抛出<code>InterruptedException</code>异常。</p>
+<h3 id="tryLock"><a href="#tryLock" class="headerlink" title="tryLock()"></a>tryLock()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">tryLock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> sync.nonfairTryAcquire(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p><code>tryLock()</code>特点：</p>
+<ol>
+<li><code>非阻塞</code>，当发现其它线程已经占用<code>独占锁</code>，然后直接返回。</li>
+<li>无论构造方法指定了公平还是不公平，都采用<code>不公平</code>的获取。</li>
+</ol>
+<h3 id="tryLock-的timeout版本"><a href="#tryLock-的timeout版本" class="headerlink" title="tryLock()的timeout版本"></a>tryLock()的timeout版本</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">tryLock</span><span class="params">(<span class="keyword">long</span> timeout, TimeUnit unit)</span></span></span><br><span class="line"><span class="function">            <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> sync.tryAcquireNanos(<span class="number">1</span>, unit.toNanos(timeout));</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p><code>timeout</code>版本的获取锁，特点如下：</p>
+<ol>
+<li>公平性由构造方法中指定。</li>
+<li>如果独占锁被其它线程获取，则阻塞等待，且最多等待<code>timeout</code>时间。</li>
+<li>能够响应中断，当中断发生时，抛出<code>InterruptedException</code>异常。</li>
+</ol>
+<h2 id="释放锁"><a href="#释放锁" class="headerlink" title="释放锁"></a>释放锁</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">unlock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        sync.release(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>释放锁，<code>3</code>种情况：</p>
+<ol>
+<li>如果调用<code>unlock()</code>方法的线程，并没有持有这个独占锁，则抛出<code>IllegalMonitorStateException</code>异常。</li>
+<li>如果当前线程持有独占锁，而且重入度<code>&gt; 1</code>，则仅仅减小重入度，并不释放锁。</li>
+<li>如果当前线程持有独占锁，而且重入度<code>= 1</code>，释放独占锁。</li>
+</ol>
+<h2 id="其它方法"><a href="#其它方法" class="headerlink" title="其它方法"></a>其它方法</h2><ol>
+<li><code>newCondition()</code>：创建<code>Condition</code>等待队列。</li>
+<li><code>getHoldCount()</code>：获取锁当前的重入度。</li>
+<li><code>isHeldByCurrentThread()</code>：判断当前线程是否占用独占锁。</li>
+<li><code>isFair()</code>：判断当前锁是否是公平锁。</li>
+<li><code>getOwner()</code>：判断占用独占锁的线程。</li>
+<li><code>hasQueuedThreads()</code>：判断<code>sync</code>队列中是否有等待线程。</li>
+<li><code>hasQueuedThread(thread)</code>：判断<code>thread</code>是否在<code>sync</code>队列中。</li>
+<li><code>getQueueLength()</code>：返回<code>sync</code>队列的长度。</li>
+<li><code>getQueuedThreads()</code>：获取<code>sync</code>队列中等待线程的集合(<code>Collection</code>)。</li>
+<li><code>getWaitQueueLength(condition)</code>：获取指定<code>condition</code>队列的长度。</li>
+<li><code>getWaitingThreads(condition)</code>：获取指定<code>condition</code>队列中等待线程的集合(<code>Collection</code>)。</li>
+</ol>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+
+      
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+    </div>
+
       
       <div class="clearfix"></div>
     </div>
@@ -841,7 +1309,7 @@
   
   
     <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
     </nav>
   
 </div>
