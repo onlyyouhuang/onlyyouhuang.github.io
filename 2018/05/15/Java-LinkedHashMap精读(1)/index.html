@@ -3,19 +3,19 @@
 <head>
   <meta charset="utf-8">
   
-  <title>ReentrantLock精读(2) | Onlyyouhuang&#39;s blog</title>
+  <title>Java-LinkedHashMap精读(1) | Onlyyouhuang&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="ReentrantLock源码基于jdk-1.7">
+  <meta name="description" content="LinkedHashMap源码基于1.7">
 <meta name="keywords" content="Java">
 <meta property="og:type" content="article">
-<meta property="og:title" content="ReentrantLock精读(2)">
-<meta property="og:url" content="https://onlyyouhuang.github.io/2018/05/08/java-ReentrantLock-2/index.html">
+<meta property="og:title" content="Java-LinkedHashMap精读(1)">
+<meta property="og:url" content="https://onlyyouhuang.github.io/2018/05/15/Java-LinkedHashMap精读(1)/index.html">
 <meta property="og:site_name" content="Onlyyouhuang&#39;s blog">
-<meta property="og:description" content="ReentrantLock源码基于jdk-1.7">
-<meta property="og:updated_time" content="2018-08-15T13:47:26.396Z">
+<meta property="og:description" content="LinkedHashMap源码基于1.7">
+<meta property="og:updated_time" content="2018-08-15T14:22:00.987Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="ReentrantLock精读(2)">
-<meta name="twitter:description" content="ReentrantLock源码基于jdk-1.7">
+<meta name="twitter:title" content="Java-LinkedHashMap精读(1)">
+<meta name="twitter:description" content="LinkedHashMap源码基于1.7">
   
     <link rel="alternative" href="/atom.xml" title="Onlyyouhuang&#39;s blog" type="application/atom+xml">
   
@@ -229,11 +229,11 @@
         </header>                
     </div>
 </nav>
-      <div class="body-wrap"><article id="post-java-ReentrantLock-2" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-Java-LinkedHashMap精读(1)" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2018/05/08/java-ReentrantLock-2/" class="article-date">
-      <time datetime="2018-05-08T06:10:53.000Z" itemprop="datePublished">2018-05-08</time>
+      <a href="/2018/05/15/Java-LinkedHashMap精读(1)/" class="article-date">
+      <time datetime="2018-05-15T05:43:44.000Z" itemprop="datePublished">2018-05-15</time>
 </a>
     </div>
   
@@ -246,7 +246,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      ReentrantLock精读(2)
+      Java-LinkedHashMap精读(1)
     </h1>
   
 
@@ -267,75 +267,36 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <p><code>ReentrantLock</code>源码基于jdk-1.7<br><a id="more"></a></p>
+        <p>LinkedHashMap源码基于1.7<br><a id="more"></a></p>
 <h2 id="内容"><a href="#内容" class="headerlink" title="内容"></a>内容</h2><ol>
 <li>成员变量</li>
-<li>构造方法</li>
-<li>获取锁</li>
-<li>释放锁</li>
-<li>其它方法</li>
+<li>HashMap中<code>Entry</code>类的扩展</li>
+<li>put()、get()和remove()方法的实现</li>
 </ol>
-<h2 id="成员变量"><a href="#成员变量" class="headerlink" title="成员变量"></a>成员变量</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Sync sync;</span><br></pre></td></tr></table></figure>
-<p><code>ReentrantLock</code>只有一个成员变量，就是<code>sync</code>。<br>这里有两种<code>sync</code>，<code>NonfairSync</code>和<code>FairSync</code>。<br>代表公平锁和不公平锁。</p>
-<h2 id="构造方法"><a href="#构造方法" class="headerlink" title="构造方法"></a>构造方法</h2><p>有两个构造方法：</p>
+<h2 id="成员变量"><a href="#成员变量" class="headerlink" title="成员变量"></a>成员变量</h2><p><code>LinkedHashMap</code>继承自<code>HashMap</code>，在此基础上增加了一个用于遍历的<code>双链表</code>。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 有序双链表头部</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">transient</span> Entry&lt;K,V&gt; header;</span><br><span class="line"><span class="comment">// 是否以访问顺序遍历</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">boolean</span> accessOrder;</span><br></pre></td></tr></table></figure></p>
 <ol>
-<li><code>无参数</code>构造方法：默认是不公平的获取锁。</li>
-<li><code>带参数</code>的构造方法：指定公平性。</li>
+<li><code>header</code>：遍历双链表的表头。</li>
+<li><code>accessOrder</code>：是否以<code>访问顺序进行遍历</code>。</li>
 </ol>
-<h3 id="无参数构造方法"><a href="#无参数构造方法" class="headerlink" title="无参数构造方法"></a>无参数构造方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ReentrantLock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    sync = <span class="keyword">new</span> NonfairSync();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这里的<code>sync</code>是<code>NonfairSync</code>的对象，所以默认<code>无参数</code>的是一个<code>非公平锁</code>。</p>
-<h3 id="带参数的构造方法"><a href="#带参数的构造方法" class="headerlink" title="带参数的构造方法"></a>带参数的构造方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ReentrantLock</span><span class="params">(<span class="keyword">boolean</span> fair)</span> </span>&#123;</span><br><span class="line">    sync = fair ? <span class="keyword">new</span> FairSync() : <span class="keyword">new</span> NonfairSync();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这里根据<code>fair</code>的值，确定公平性。<br>当<code>fair = true</code>，<code>sync</code>是<code>FairSync</code>，即采用公平锁。<br>否则，<code>sync</code>是<code>NonfairSync</code>，采用非公平锁。</p>
-<h2 id="获取锁"><a href="#获取锁" class="headerlink" title="获取锁"></a>获取锁</h2><p>获取锁的方法，有以下4种：</p>
+<h2 id="Entry类"><a href="#Entry类" class="headerlink" title="Entry类"></a>Entry类</h2><p><code>LinkedHashMap</code>中的<code>Entry</code>类继承自<code>HashMap</code>中的<code>Entry</code>类，每个<code>Entry</code>增加了<code>before</code>和<code>after</code>指针，形成一个<code>header</code>为表头的双链表。header的作用就是永远只是HashMap中所有成员的头（header.after）和尾(header.before)。LinkedHashMap就是通过header的双向链表来实现LRU算法的。header.after永远指向最近最不常使用的那个节点，删除的话，就是删除这个header.after对应的节点。相对的，header.before指向的就是刚刚使用过的那个节点。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Entry&lt;K,V&gt; before, after;</span><br></pre></td></tr></table></figure></p>
+<h3 id="recordAccess"><a href="#recordAccess" class="headerlink" title="recordAccess()"></a>recordAccess()</h3><p><code>recordAccess()</code>在<code>HashMap</code>中的<code>Entry</code>类中是空实现。<br>并且在<code>HashMap</code>中的<code>get()</code>和<code>put()</code>中被调用。<br><code>recordAccess()</code>方法实现当<code>accessOrder = true</code>时，将<code>entry</code>移动到<code>header</code>之前，即<code>header</code>双链表尾部。下面是在<code>LinkedHashMap</code>中的<code>Entry</code>类中被重写：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 在put和get出调用</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">recordAccess</span><span class="params">(HashMap&lt;K,V&gt; m)</span> </span>&#123;</span><br><span class="line">    LinkedHashMap&lt;K,V&gt; lm = (LinkedHashMap&lt;K,V&gt;)m;</span><br><span class="line">	<span class="comment">// accessOrder = true</span></span><br><span class="line">	<span class="keyword">if</span> (lm.accessOrder) &#123;</span><br><span class="line">	    lm.modCount++;</span><br><span class="line">		 <span class="comment">// 从header双链表移除</span></span><br><span class="line">	    remove();</span><br><span class="line">		 <span class="comment">// 加入到header双链表尾部</span></span><br><span class="line">        addBefore(lm.header);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="recordRemoval"><a href="#recordRemoval" class="headerlink" title="recordRemoval()"></a>recordRemoval()</h3><p><code>recordRemoval()</code>在<code>HashMap</code>类中的<code>remove(key)</code>方法中被调用，即将目标<code>entry</code>从<code>header</code>双链表移除：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">recordRemoval</span><span class="params">(HashMap&lt;K,V&gt; m)</span> </span>&#123;</span><br><span class="line">    remove();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="addEntry"><a href="#addEntry" class="headerlink" title="addEntry()"></a>addEntry()</h3><p><code>LinkedHashMap</code>重写了<code>addEntry()</code>方法增加了实现<code>LRU</code>缓存的方法。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">addEntry</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, <span class="keyword">int</span> bucketIndex)</span> </span>&#123;</span><br><span class="line">	<span class="comment">// 创建entry 插入到指定table的表头、插入到header双链表表尾</span></span><br><span class="line">    createEntry(hash, key, value, bucketIndex);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Remove eldest entry if instructed, else grow capacity if appropriate</span></span><br><span class="line">    Entry&lt;K,V&gt; eldest = header.after;</span><br><span class="line">	<span class="comment">// 如果removeEldstEntry() 返回true 表示删除最近最少被访问的entry</span></span><br><span class="line">    <span class="keyword">if</span> (removeEldestEntry(eldest)) &#123;</span><br><span class="line">        removeEntryForKey(eldest.key);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// 否则判断是否需要扩容</span></span><br><span class="line">        <span class="keyword">if</span> (size &gt;= threshold)</span><br><span class="line">            resize(<span class="number">2</span> * table.length);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <ol>
-<li><code>lock()</code></li>
-<li><code>lockInterruptibly()</code></li>
-<li><code>tryLock()</code></li>
-<li><code>tryLock()</code>的<code>timeout</code>版本</li>
+<li><code>createEntry</code>：完成三个功能，创建entry，插入到目标<code>table</code>数组项的表头（头插法），插入到<code>header</code>双链表表尾。</li>
+<li>遍历<code>header</code>双链表，调用<code>removeEldestEntry()</code>方法决定是否清除双链表前面的<code>Entry</code>，<code>LRU</code>缓存的实现，默认<code>removeEldestEntry()</code>返回<code>false</code>，即不删除。</li>
+<li><code>size</code>是否大于等于 阀值，是则进行扩容。</li>
 </ol>
-<h3 id="lock"><a href="#lock" class="headerlink" title="lock()"></a>lock()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">lock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        sync.lock();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p>分为三种情况：</p>
+<h2 id="put-、get-和remove-方法的实现"><a href="#put-、get-和remove-方法的实现" class="headerlink" title="put()、get()和remove()方法的实现"></a>put()、get()和remove()方法的实现</h2><h3 id="put"><a href="#put" class="headerlink" title="put()"></a>put()</h3><p><code>put()</code>方法使用的还是<code>HashMap</code>中的<code>put()</code><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> V <span class="title">put</span><span class="params">(K key, V value)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (key == <span class="keyword">null</span>)</span><br><span class="line">        <span class="keyword">return</span> putForNullKey(value);</span><br><span class="line">    <span class="keyword">int</span> hash = hash(key.hashCode());</span><br><span class="line">    <span class="keyword">int</span> i = indexFor(hash, table.length);</span><br><span class="line">    <span class="keyword">for</span> (Entry&lt;K,V&gt; e = table[i]; e != <span class="keyword">null</span>; e = e.next) &#123;</span><br><span class="line">        Object k;</span><br><span class="line">        <span class="keyword">if</span> (e.hash == hash &amp;&amp; ((k = e.key) == key || key.equals(k))) &#123;</span><br><span class="line">        <span class="comment">// 如果目标`key`的`entry`已经存在</span></span><br><span class="line">        V oldValue = e.value;</span><br><span class="line">            e.value = value;		</span><br><span class="line">            e.recordAccess(<span class="keyword">this</span>);</span><br><span class="line">            <span class="keyword">return</span> oldValue;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    modCount++;</span><br><span class="line">    addEntry(hash, key, value, i);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>由于重写了<code>Entry</code>类，<code>put()</code>会出现两种情况：</p>
 <ol>
-<li>如果独占锁还没有其它线程获取，则直接获取，然后返回。</li>
-<li>如果独占锁已经并获取，但是是当前线程获取的，所以将<code>state+1</code>，可重入性。</li>
-<li>如果独占锁被其它线程获取，则调用<code>acquire(1)</code>，阻塞等待获取。</li>
+<li>如果目标<code>key</code>的<code>entry</code>已经存在，则直接修改<code>entry</code>的<code>value</code>对象。然后调用<code>recordAccess(this)</code>，如果<code>accessOrder = ture，则</code>将<code>entry</code>移动到<code>header</code>双链表尾部，否则不移动<code>entry</code>。</li>
+<li>如果目标<code>key</code>的<code>entry</code>不存在，则表明之前没有插入过，则调用<code>addEntry()</code>进行添加。由上面<code>addEntry()</code>可知，这个方法会将<code>entry</code>插入到<code>table</code>中，也会插入到<code>header</code>双链表尾部。</li>
 </ol>
-<p><code>lock()</code>的特点：忽略中断。公平性由<code>tryAcquire()</code>即在构造方法中指定。</p>
-<h3 id="lockInterruptibly"><a href="#lockInterruptibly" class="headerlink" title="lockInterruptibly()"></a>lockInterruptibly()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">lockInterruptibly</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">    sync.acquireInterruptibly(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>其它都和<code>lock()</code>一样，唯一的区别：<br>能够响应中断过，并且抛出<code>InterruptedException</code>异常。</p>
-<h3 id="tryLock"><a href="#tryLock" class="headerlink" title="tryLock()"></a>tryLock()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">tryLock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> sync.nonfairTryAcquire(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><code>tryLock()</code>特点：</p>
-<ol>
-<li><code>非阻塞</code>，当发现其它线程已经占用<code>独占锁</code>，然后直接返回。</li>
-<li>无论构造方法指定了公平还是不公平，都采用<code>不公平</code>的获取。</li>
-</ol>
-<h3 id="tryLock-的timeout版本"><a href="#tryLock-的timeout版本" class="headerlink" title="tryLock()的timeout版本"></a>tryLock()的timeout版本</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">tryLock</span><span class="params">(<span class="keyword">long</span> timeout, TimeUnit unit)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> sync.tryAcquireNanos(<span class="number">1</span>, unit.toNanos(timeout));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><code>timeout</code>版本的获取锁，特点如下：</p>
-<ol>
-<li>公平性由构造方法中指定。</li>
-<li>如果独占锁被其它线程获取，则阻塞等待，且最多等待<code>timeout</code>时间。</li>
-<li>能够响应中断，当中断发生时，抛出<code>InterruptedException</code>异常。</li>
-</ol>
-<h2 id="释放锁"><a href="#释放锁" class="headerlink" title="释放锁"></a>释放锁</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">unlock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        sync.release(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p>释放锁，<code>3</code>种情况：</p>
-<ol>
-<li>如果调用<code>unlock()</code>方法的线程，并没有持有这个独占锁，则抛出<code>IllegalMonitorStateException</code>异常。</li>
-<li>如果当前线程持有独占锁，而且重入度<code>&gt; 1</code>，则仅仅减小重入度，并不释放锁。</li>
-<li>如果当前线程持有独占锁，而且重入度<code>= 1</code>，释放独占锁。</li>
-</ol>
-<h2 id="其它方法"><a href="#其它方法" class="headerlink" title="其它方法"></a>其它方法</h2><ol>
-<li><code>newCondition()</code>：创建<code>Condition</code>等待队列。</li>
-<li><code>getHoldCount()</code>：获取锁当前的重入度。</li>
-<li><code>isHeldByCurrentThread()</code>：判断当前线程是否占用独占锁。</li>
-<li><code>isFair()</code>：判断当前锁是否是公平锁。</li>
-<li><code>getOwner()</code>：判断占用独占锁的线程。</li>
-<li><code>hasQueuedThreads()</code>：判断<code>sync</code>队列中是否有等待线程。</li>
-<li><code>hasQueuedThread(thread)</code>：判断<code>thread</code>是否在<code>sync</code>队列中。</li>
-<li><code>getQueueLength()</code>：返回<code>sync</code>队列的长度。</li>
-<li><code>getQueuedThreads()</code>：获取<code>sync</code>队列中等待线程的集合(<code>Collection</code>)。</li>
-<li><code>getWaitQueueLength(condition)</code>：获取指定<code>condition</code>队列的长度。</li>
-<li><code>getWaitingThreads(condition)</code>：获取指定<code>condition</code>队列中等待线程的集合(<code>Collection</code>)。</li>
-</ol>
+<h3 id="get"><a href="#get" class="headerlink" title="get()"></a>get()</h3><p><code>get()</code>方法在<code>LinkedHashMap</code>被重写了。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> V <span class="title">get</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 获取entry</span></span><br><span class="line">    Entry&lt;K,V&gt; e = (Entry&lt;K,V&gt;)getEntry(key);</span><br><span class="line">    <span class="keyword">if</span> (e == <span class="keyword">null</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    e.recordAccess(<span class="keyword">this</span>);</span><br><span class="line">    <span class="keyword">return</span> e.value;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>从中可以看出，找到<code>entry</code>后，调用<code>recordAccess(this)</code>，如果<code>accessOrder = true</code>，则将<code>entry</code>移动到<code>header</code>双链表尾部，否则保持不变。</p>
+<h3 id="remove"><a href="#remove" class="headerlink" title="remove()"></a>remove()</h3><p><code>LinkedHashMap</code>没有重写<code>remove()</code>方法，直接使用<code>HashMap</code>中的<code>remove()</code>方法。而<code>HashMap</code>中的<code>remove()</code>方法，委托<code>removeEntryForKey()</code>实现：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> Entry&lt;K,V&gt; <span class="title">removeEntryForKey</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> hash = (key == <span class="keyword">null</span>) ? <span class="number">0</span> : hash(key.hashCode());</span><br><span class="line">    <span class="keyword">int</span> i = indexFor(hash, table.length);</span><br><span class="line">    Entry&lt;K,V&gt; prev = table[i];</span><br><span class="line">    Entry&lt;K,V&gt; e = prev;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (e != <span class="keyword">null</span>) &#123;</span><br><span class="line">        Entry&lt;K,V&gt; next = e.next;</span><br><span class="line">        Object k;</span><br><span class="line">        <span class="keyword">if</span> (e.hash == hash &amp;&amp;</span><br><span class="line">            ((k = e.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k)))) &#123;</span><br><span class="line">            modCount++;</span><br><span class="line">            size--;</span><br><span class="line">            <span class="keyword">if</span> (prev == e)</span><br><span class="line">                table[i] = next;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                prev.next = next;</span><br><span class="line">			<span class="comment">// linkedhashmap</span></span><br><span class="line">            e.recordRemoval(<span class="keyword">this</span>);</span><br><span class="line">            <span class="keyword">return</span> e;</span><br><span class="line">        &#125;</span><br><span class="line">        prev = e;</span><br><span class="line">        e = next;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> e;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>从中可以看出，当找到<code>entry</code>之后，则首先从<code>table</code>项的单链表中移除。然后再调用<code>e.recordRemoval(this);</code>，从<code>header</code>双链表中移除。</p>
 
       
     </div>
@@ -344,13 +305,13 @@
   
     
     <div class="copyright">
-        <p><span>本文标题:</span><a href="/2018/05/08/java-ReentrantLock-2/">ReentrantLock精读(2)</a></p>
+        <p><span>本文标题:</span><a href="/2018/05/15/Java-LinkedHashMap精读(1)/">Java-LinkedHashMap精读(1)</a></p>
         <p><span>文章作者:</span><a href="/" title="回到主页">HuangLangyou</a></p>
-        <p><span>发布时间:</span>2018-05-08, 14:10:53</p>
-        <p><span>最后更新:</span>2018-08-15, 21:47:26</p>
+        <p><span>发布时间:</span>2018-05-15, 13:43:44</p>
+        <p><span>最后更新:</span>2018-08-15, 22:22:00</p>
         <p>
-            <span>原始链接:</span><a class="post-url" href="/2018/05/08/java-ReentrantLock-2/" title="ReentrantLock精读(2)">https://onlyyouhuang.github.io/2018/05/08/java-ReentrantLock-2/</a>
-            <span class="copy-path" data-clipboard-text="原文: https://onlyyouhuang.github.io/2018/05/08/java-ReentrantLock-2/　　作者: HuangLangyou" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <span>原始链接:</span><a class="post-url" href="/2018/05/15/Java-LinkedHashMap精读(1)/" title="Java-LinkedHashMap精读(1)">https://onlyyouhuang.github.io/2018/05/15/Java-LinkedHashMap精读(1)/</a>
+            <span class="copy-path" data-clipboard-text="原文: https://onlyyouhuang.github.io/2018/05/15/Java-LinkedHashMap精读(1)/　　作者: HuangLangyou" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
             <script src="/js/clipboard.min.js"></script>
             <script> var clipboard = new Clipboard('.copy-path'); </script>
         </p>
@@ -364,15 +325,15 @@
     <nav id="article-nav">
         
             <div id="article-nav-newer" class="article-nav-title">
-                <a href="/2018/05/10/java-HashMap精读(1)/">
-                    Java-HashMap精读(1)
+                <a href="/2018/05/15/Java-LinkedHashMap精读(2)/">
+                    Java-LinkedHashMap精读(2)
                 </a>
             </div>
         
         
             <div id="article-nav-older" class="article-nav-title">
-                <a href="/2018/05/07/java-ReentrantLock-1/">
-                    ReentrantLock精读(1)
+                <a href="/2018/05/15/java-LinkedHashMap/">
+                    Java-LinkedHashMap
                 </a>
             </div>
         
@@ -383,7 +344,7 @@
 
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#内容"><span class="toc-number">1.</span> <span class="toc-text">内容</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#成员变量"><span class="toc-number">2.</span> <span class="toc-text">成员变量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#构造方法"><span class="toc-number">3.</span> <span class="toc-text">构造方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#无参数构造方法"><span class="toc-number">3.1.</span> <span class="toc-text">无参数构造方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#带参数的构造方法"><span class="toc-number">3.2.</span> <span class="toc-text">带参数的构造方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#获取锁"><span class="toc-number">4.</span> <span class="toc-text">获取锁</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#lock"><span class="toc-number">4.1.</span> <span class="toc-text">lock()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#lockInterruptibly"><span class="toc-number">4.2.</span> <span class="toc-text">lockInterruptibly()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#tryLock"><span class="toc-number">4.3.</span> <span class="toc-text">tryLock()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#tryLock-的timeout版本"><span class="toc-number">4.4.</span> <span class="toc-text">tryLock()的timeout版本</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#释放锁"><span class="toc-number">5.</span> <span class="toc-text">释放锁</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#其它方法"><span class="toc-number">6.</span> <span class="toc-text">其它方法</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#内容"><span class="toc-number">1.</span> <span class="toc-text">内容</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#成员变量"><span class="toc-number">2.</span> <span class="toc-text">成员变量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Entry类"><span class="toc-number">3.</span> <span class="toc-text">Entry类</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#recordAccess"><span class="toc-number">3.1.</span> <span class="toc-text">recordAccess()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#recordRemoval"><span class="toc-number">3.2.</span> <span class="toc-text">recordRemoval()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#addEntry"><span class="toc-number">3.3.</span> <span class="toc-text">addEntry()</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#put-、get-和remove-方法的实现"><span class="toc-number">4.</span> <span class="toc-text">put()、get()和remove()方法的实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#put"><span class="toc-number">4.1.</span> <span class="toc-text">put()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#get"><span class="toc-number">4.2.</span> <span class="toc-text">get()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#remove"><span class="toc-number">4.3.</span> <span class="toc-text">remove()</span></a></li></ol></li></ol>
 </div>
 <style>
     .left-col .switch-btn {
@@ -440,7 +401,7 @@
         </div>
         <script>
             window._bd_share_config={
-                "common":{"bdSnsKey":{},"bdText":"ReentrantLock精读(2)　| Onlyyouhuang's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+                "common":{"bdSnsKey":{},"bdText":"Java-LinkedHashMap精读(1)　| Onlyyouhuang's blog　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
         </script>
     
 
@@ -460,7 +421,7 @@
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/2018/05/10/java-HashMap精读(1)/" title="上一篇: Java-HashMap精读(1)">
+            <a href="/2018/05/15/Java-LinkedHashMap精读(2)/" title="上一篇: Java-LinkedHashMap精读(2)">
                 <i class="fa fa-angle-left"></i>
             </a>
         
@@ -468,7 +429,7 @@
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
 
         
-            <a href="/2018/05/07/java-ReentrantLock-1/" title="下一篇: ReentrantLock精读(1)">
+            <a href="/2018/05/15/java-LinkedHashMap/" title="下一篇: Java-LinkedHashMap">
                 <i class="fa fa-angle-right"></i>
             </a>
         
