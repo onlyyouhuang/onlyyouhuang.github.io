@@ -5,18 +5,18 @@
   
   <title>Java-基础 | Onlyyouhuang&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="1. 8种基本数据类型   类型 大小 封装类     boolean 1/8 Boolean   char 2 Character   byte 1 Byte   short 2 Short   int 4 Integer   long 8 Long   float 4 Float   double 8 Double     Java数据类型分为基本数据类型和引用数据类型。 基本数据类型也称为原">
+  <meta name="description" content="Java基础整理">
 <meta name="keywords" content="Java">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java-基础">
 <meta property="og:url" content="https://onlyyouhuang.github.io/2018/04/05/java-base/index.html">
 <meta property="og:site_name" content="Onlyyouhuang&#39;s blog">
-<meta property="og:description" content="1. 8种基本数据类型   类型 大小 封装类     boolean 1/8 Boolean   char 2 Character   byte 1 Byte   short 2 Short   int 4 Integer   long 8 Long   float 4 Float   double 8 Double     Java数据类型分为基本数据类型和引用数据类型。 基本数据类型也称为原">
+<meta property="og:description" content="Java基础整理">
 <meta property="og:image" content="https://onlyyouhuang.github.io/img/java-base-1.bmp">
-<meta property="og:updated_time" content="2018-08-13T08:38:06.176Z">
+<meta property="og:updated_time" content="2018-08-15T07:22:07.742Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java-基础">
-<meta name="twitter:description" content="1. 8种基本数据类型   类型 大小 封装类     boolean 1/8 Boolean   char 2 Character   byte 1 Byte   short 2 Short   int 4 Integer   long 8 Long   float 4 Float   double 8 Double     Java数据类型分为基本数据类型和引用数据类型。 基本数据类型也称为原">
+<meta name="twitter:description" content="Java基础整理">
 <meta name="twitter:image" content="https://onlyyouhuang.github.io/img/java-base-1.bmp">
   
     <link rel="alternative" href="/atom.xml" title="Onlyyouhuang&#39;s blog" type="application/atom+xml">
@@ -269,7 +269,8 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <h4 id="1-8种基本数据类型"><a href="#1-8种基本数据类型" class="headerlink" title="1. 8种基本数据类型"></a>1. 8种基本数据类型</h4><table>
+        <p>Java基础整理<br><a id="more"></a></p>
+<h4 id="1-8种基本数据类型"><a href="#1-8种基本数据类型" class="headerlink" title="1. 8种基本数据类型"></a>1. 8种基本数据类型</h4><table>
 <thead>
 <tr>
 <th>类型</th>
@@ -329,21 +330,24 @@
 </code></pre><h4 id="4-Object类的共有方法"><a href="#4-Object类的共有方法" class="headerlink" title="4. Object类的共有方法"></a>4. Object类的共有方法</h4><ol>
 <li><code>clone</code>: 拷贝原对象的一个副本，返回这个副本的引用。对于基本数据类型，直接赋值即可，如果是是引用类型，clone会使副本和原来的对象指向相同的引用，所以需要进行深度拷贝。<code>clone</code>方法是<code>protected</code>权限的，所以只能在同一个包内或者继承的子类当中使用。同时使用时必须实现<code>cloneable</code>接口。</li>
 <li><code>equals</code>: 比较两个对象的内容是否相等，<code>object中是比较地址</code>，一般根据具体的类进行重写覆盖。</li>
-<li><code>finalize</code>: 垃圾回收机制准备回收这个对象的内存时，会先调用这个方法的<code>(详细见jvm-垃圾回收)</code>。</li>
+<li><code>finalize</code>: 垃圾回收机制准备回收这个对象的内存时，会先调用这个方法的。</li>
 <li><code>getClass</code>: 返回这个对象的完整路径+类名。</li>
 <li><code>hashCode</code>: 返回这个对象的哈希值</li>
-<li><code>notify</code>: 唤醒一个(多个等待时)等待该对象的线程, 调用它之前必须已获取<code>monitor</code>(锁)</li>
-<li><code>notifyall</code>: 唤醒所有等待该对象的线程,调用它之前必须已获取<code>monitor</code>(锁)</li>
-<li><code>wait</code>: 调用它之前必须已获取<code>monitor</code>(锁),一般使用<code>Synchronized</code>关键字对目标进行锁定，使当前线程等待，直到其他线程调用此对象的<code>notify()</code>方法或<code>notifyAll()</code>方法。    </li>
-<li><code>toString</code>: 返回代表这个对象的字符串，<code>getClass().getName() + &#39;@&#39; + Integer.toHexString(hashCode())</code>即类名+@+对象的hash值的16进制表示。<br>10 <code>wait(time) 和 wait(time, nano)</code>,调用它之前必须已获取<code>monitor</code>(锁),和<code>wait()</code>一样<br><code>ps</code>:wait()、notify()和notifyall是用于线程间同步的机制。<br><code>wait</code>和<code>notify</code>实现线程同步机制，<code>synchronoized</code>实现互斥。不过<code>wait</code>和<code>notify</code>必须和<code>synchronoized</code>共同使用。<br>如果纯粹使用<code>线程间同步</code>，可以使用<code>volatile</code>。</li>
+<li><code>toString</code>: 返回代表这个对象的字符串，<code>getClass().getName() + &#39;@&#39; + Integer.toHexString(hashCode())</code>，即类名+@+对象的hash值的16进制表示。</li>
+<li><code>notify</code>: 唤醒一个等待该对象的线程，调用它之前必须已获取<code>monitor</code>(锁)</li>
+<li><code>notifyAll</code>: 唤醒所有等待该对象的线程，调用它之前必须已获取<code>monitor</code>(锁)</li>
+<li><code>wait</code>: 调用它之前必须已获取<code>monitor</code>(锁)，一般使用<code>Synchronized</code>关键字对目标进行锁定，使当前线程等待，直到其他线程调用此对象的<code>notify()</code>方法或<code>notifyAll()</code>方法。</li>
+<li><code>wait(time) 和 wait(time, nano)</code>，调用它之前必须已获取<code>monitor</code>(锁),和<code>wait()</code>一样。</li>
 </ol>
+<p>wait()、notify()和notifyall是用于线程间同步的机制。<br><code>wait</code>和<code>notify</code>实现线程同步机制，<code>synchronoized</code>实现互斥。不过<code>wait</code>和<code>notify</code>必须和<code>synchronoized</code>共同使用。<br>如果纯粹使用<code>线程间同步</code>，可以使用<code>volatile</code>。</p>
 <h4 id="5-Java的四种引用"><a href="#5-Java的四种引用" class="headerlink" title="5.Java的四种引用"></a>5.Java的四种引用</h4><ol>
-<li>强引用(<code>StrongReference</code>)：只要某个对象有强引用与之关联，<code>jvm</code>必定不会回收这个对象，即使在内存不足的情况下，<code>jvm</code>宁愿抛出<code>OutOfMemory</code>错误也不会回收这种对象。如果想中断强引用和某个对象的关联，可以显示地将引用赋值为<code>null</code>，这样一来jvm会在合适的时间回收该对象。</li>
-<li>软引用(<code>SoftReference</code>)：软引用用来描述一些非必须的对象。当内存充足时垃圾回收机制不会回收其内存，但是<code>OOP</code>（内存不充足时）会回收其内存， 所以软银用所关联的对象非常适合用来实现一些缓存：比如网页缓存、图片缓存等，可以在内存充足的情况下，提高系统的性能。只有在内存不足的情况下才会回收这些内存。在<code>Java</code>中用<code>java.lang.ref.SoftReference</code>类来表示。</li>
-<li>弱引用(<code>WeakReference</code>)：弱引用也是用来描述一些非必须的对象。但是当<code>JVM</code>进行垃圾回收时，无论内存是否充足都会对这部分内存进行回收。在<code>Java</code>中用<code>java.lang.ref.WeakReference</code>类进行描述。(一般用作缓存)</li>
-<li>虚引用：虚引用和前面的软引用、弱引用不同，它并不影响对象的生命周期(<code>比如，new出来的对象和正常的强引用一样</code>，只是在被<code>回收前</code>会放入<code>引用队列</code>中，然后可以使用<code>phref.isEnqueued()</code>查看是否在引用队列)。在java中用<code>java.lang.ref.PhantomReference</code>类表示。必须与引用队列一起使用，唯一的作用是在对象被gc回收时，可以起到通知的作用。<code>pf.get()</code>永远返回null。<br><code>进一步理解软引用和弱引用</code>：<br>对于强引用，我们平时在编写代码时经常会用到。而对于其他三种类型的引用，使用得最多的就是软引用和弱引用，这2种既有相似之处又有区别。<code>它们都是用来描述非必需对象的，但是被软引用关联的对象只有在内存不足时才会被回收，而被弱引用关联的对象在JVM进行垃圾回收时总会被回收。</code>针对上面的特性，软引用适合用来进行缓存，当内存不够时能让JVM回收内存，弱引用能用来在回调函数中防止内存泄露。当然现在缓存也不是用软引用或者弱引用实现的，一般使用<code>LruCache</code>实现。</li>
+<li>强引用(<code>StrongReference</code>)：只要某个对象有强引用与之关联，JVM必定不会回收这个对象，即使在内存不足的情况下，JVM宁愿抛出<code>OutOfMemory</code>错误也不会回收这种对象。如果想中断强引用和某个对象的关联，可以显示地将引用赋值为<code>null</code>，这样一来JVM会在合适的时间回收该对象。</li>
+<li>软引用(<code>SoftReference</code>)：软引用用来描述一些非必须的对象。当内存充足时垃圾回收机制不会回收其内存，但是内存不充足时会回收其内存， 所以软引用所关联的对象非常适合用来实现一些缓存：比如网页缓存、图片缓存等，可以在内存充足的情况下，提高系统的性能。只有在内存不足的情况下才会回收这些内存。在<code>Java</code>中用<code>java.lang.ref.SoftReference</code>类来表示。</li>
+<li>弱引用(<code>WeakReference</code>)：弱引用也是用来描述一些非必须的对象。但是当JVM进行垃圾回收时，无论内存是否充足都会对这部分内存进行回收。在<code>Java</code>中用<code>java.lang.ref.WeakReference</code>类进行描述。(一般用作缓存)</li>
+<li>虚引用：虚引用和前面的软引用、弱引用不同，它并不影响对象的生命周期(比如，new出来的对象和正常的强引用一样，只是在被<code>回收前</code>会放入<code>引用队列</code>中，然后可以使用<code>phref.isEnqueued()</code>查看是否在引用队列)。在java中用<code>java.lang.ref.PhantomReference</code>类表示。必须与引用队列一起使用，唯一的作用是在对象被gc回收时，可以起到通知的作用。<code>pf.get()</code>永远返回null。</li>
 </ol>
-<h4 id="6-Hashcode的作用"><a href="#6-Hashcode的作用" class="headerlink" title="6. Hashcode的作用"></a>6. Hashcode的作用</h4><p><code>object.hashCode()</code>方法返回该对象所在<code>jvm内存</code>的32位地址。(<code>hashCode()方法没有被重写的情况下</code>)<br>1、<code>hashCode</code>的存在主要是用于查找的快捷性，如<code>Hashtable</code>，<code>HashMap</code>等，<code>hashCode</code>是用来在散列存储结构中确定对象的存储地址的；<br>2、如果两个对象相同，就是适用于<code>equals(Java.lang.Object)</code> 方法，那么这两个对象的<code>hashCode</code>一定要相同；<br>3、如果对象的<code>equals</code>方法被重写，那么对象的<code>hashCode</code>也尽量重写，并且产生<code>hashCode</code>使用的对象，一定要和<code>equals</code>方法中使用的一致，否则就会违反上面提到的第2点；<br>4、两个对象的<code>hashCode</code>相同，并不一定表示两个对象就相同，也就是不一定适用于<code>equals(java.lang.Object)</code> 方法，只能够说明这两个对象在散列存储结构中，如<code>Hashtable</code>，他们“存放在同一个篮子里”。</p>
+<p>进一步理解软引用和弱引用：<br>对于强引用，我们平时在编写代码时经常会用到。而对于其他三种类型的引用，使用得最多的就是软引用和弱引用，这2种既有相似之处又有区别。<code>它们都是用来描述非必需对象的，但是被软引用关联的对象只有在内存不足时才会被回收，而被弱引用关联的对象在JVM进行垃圾回收时总会被回收。</code>针对上面的特性，软引用适合用来进行缓存，当内存不够时能让JVM回收内存，弱引用能用来在回调函数中防止内存泄露。当然现在缓存也不是用软引用或者弱引用实现的，一般使用<code>LruCache</code>实现。</p>
+<h4 id="6-HashCode的作用"><a href="#6-HashCode的作用" class="headerlink" title="6. HashCode的作用"></a>6. HashCode的作用</h4><p><code>object.hashCode()</code>方法返回该对象所在JVM内存的32位地址。(hashCode()方法没有被重写的情况下)<br>1、<code>hashCode</code>的存在主要是用于查找的快捷性，如<code>Hashtable</code>，<code>HashMap</code>等，<code>hashCode</code>是用来在散列存储结构中确定对象的存储地址的；<br>2、如果两个对象相同，就是适用于<code>equals(Java.lang.Object)</code> 方法，那么这两个对象的<code>hashCode</code>一定要相同；<br>3、如果对象的<code>equals</code>方法被重写，那么对象的<code>hashCode</code>也尽量重写，并且产生<code>hashCode</code>使用的对象，一定要和<code>equals</code>方法中使用的一致，否则就会违反上面提到的第2点；<br>4、两个对象的<code>hashCode</code>相同，并不一定表示两个对象就相同，也就是不一定适用于<code>equals(java.lang.Object)</code> 方法，只能够说明这两个对象在散列存储结构中，如<code>HashTable</code>，他们“存放在同一个篮子里”。</p>
 <h4 id="7-ArrayList、LinkedList、Vector的区别"><a href="#7-ArrayList、LinkedList、Vector的区别" class="headerlink" title="7. ArrayList、LinkedList、Vector的区别"></a>7. ArrayList、LinkedList、Vector的区别</h4><p><code>ArrayList</code>和<code>Vector</code>都是数组实现的列表（<code>list</code>）,即动态数组，其中<code>Vector</code>是线程安全的(这个线程安全是很弱的，仅仅只是当一个线程调用vector的一个方法(比如<code>remove</code>时)，其它线程调用该方法时需要等待，这时是线程安全的，如果另外的线程调用的是其它的方法(比如size())，则会出现错误)。<code>LinkedList</code>是链表实现的<code>list</code>。</p>
 <p><code>ArrayList</code>和<code>LinkedList</code>的区别：</p>
 <ol>
@@ -351,39 +355,30 @@
 <li><code>LinkedList</code>：内部采取双向链表来存储元素，支持快速插入和删除元素，但不支持随机访问。</li>
 <li><code>Vector</code>：线程安全的<code>ArrayList</code>，大部分的方法都用<code>synchronized</code>修饰。</li>
 </ol>
-<h4 id="8-String、StringBuffer与StringBuilder的区别"><a href="#8-String、StringBuffer与StringBuilder的区别" class="headerlink" title="8. String、StringBuffer与StringBuilder的区别"></a>8. String、StringBuffer与StringBuilder的区别</h4><p><code>首先：线程安全就是说多线程访问同一代码，不会产生不确定的结果。编写线程安全的代码是低靠线程同步。</code><br>. <code>String</code>: 不可变，需要改变时，其实是<code>new</code>了一个新的对象 (<code>String</code>是final的，所以显然也是线程安全的)<br>. <code>StringBuffer</code>: 可变的，线程安全的<br>. <code>StringBuilder</code>: 可变的 ，非线程安全的<br>. 速度: <code>StringBuilder &gt;(快于) StringBuffer &gt;(快于)  String</code></p>
-<p>String 和 另外两个的区别：<br>对于<code>equal</code>方法，<code>String</code>类重写了该方法，比较的是字符串的内容。<br>而<code>StringBuffer</code>和<code>StringBuilder</code>都没有重写<code>Object</code>类的方法，比较的还都是引用(地址)。<br>所以要将<code>StringBuffer</code>和<code>StringBuilder</code>的对象放入<code>Set</code>集合中最好使用,它们的<code>toString()</code>方法，因为<code>toString()</code>方法会<code>new</code>一个<code>String</code> 对象出来。<code>String</code>对象放在常量池内。</p>
+<h4 id="8-String、StringBuffer与StringBuilder的区别"><a href="#8-String、StringBuffer与StringBuilder的区别" class="headerlink" title="8. String、StringBuffer与StringBuilder的区别"></a>8. String、StringBuffer与StringBuilder的区别</h4><p>首先：线程安全就是说多线程访问同一代码，不会产生不确定的结果。编写线程安全的代码是依靠线程同步。</p>
+<ol>
+<li><code>String</code>: 不可变，需要改变时，其实是<code>new</code>了一个新的对象 (<code>String</code>是final的，所以显然也是线程安全的)</li>
+<li><code>StringBuffer</code>: 可变的，线程安全的</li>
+<li><code>StringBuilder</code>: 可变的 ，非线程安全的</li>
+<li>速度: <code>StringBuilder &gt;(快于) StringBuffer &gt;(快于)  String</code></li>
+</ol>
+<p>String 和 另外两个的区别：<br>对于<code>equal</code>方法，<code>String</code>类重写了该方法，比较的是字符串的内容。<br>而<code>StringBuffer</code>和<code>StringBuilder</code>都没有重写<code>Object</code>类的方法，比较的还都是引用(地址)。<br>所以要将<code>StringBuffer</code>和<code>StringBuilder</code>的对象放入<code>Set</code>集合中最好使用它们的<code>toString()</code>方法，因为<code>toString()</code>方法会<code>new</code>一个<code>String</code> 对象出来。<code>String</code>对象放在常量池内。</p>
 <p>使用建议：</p>
 <ol>
 <li>字符串数量较少时，使用<code>String</code>。</li>
 <li>单线程操作字符串缓冲区下操作大量字符串，使用<code>StringBuilder</code>。</li>
-<li>多线程操作字符串缓冲区下操作大量字符串，使用<code>StringBUffer</code>。</li>
+<li>多线程操作字符串缓冲区下操作大量字符串，使用<code>StringBuffer</code>。</li>
 </ol>
 <p><code>String</code>类不能被继承，因为<code>String</code>类由<code>final</code>进行修饰。<br><code>String</code>类对象<code>+</code>的实现：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">String s1 = <span class="string">"a"</span>;</span><br><span class="line">String s2 = <span class="string">"b"</span>;</span><br><span class="line">String s = s1 + s2;</span><br></pre></td></tr></table></figure></p>
 <p>相当于：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">String s = <span class="keyword">new</span> StringBuilder().append(a).append(b).toString();</span><br></pre></td></tr></table></figure></p>
 <p>通过构建<code>StringBuilder</code>实现的。</p>
-<p><code>String</code>类的<code>hashcode()</code>方法被重写了：原因是当需要将相同字符串的<code>String</code>对象放到<code>hashmap</code>中的同一个<code>bucket</code>里面。<br><code>String</code>类的<code>toString()</code>方法也被重写了，返回表示的字符串，语义需要(因为<code>String</code>就是一个字符串)。</p>
+<p><code>String</code>类的<code>hashCode()</code>方法被重写了：原因是当需要将相同字符串的<code>String</code>对象放到<code>hashMap</code>中的同一个<code>bucket</code>里面。<br><code>String</code>类的<code>toString()</code>方法也被重写了，返回表示的字符串，语义需要(因为<code>String</code>就是一个字符串)。</p>
 <h4 id="9-Map、Set、List、Queue、Stack的特点与用法"><a href="#9-Map、Set、List、Queue、Stack的特点与用法" class="headerlink" title="9. Map、Set、List、Queue、Stack的特点与用法"></a>9. Map、Set、List、Queue、Stack的特点与用法</h4><ol>
 <li><code>Map&lt;k,v&gt;</code>: <code>Java</code>中存储键值对的数据类型都实现了这个接口，表示<code>映射表</code>。支持的两个操作是<code>get(Object key)</code>和<code>put(Object key,Object value)</code>。分别用来获取键对应的值，以及向映射表插入键值对。</li>
 <li><code>Set&lt;E&gt;</code>: 实现这个接口的集合类型不允许存在重复的元素，即数学意义上的<code>集合</code>。它支持的操作<code>add(E e),remove(Object obj)和contains(Object obj)</code>，分别表示添加元素、删除元素和判断给定元素是否存在。</li>
 <li><code>List</code>：<code>Java</code>集合框架类型中的列表都实现了这个接口，表示一种有序序列。支持<code>get(int index) 和add(E e)</code>等操作。</li>
-<li><code>Queue</code>: <code>Java</code>集合类框架的队列接口，代表<code>先进先出队列</code>。支持<code>offer(E e)、poll()</code>等操作，队列已经由<code>LinkedList</code>实现。</li>
+<li><code>Queue</code>: <code>Java</code>集合类框架的队列接口，代表<code>先进先出队列</code>。支持<code>offer(E e),poll()</code>等操作，队列已经由<code>LinkedList</code>实现。</li>
 <li><code>Stack</code>: <code>Java</code>集合类框架中表示栈的数据类型，代表<code>先进后出</code>的栈。支持操作<code>push(E e)和pop()</code>等操作。</li>
-</ol>
-<h4 id="10-HashMap和Hashtable的区别"><a href="#10-HashMap和Hashtable的区别" class="headerlink" title="10. HashMap和Hashtable的区别"></a>10. HashMap和Hashtable的区别</h4><p>首先<code>HashMap</code>和<code>Hashtable</code>都是用<code>数组+链表实现的散列表</code>。<code>哈希映射</code>依靠的是<code>Object.hashCode()</code>方法返回的哈希值，即该对象在<code>JVM</code>中的内存地址。</p>
-<ol>
-<li><code>HashMap</code>不是线程安全的, 但是<code>key和value都可以为null</code>，当<code>key</code>为<code>null</code>的时候，将该<code>key</code>和<code>value</code>插入到<code>table[0]</code>链表。(HashMap最多只允许一条记录的键为Null;允许多条记录的值为 Null;)    </li>
-<li><code>Hashtable</code>是线程安全的, <code>key</code>和<code>value</code>都不可以为<code>null</code>，在HashTable中调用put方法时，如果<code>key</code>或者<code>value</code>为<code>null</code>，直接抛出NullPointerException。线程安全的实现是用<code>Sycnchronized</code>修饰方法。<code>Hashtable</code>里面的方法基本都是<code>Synchronied</code>修饰的。这样当一个线程在使用这个对象的方法时，已经对该对象上锁，其它线程要调用这个对象(的方法)时，就必须等前面一个线程释放该对象。</li>
-</ol>
-<h4 id="11-HashMap和ConcurrentHashMap的区别，HashMap的底层源码"><a href="#11-HashMap和ConcurrentHashMap的区别，HashMap的底层源码" class="headerlink" title="11. HashMap和ConcurrentHashMap的区别，HashMap的底层源码"></a>11. HashMap和ConcurrentHashMap的区别，HashMap的底层源码</h4><ol>
-<li><code>HashMap</code>：数组+单链表 + 散列函数实现的哈希表， 非线程安全的， 用迭代器遍历时是随机的，原因是散列函数。</li>
-<li><code>ConcurrentHashMap</code>：实现与<code>HashMap</code>类似，但是是线程安全的，而且线程安全不是通过<code>sychronized</code>实现的（同样线程安全的<code>Hashtable</code>是由<code>sychronized</code>实现的）<code>ConcurrentHashMap</code>是将整个数组分为好几段，并且对访问得这一段加锁，实现线程安全带，所以要比<code>Hashtable</code>速度要快很多。线程读的时候不加锁，只有写的时候需要加锁。所以可以对于读可以达到非常高的并发量。<br><code>ConcurrentHashMap</code>在jdk-1.6、jdk-1.7、和jdk-1.8中都有优化。</li>
-</ol>
-<h4 id="12-TreeMap、HashMap、LindedHashMap和WeakHashMap的区别"><a href="#12-TreeMap、HashMap、LindedHashMap和WeakHashMap的区别" class="headerlink" title="12. TreeMap、HashMap、LindedHashMap和WeakHashMap的区别"></a>12. TreeMap、HashMap、LindedHashMap和WeakHashMap的区别</h4><ol>
-<li><code>TreeMap</code>：红黑树的二叉排序树实现的<code>Map</code>，遍历时按升序遍历。这里的顺序，默认是可以比较的类的对象，比如<code>String</code>、<code>Integer</code>等。默认内容升序。但是可以通过<code>key</code>的类实现<code>Comparator</code>的比较器，或者传入<code>Comparator</code>自定义比较器，实现自定义的升序。</li>
-<li><code>HashMap</code>：数组+单链表 + 散列函数实现的哈希表， 非线程安全的， 用迭代器遍历时是随机的，原因是散列函数。</li>
-<li><code>LinkedHashMap</code>：继承了HashMap, 然后增加了一个双链表的<code>header</code>, <code>entry</code>也再多了双链表的两个指针(之前只有一个<code>next</code>指针)， 当<code>accessOrder</code>为<code>true</code>时， 遍历的时候是按照访问的顺序。每次将刚访问的<code>entry</code>插入到<code>header</code>之前（双链表最后），当<code>accessOrder</code>为<code>false</code>时，则遍历的时候是插入顺序。。最后迭代器遍历即为双链表中的顺序。<code>accessOrder</code>可以在构造函数中指定。由于当<code>accessOrder</code>为<code>true</code>时，每次访问都将目标<code>entry</code>移动<code>header</code>之前，也就是双链表尾部，所以链表头部保存的都是最近最少被访问的<code>entry</code>，所以可以实现<code>Lru</code>缓存。</li>
-<li><code>WeakHashMap</code>：也是<code>拉链法</code>实现的<code>映射</code>，但是放入<code>WeakHashMap</code>中的键值封装成<code>WeakRefence</code>，即弱引用，每次<code>gc</code>都会被回收，然后加入到一个<code>引用队列</code>中，所以需要定期检查和整理<code>WeakHashMap</code>。<code>WeakHashMap</code>主要做缓存。而<code>TreeMap</code>、<code>HashMap</code>和<code>LinkedHashMap</code>都是<code>强键</code>。</li>
 </ol>
 <p><code>Set</code>定义：</p>
 <ol>
@@ -393,15 +388,30 @@
 <p><code>TreeSet</code>、<code>HashSet</code>和<code>LinkedHashSet</code>区别：</p>
 <ol>
 <li><code>TreeSet</code>：是利用<code>TreeMap</code>实现的，遍历自然升序，当然可以通过传入<code>Comparator</code>实现自定义升序。</li>
-<li><code>HashSet</code>：是继承<code>HashMap</code>实现的，遍历的时候无序。</li>
-<li><code>LinkedHashSet</code>：继承自<code>HashSet</code>，但是调用的是<code>new LinkedHashMap&lt;&gt;()</code>创建哈希表，由于<code>Set</code>没有访问的方法，所以<code>LinkedHashSet</code>遍历的时候就是按照插入的顺序。</li>
+<li><code>HashSet</code>：继承自AbstractSet，实现了Set接口，内部使用HashMap来存储数据，数据存储在HashMap的key中，value都是同一个默认值，遍历的时候无序。</li>
+<li><code>LinkedHashSet</code>：继承自<code>HashSet</code>，内部使用的是LinkHashMap(调用的是<code>new LinkedHashMap&lt;&gt;()</code>创建哈希表)，由于<code>Set</code>没有访问的方法，所以<code>LinkedHashSet</code>遍历的时候就是按照插入的顺序。</li>
+</ol>
+<h4 id="10-HashMap和Hashtable的区别"><a href="#10-HashMap和Hashtable的区别" class="headerlink" title="10. HashMap和Hashtable的区别"></a>10. HashMap和Hashtable的区别</h4><p>首先<code>HashMap</code>和<code>Hashtable</code>都是用<code>数组+链表实现的散列表</code>。<code>哈希映射</code>依靠的是<code>Object.hashCode()</code>方法返回的哈希值，即该对象在JVM中的内存地址。</p>
+<ol>
+<li><code>HashMap</code>不是线程安全的, 但是<code>key和value都可以为null</code>，当<code>key</code>为<code>null</code>的时候，将该<code>key</code>和<code>value</code>插入到<code>table[0]</code>链表。(HashMap最多只允许一条记录的键为Null;允许多条记录的值为Null;)</li>
+<li><code>Hashtable</code>是线程安全的, <code>key</code>和<code>value</code>都不可以为<code>null</code>，在HashTable中调用put方法时，如果<code>key</code>或者<code>value</code>为<code>null</code>，直接抛出NullPointerException。线程安全的实现是用<code>Sycnchronized</code>修饰方法。<code>Hashtable</code>里面的方法基本都是<code>Synchronied</code>修饰的。这样当一个线程在使用这个对象的方法时，已经对该对象上锁，其它线程要调用这个对象(的方法)时，就必须等前面一个线程释放该对象。</li>
+</ol>
+<h4 id="11-HashMap和ConcurrentHashMap的区别，HashMap的底层源码"><a href="#11-HashMap和ConcurrentHashMap的区别，HashMap的底层源码" class="headerlink" title="11. HashMap和ConcurrentHashMap的区别，HashMap的底层源码"></a>11. HashMap和ConcurrentHashMap的区别，HashMap的底层源码</h4><ol>
+<li><code>HashMap</code>：数组+单链表+散列函数实现的哈希表， 非线程安全的， 用迭代器遍历时是随机的，原因是散列函数。</li>
+<li><code>ConcurrentHashMap</code>：实现与<code>HashMap</code>类似，但是是线程安全的，而且线程安全不是通过<code>sychronized</code>实现的（同样线程安全的<code>Hashtable</code>是由<code>sychronized</code>实现的）<code>ConcurrentHashMap</code>是将整个数据分为好几段，并且对访问得这一段加锁，实现线程安全带，所以要比<code>Hashtable</code>速度要快很多。线程读的时候不加锁，只有写的时候需要加锁。所以可以对于读可以达到非常高的并发量。<br><code>ConcurrentHashMap</code>在jdk-1.6、jdk-1.7、和jdk-1.8中都有优化。</li>
+</ol>
+<h4 id="12-TreeMap、HashMap、LindedHashMap和WeakHashMap的区别"><a href="#12-TreeMap、HashMap、LindedHashMap和WeakHashMap的区别" class="headerlink" title="12. TreeMap、HashMap、LindedHashMap和WeakHashMap的区别"></a>12. TreeMap、HashMap、LindedHashMap和WeakHashMap的区别</h4><ol>
+<li><code>TreeMap</code>：红黑树的二叉排序树实现的<code>Map</code>，遍历时按升序遍历。这里的顺序，默认是可以比较的类的对象，比如<code>String</code>、<code>Integer</code>等。默认内容升序。但是可以通过<code>key</code>的类实现<code>Comparator</code>的比较器，或者传入<code>Comparator</code>自定义比较器，实现自定义的顺序。</li>
+<li><code>HashMap</code>：数组+单链表+散列函数实现的哈希表，非线程安全的，用迭代器遍历时是随机的，原因是散列函数。</li>
+<li><code>LinkedHashMap</code>：继承了HashMap, 然后增加了一个双链表的<code>header</code>, <code>entry</code>也再多了双链表的两个指针(之前只有一个<code>next</code>指针)， 当<code>accessOrder</code>为<code>true</code>时， 遍历的时候是按照访问的顺序。每次将刚访问的<code>entry</code>插入到<code>header</code>之前（双链表最后），当<code>accessOrder</code>为<code>false</code>时，则遍历的时候是插入顺序。最后迭代器遍历即为双链表中的顺序。<code>accessOrder</code>可以在构造函数中指定。由于当<code>accessOrder</code>为<code>true</code>时，每次访问都将目标<code>entry</code>移动<code>header</code>之前，也就是双链表尾部，所以链表头部保存的都是最近最少被访问的<code>entry</code>，所以可以实现<code>Lru</code>缓存。</li>
+<li><code>WeakHashMap</code>：也是<code>拉链法</code>实现的<code>映射</code>，但是放入<code>WeakHashMap</code>中的键值封装成<code>WeakReference</code>，即弱引用，每次<code>gc</code>都会被回收，然后加入到一个<code>引用队列</code>中，所以需要定期检查和整理<code>WeakHashMap</code>。<code>WeakHashMap</code>主要做缓存。而<code>TreeMap</code>、<code>HashMap</code>和<code>LinkedHashMap</code>都是<code>强键</code>。</li>
 </ol>
 <h4 id="13-Collection包结构，与Collections的区别"><a href="#13-Collection包结构，与Collections的区别" class="headerlink" title="13 Collection包结构，与Collections的区别"></a>13 Collection包结构，与Collections的区别</h4><p><code>Collection</code>是一个接口，<code>List</code>、<code>Set</code>和<code>Queue</code>的具体类都实现了这个接口。<br><code>Collection</code>本身继承了<code>Iterable</code>类，而了<code>Iterable</code>类本身包含一个<code>Iterator</code>类的成员，简单来讲，就是<code>Collection</code>可以实现一个迭代器的功能。</p>
 <p><em>Collection包包含<code>List</code>、<code>Set</code>和<code>Queue</code>三种集合：</em></p>
 <ol>
-<li><code>List</code>：包含<code>ArrayList</code>、 <code>LinkedList</code></li>
-<li><code>Set</code>：包含<code>HashSet</code>，<code>TreeSet</code>，<code>EnumSet</code>，<code>LinkedHashSet</code>等</li>
-<li><code>Queue</code>：<code>AbstractQueue</code>， <code>ArrayDeque</code>， <code>LinkedList</code>，<code>PriorityQueue</code>，<code>DelayQueue</code>等</li>
+<li><code>List</code>：包含ArrayList、 LinkedList</li>
+<li><code>Set</code>：包含HashSet，TreeSet，EnumSet，LinkedHashSet等</li>
+<li><code>Queue</code>：AbstractQueue， ArrayDeque， LinkedList，PriorityQueue，DelayQueue等</li>
 </ol>
 <p><em>Collections类：</em>可以对一些<code>Collection</code>类的对象调用它的方法，实现对其操作（比如对<code>list</code>的排序，二分搜索等）</p>
 <ol>
@@ -410,21 +420,21 @@
 <li>服务于Java的<code>Collection</code>的框架；</li>
 </ol>
 <h4 id="14-try-catch-finally，try里有return，finally还执行么？"><a href="#14-try-catch-finally，try里有return，finally还执行么？" class="headerlink" title="14 try catch finally，try里有return，finally还执行么？"></a>14 try catch finally，try里有return，finally还执行么？</h4><ol>
-<li><code>finally</code>中的语句肯定会执行 在<code>try return</code>中表达式执行完，<code>return</code>返回之前执行。如果<code>finally</code>中有<code>return</code>语句，则覆盖<code>try</code>中的<code>return</code>提前返回。<br><code>try catch finally</code>中<code>finally</code>不执行的两种情况：<ol>
+<li><code>finally</code>中的语句肯定会执行 在<code>try return</code>中表达式执行完，<code>return</code>返回之前执行。如果<code>finally</code>中有<code>return</code>语句，则覆盖<code>try</code>中的<code>return</code>提前返回。<br><code>try catch finally</code>中<code>finally</code>不执行的两种情况：<ul>
 <li>JVM崩溃了。</li>
 <li>另外一种<code>finally</code>里面的语句不执行的情况是<code>try catch</code>中包含<code>System.exit()</code>，使整个<code>java</code>进程退出。</li>
-</ol>
+</ul>
 </li>
 </ol>
 <h4 id="15-Excption与Error包结构。OOM你遇到过哪些情况，SOF你遇到过哪些情况。"><a href="#15-Excption与Error包结构。OOM你遇到过哪些情况，SOF你遇到过哪些情况。" class="headerlink" title="15 Excption与Error包结构。OOM你遇到过哪些情况，SOF你遇到过哪些情况。"></a>15 Excption与Error包结构。OOM你遇到过哪些情况，SOF你遇到过哪些情况。</h4><p><code>Throwable</code>类包含两个子类<code>Error</code>和<code>Exception</code>。<br><img src="/img/java-base-1.bmp" alt=""><br><code>SOF(StackOverFlow)</code>：栈溢出，当应用程序递归太深发生栈溢出，抛出<code>stackoverflowError</code>错误。<br>原因：如果栈请求的栈深度大于虚拟机锁允许的最大深度，将抛出<code>stackoverflowError</code>错误。</p>
-<p><code>OOM(Out of Memery)</code>:<br>原因1：由于不断创建对象，导致<code>java</code>堆溢出，将抛出<code>OutofMemeryError</code>错误。<br>原因2：如果虚拟机在扩展栈时无法申请到足够的内存，则将抛出<code>OutofMemeryError</code>错误。</p>
+<p><code>OOM(Out of Memery)</code>:<br>原因1：由于不断创建对象，导致Java堆溢出，将抛出<code>OutofMemeryError</code>错误。<br>原因2：如果虚拟机在扩展栈时无法申请到足够的内存，则将抛出<code>OutofMemeryError</code>错误。</p>
 <h4 id="16-Java面向对象的三个特征与含义"><a href="#16-Java面向对象的三个特征与含义" class="headerlink" title="16 Java面向对象的三个特征与含义"></a>16 Java面向对象的三个特征与含义</h4><p>Java面向对象三种特性是指：封装、继承和多态。</p>
 <ol>
 <li>封装：将方法和数据成员封装在类的内部</li>
 <li>继承：子对象可以继承父对象的属性和方法</li>
 <li>多态：<code>override</code>(重写)和<code>overload</code>(重载)</li>
 </ol>
-<h4 id="17-Override和Overload的含义去区别。"><a href="#17-Override和Overload的含义去区别。" class="headerlink" title="17 Override和Overload的含义去区别。"></a>17 Override和Overload的含义去区别。</h4><p><code>Override</code>即<code>重写</code>（<code>覆盖</code>）: <code>动态绑定多态机制</code>，父类和子类多态的表现<br><code>Overload</code>即<code>重载</code>：<code>参数多态机制</code>。一个类中同名方法，可以通过<code>不同的参数个数、不同的参数类型和不同的参数顺序</code>进行重载<br><code>Override</code>即<code>重写</code>(<code>覆盖</code>)的特点：</p>
+<h4 id="17-Override和Overload的含义去区别。"><a href="#17-Override和Overload的含义去区别。" class="headerlink" title="17 Override和Overload的含义去区别。"></a>17 Override和Overload的含义去区别。</h4><p><code>Override</code>即<code>重写</code>（<code>覆盖</code>）: <code>动态绑定多态机制</code>，是子类对父类中同一方法的重新定义，父类和子类多态的表现<br><code>Overload</code>即<code>重载</code>：<code>参数多态机制</code>。一个类中同名方法，可以通过<code>不同的参数个数、不同的参数类型和不同的参数顺序</code>进行重载<br><code>Override</code>即<code>重写</code>(<code>覆盖</code>)的特点：</p>
 <ol>
 <li>覆盖的方法的标志必须要和被覆盖的方法的标志完全匹配，才能达到覆盖的效果；  </li>
 <li>覆盖的方法的返回值必须和被覆盖的方法的返回一致；</li>
@@ -439,29 +449,28 @@
 <li>类方法的异常类型和数目不会对重载造成任何的影响</li>
 <li>重载事件通常发生在同一个类中，不同方法之间的现象。</li>
 </ol>
-<p>. Override表示“重写”，是子类对父类中同一方法的重新定义<br>. Overload表示“重载”，也就是定义一个与已定义方法名称相同但签名不同的新方法</p>
 <h4 id="18-Interface与abstract类的区别"><a href="#18-Interface与abstract类的区别" class="headerlink" title="18 Interface与abstract类的区别"></a>18 Interface与abstract类的区别</h4><p><em>相同点：</em></p>
 <ol>
 <li>都不能实例化</li>
-<li>都需要子类实现自己生命的 抽象方法</li>
+<li>都需要子类实现自己声明的抽象方法</li>
 <li>都可以定义静态成员变量</li>
 </ol>
 <p><em>不同点：</em></p>
 <ol>
 <li><code>interface</code>需要实现，要用<code>implements</code>，而<code>abstract class</code>需要继承，要用<code>extends</code>。</li>
-<li>一个类可以实现多个<code>interface</code>，但一个类只能继承一个<code>abstract class</code>。一个类自能有一个父类。</li>
+<li>一个类可以实现多个<code>interface</code>，但一个类只能继承一个<code>abstract class</code>。一个类只能有一个父类。</li>
 <li><code>interface</code>中的每个方法都是抽象的，<code>abstract class</code>中可以由非抽象的方法。</li>
 <li><code>abstract class</code>中可以有一般的成员变量，但是<code>interface</code>的成员变量必须是<code>static final</code>的。</li>
 </ol>
 <p>接口是一种约定，实现接口的类要遵循这个约定；抽象类本质上是一个类，使用抽象类的代价要比接口大。接口与抽象类的对比如下：</p>
 <ol>
-<li>抽象类中可以包含属性，方法（包含抽象方法与有着具体实现的方法），常量；接口只能包含常量和方法声明。</li>
+<li>抽象类中可以包含属性、方法（包含抽象方法与有着具体实现的方法）、常量；接口只能包含常量和方法声明。</li>
 <li>抽象类中的方法和成员变量可以定义可见性（比如<code>public</code>、<code>private</code>等）；而接口中的方法只能为<code>public</code>（缺省为<code>public</code>）。</li>
 <li>一个子类只能有一个父类（具体类或抽象类）；而一个接口可以继承一个多个接口，一个类也可以实现多个接口。</li>
-<li>子类中实现父类中的抽象方法时，可见性可以大于等于父类中的；而接口实现类中的接口 方法的可见性只能与接口中相同（public）。</li>
+<li>子类中实现父类中的抽象方法时，可见性可以大于等于父类中的；而接口实现类中的接口方法的可见性只能与接口中相同（public）。</li>
 </ol>
-<h4 id="19-Static-class-与non-static-class的区别"><a href="#19-Static-class-与non-static-class的区别" class="headerlink" title="19 Static class 与non static class的区别"></a>19 Static class 与non static class的区别</h4><p><code>Static class</code>只能在一个类的内部声明，如果不是则无法通过编译，编译器会报错。所以<code>Static class</code>只能是内部静态类。<br>1.静态内部类不会持有外围类的引用，而非静态内部类会隐式持有外围类的一个引用。<br>所以静态内部类只能访问外部类的静态属性和静态方法，因为它没有持有外部类对象的引用，而非静态内部类持有了这个引用。</p>
-<h4 id="20-java多态的实现原理"><a href="#20-java多态的实现原理" class="headerlink" title="20  java多态的实现原理"></a>20  java多态的实现原理</h4><p>java多态的实现依靠<code>.class</code>（编译之后）文件中的<code>方法区</code>。<code>方法区</code>包含<code>类型信息（方法、数据和类信息</code>）、<code>一个指向类里面各种方法的方法表的指针</code>和<code>运行时的常量池</code>。其中方法表里面有指向类中每个方法的指针。<code>.class</code>是编译生成的，所以说方法表也是编译生成的，所以动态绑定(多态)其实就在在方法表中找到目标方法。</p>
+<h4 id="19-Static-class-与non-static-class的区别"><a href="#19-Static-class-与non-static-class的区别" class="headerlink" title="19 Static class 与non static class的区别"></a>19 Static class 与non static class的区别</h4><p><code>Static class</code>只能在一个类的内部声明，如果不是则无法通过编译，编译器会报错。所以<code>Static class</code>只能是内部静态类。<br>静态内部类不会持有外围类的引用，而非静态内部类会隐式持有外围类的一个引用。<br>所以静态内部类只能访问外部类的静态属性和静态方法，因为它没有持有外部类对象的引用，而非静态内部类持有了这个引用。</p>
+<h4 id="20-Java多态的实现原理"><a href="#20-Java多态的实现原理" class="headerlink" title="20  Java多态的实现原理"></a>20  Java多态的实现原理</h4><p>java多态的实现依靠<code>.class</code>（编译之后）文件中的<code>方法区</code>。<code>方法区</code>包含<code>类型信息（方法、数据和类信息</code>）、<code>一个指向类里面各种方法的方法表的指针</code>和<code>运行时的常量池</code>。其中方法表里面有指向类中每个方法的指针。<code>.class</code>是编译生成的，所以说方法表也是编译生成的，所以动态绑定(多态)其实就在在方法表中找到目标方法。</p>
 <h4 id="21-实现多线程的两种方法：Thread与Runable"><a href="#21-实现多线程的两种方法：Thread与Runable" class="headerlink" title="21 实现多线程的两种方法：Thread与Runable"></a>21 实现多线程的两种方法：Thread与Runable</h4><p>继承<code>Thread</code>类:</p>
 <ol>
 <li>继承<code>Thread</code>类，并且重写<code>run</code>方法</li>
@@ -476,7 +485,7 @@
 <li><code>tt.start();</code></li>
 </ol>
 <p>其中<code>Runnable</code>接口不能抛出异常，只能<code>try catch</code>捕获异常<br><code>一般在Thread和Runnable中选择Runnable，因为可以多继承</code></p>
-<h4 id="22-线程安全的方法：volatile、sychronized、reentrantLock"><a href="#22-线程安全的方法：volatile、sychronized、reentrantLock" class="headerlink" title="22 线程安全的方法：volatile、sychronized、reentrantLock"></a>22 线程安全的方法：volatile、sychronized、reentrantLock</h4><p><code>volatile</code>:线程安全最轻量级的实现，具有两个性质可见性和禁止指令重排的特性。<br><code>volatile</code>实现线程安全的情况非常有限，因为它不具有原子性。<br>满足下面两个性质的线程操作才可以实现线程安全：</p>
+<h4 id="22-线程安全的方法：volatile、synchronized、reentrantLock"><a href="#22-线程安全的方法：volatile、synchronized、reentrantLock" class="headerlink" title="22 线程安全的方法：volatile、synchronized、reentrantLock"></a>22 线程安全的方法：volatile、synchronized、reentrantLock</h4><p><code>volatile</code>:线程安全最轻量级的实现，具有两个性质可见性和禁止指令重排的特性。<br><code>volatile</code>实现线程安全的情况非常有限，因为它不具有原子性。<br>满足下面两个性质的线程操作才可以实现线程安全：</p>
 <ol>
 <li>该变量的写操作不依赖于当前值。</li>
 <li>该变量不能包含在其它变量的不变式中。</li>
@@ -486,51 +495,47 @@
 <li><code>volatile</code>共享变量：线程每次读，都需要从主内存中读。线程每次写该变量时，都需要写入主内存。</li>
 <li>非<code>volatile</code>共享变量：线程读写该变量都从自己工作空间的变量拷贝中读写，但是当线程进入或者离开同步代码块的时候需要更新该变量。</li>
 </ol>
-<p><code>sychronized</code>：是<code>java</code>中的关键字，底层用<code>monitor</code>对象实现。<br>三种修饰：</p>
+<p><code>synchronized</code>：是<code>Java</code>中的关键字，底层用<code>monitor</code>对象实现。</p>
+<p><code>synchronized</code>底层(线程状态及状态转换):<br>当多个线程同时请求某个对象监视器时，对象监视器会设置几种状态用来区分请求的线程：<br><code>Contention List</code>：所有请求锁的线程将被首先放置到该竞争队列<br><code>Entry List</code>：<code>Contention List</code>中那些有资格成为候选人的线程被移到<code>Entry List</code><br><code>Wait Set</code>：那些调用wait方法被阻塞的线程被放置到<code>Wait Set</code><br><code>OnDeck</code>：任何时刻最多只能有一个线程正在竞争锁，该线程称为<code>OnDeck</code><br><code>Owner</code>：获得锁的线程称为<code>Owner</code><br><code>!Owner</code>：释放锁的线程</p>
+<p><code>synchronized</code>底层包含3种锁（优化性能）：</p>
 <ol>
-<li>修饰非静态方法，此时锁的是当前对象</li>
-<li>修饰静态方法，  此时锁的是当前的类的<code>class</code>对象，即所有这个类的实例化对象。</li>
-<li>修饰代码块， 锁的是括号中配置的实例对象。</li>
-</ol>
-<p><code>sychronized</code>底层(线程状态及状态转换):<br>当多个线程同时请求某个对象监视器时，对象监视器会设置几种状态用来区分请求的线程：<br><code>Contention List</code>：所有请求锁的线程将被首先放置到该竞争队列<br><code>Entry List</code>：<code>Contention List</code>中那些有资格成为候选人的线程被移到<code>Entry List</code><br><code>Wait Set</code>：那些调用wait方法被阻塞的线程被放置到<code>Wait Set</code><br><code>OnDeck</code>：任何时刻最多只能有一个线程正在竞争锁，该线程称为<code>OnDeck</code><br><code>Owner</code>：获得锁的线程称为<code>Owner</code><br><code>!Owner</code>：释放锁的线程</p>
-<p><code>sychronized</code>底层包含3种锁（优化性能）：</p>
-<ol>
-<li>偏向锁：主要用于无竞争条件下，由于锁都是可重入的，即已经获得锁的进程可以多次锁住/解锁<code>monitor对象</code>。偏向的意思就是当线程第一次获得锁之后，下一次由于还是这个线程获得锁，那么就取消加锁/解锁的流程，以提高效率。</li>
-<li>轻量级锁(自选锁)：适用于多线程竞争条件下，当发生竞争时，想要获取锁的线程由于当前有其它线程占用锁，所以必须等待。此时由于锁占用的时间不会很长，所以竞争线程不需要挂起，只需自旋一段时间就可以获得该锁。</li>
-<li>重量级锁：竞争线程由于不能获取锁，而且需要等待很长的时间，所以将其挂起， 由<code>OS</code>来调度。</li>
+<li>偏向锁：主要用于无竞争条件下，由于锁都是可重入的，即已经获得锁的进程可以多次锁住/解锁<code>monitor对象</code>。偏向的意思就是当线程第一次获得锁之后，下一次由于还是这个线程访问，那么就会自动获取锁，降低获取锁的代价，以提高效率。</li>
+<li>轻量级锁(自旋锁)：适用于多线程竞争条件下，当发生竞争时，想要获取锁的线程由于当前有其它线程占用锁，所以必须等待。此时由于锁占用的时间不会很长，所以竞争线程不需要挂起，只需自旋一段时间就可以获得该锁。</li>
+<li>重量级锁(synchronized)：竞争线程由于不能获取锁，而且需要等待很长的时间，所以将其挂起， 由<code>OS</code>来调度。</li>
 </ol>
 <p>锁的升级：无锁–&gt;偏向锁–&gt;轻量级锁(自旋锁)–&gt;重量级锁</p>
 <p><code>Lock</code>:</p>
 <ol>
-<li><code>Lock</code>是<code>java</code>代码实现的，和jvm无关。</li>
-<li><code>Lock</code>和<code>sychronized</code>一点最大的不同，采用<code>sychronized</code>的代码不需要手动解锁，而采用<code>Lock</code>的方式必须手动解锁。</li>
+<li><code>Lock</code>是<code>Java</code>代码实现的，和JVM无关。</li>
+<li><code>Lock</code>和<code>synchronized</code>一点最大的不同，采用<code>synchronized</code>的代码不需要手动解锁，而采用<code>Lock</code>的方式必须手动解锁。</li>
 </ol>
 <p><code>Lock</code>的特点：</p>
 <ol>
 <li><code>Lock</code>实现了读写锁。</li>
-<li><code>Lock</code>实现了可中断的锁：A、B竞争互斥锁，A获得了该锁，B必须等待，如果B被中断(比如IO)，那么B可以响应中断。</li>
+<li><code>Lock</code>实现了可中断的锁：A、B竞争互斥锁，A获得了该锁，B必须等待，如果B被中断(比如IO)，那么B可以响应中断。(ReentrantLock的lockInterruptibly()方法可以优先考虑响应中断。)</li>
 </ol>
 <p>锁的相关概念：</p>
 <ol>
 <li>可重入锁：可重入性实际上表明了锁的分配机制，基于线程的分配，而不是基于方法调用的分配。<code>Lock</code>和<code>sychronized</code>都是可重入锁。具体解释是当一个线程已经获取了这个锁，然后在调用加锁的方法时，可重入锁会将锁的引用计数加一，然后从这个方法返回。</li>
 <li>可中断锁：如果某一线程A正在执行锁中的代码，另一线程B正在等待获取该锁，可能由于等待时间过长，线程B不想等待了，想先处理其他事情，我们可以让它中断自己或者在别的线程中中断它，这种就是可中断锁。<code>synchronized</code>就不是可中断锁，而<code>Lock</code>是可中断锁。</li>
-<li>公平锁：公平锁即尽量以请求锁的顺序来获取锁。比如同是有多个线程在等待一个锁，当这个锁被释放时，等待时间最久的线程（最先请求的线程）会获得该所，这种就是公平锁。<code>synchronized</code>就是非公平锁，它无法保证等待的线程获取锁的顺序。</li>
+<li>公平锁：公平锁即尽量以请求锁的顺序来获取锁。比如同时有多个线程在等待一个锁，当这个锁被释放时，等待时间最久的线程（最先请求的线程）会获得该所，这种就是公平锁。<code>synchronized</code>就是非公平锁，它无法保证等待的线程获取锁的顺序。</li>
 </ol>
-<h4 id="23-锁的等级：方法锁、对象锁、类锁"><a href="#23-锁的等级：方法锁、对象锁、类锁" class="headerlink" title="23 锁的等级：方法锁、对象锁、类锁"></a>23 锁的等级：方法锁、对象锁、类锁</h4><p><code>sychronized</code>三种修饰(一样)：</p>
+<h4 id="23-锁的等级：方法锁、对象锁、类锁"><a href="#23-锁的等级：方法锁、对象锁、类锁" class="headerlink" title="23 锁的等级：方法锁、对象锁、类锁"></a>23 锁的等级：方法锁、对象锁、类锁</h4><p><code>sychronized</code>三种修饰：</p>
 <ol>
-<li>修饰非静态方法，此时锁的是当前对象</li>
-<li>修饰静态方法，  此时锁的是当前的类的<code>class</code>对象，即所有这个类的实例化对象。</li>
-<li>修饰代码块， 锁的是括号中配置的实例对象。</li>
+<li>修饰非静态方法，此时锁的是当前对象。</li>
+<li>修饰静态方法，此时锁的是当前的类的<code>class</code>对象，即所有这个类的实例化对象。</li>
+<li>修饰代码块，锁的是括号中配置的实例对象。</li>
 </ol>
-<h4 id="24-写出生产者消费者模式"><a href="#24-写出生产者消费者模式" class="headerlink" title="24 写出生产者消费者模式"></a>24 写出生产者消费者模式</h4><p><code>分析：</code><br><code>生产者和生产者：互斥</code><br><code>生产者和消费者：互斥和同步</code><br><code>消费者和消费者：互斥</code></p>
-<p><em>伪代码</em><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">semphore empty = <span class="number">20</span>;</span><br><span class="line">semphore full  = <span class="number">0</span>;</span><br><span class="line">semphore mutex = <span class="number">1</span>; <span class="comment">//互斥</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">producer</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">while</span> (<span class="number">1</span>)&#123;</span><br><span class="line">	      p(empty);</span><br><span class="line">	      p(mutex);</span><br><span class="line">	      produce_and_put();</span><br><span class="line">	      v(mutex);</span><br><span class="line">	      v(full);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">consumer</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">while</span> (<span class="number">1</span>)&#123;</span><br><span class="line">	      p(full);</span><br><span class="line">	      p(mutex);</span><br><span class="line">	      get_and_consumer();</span><br><span class="line">	      v(mutex);</span><br><span class="line">	      v(empty);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="24-写出生产者消费者模式"><a href="#24-写出生产者消费者模式" class="headerlink" title="24 写出生产者消费者模式"></a>24 写出生产者消费者模式</h4><p>分析：<br>生产者和生产者：互斥<br>生产者和消费者：互斥和同步<br>消费者和消费者：互斥</p>
+<p><em>伪代码</em></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">semphore empty = <span class="number">20</span>;</span><br><span class="line">semphore full  = <span class="number">0</span>;</span><br><span class="line">semphore mutex = <span class="number">1</span>; <span class="comment">//互斥</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">producer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">	      p(empty);</span><br><span class="line">	      p(mutex);</span><br><span class="line">	      produce_and_put();</span><br><span class="line">	      v(mutex);</span><br><span class="line">	      v(full);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">consumer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">	      p(full);</span><br><span class="line">	      p(mutex);</span><br><span class="line">	      get_and_consumer();</span><br><span class="line">	      v(mutex);</span><br><span class="line">	      v(empty);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h4 id="25-ThreadLocal的设计理念与作用"><a href="#25-ThreadLocal的设计理念与作用" class="headerlink" title="25 ThreadLocal的设计理念与作用"></a>25 ThreadLocal的设计理念与作用</h4><p><code>ThreadLocal</code>是线程局部变量。每个线程都有自己的副本，而不会与其它线程的副本相冲突。<br><code>ThreadLocal</code>最常用于以下这个场景：多线程环境下存在对非线程安全对象的并发访问，而且该对象不需要在线程间共享，但是我们不想加锁，这时候可以使用ThreadLocal来使得每个线程都持有一个该对象的副本。</p>
-<p><code>pulic T get(){}</code>: 获取当前线程的局部变量。<br><code>public void set(T vaule){}</code>: 设置当前线程的局部变量。<br><code>public void remove()</code>: 移除当前线程副本。<br><code>protected initialvalue(){}</code>：<code>protected</code>方法，在使用前 需要重写。</p>
-<p>实现原理：<br>每个<code>ThreadLocal</code>对象都包含一个<code>ThreadLocalMap</code>(类似于一个<code>hashmap</code>，数组实现，因为没有碰撞)，key为<code>thread</code>，<code>value</code>为变量。</p>
+<p><code>pulic T get(){}</code>: 获取当前线程的局部变量。<br><code>public void set(T vaule){}</code>: 设置当前线程的局部变量。<br><code>public void remove()</code>: 移除当前线程副本。<br><code>protected initialvalue(){}</code>：<code>protected</code>方法，在使用前需要重写。</p>
+<p>实现原理：<br>每个<code>ThreadLocal</code>对象都包含一个<code>ThreadLocalMap</code>(概念上的map，维护了一个Entry表或者说Entry数组，使用线性探测法来解决散列冲突)，key为ThreadLocal对象，value为变量。</p>
 <h4 id="26-ThreadPool用法与优势。"><a href="#26-ThreadPool用法与优势。" class="headerlink" title="26. ThreadPool用法与优势。"></a>26. ThreadPool用法与优势。</h4><p>线程池的优点：</p>
 <ol>
 <li>减少资源消耗：当有大量线程进行不断得创建和撤销，这种性能的消耗是很大的，有了线程池可以减少这种不必要的消耗。</li>
-<li>加快线程的响应：没有线程池的情况，线程需要创建才能运行，有了线程池之后，就可以直接运行可。</li>
+<li>加快线程的响应：没有线程池的情况，线程需要创建才能运行，有了线程池之后，就可以直接运行。</li>
 <li>方便对于线程的管理。</li>
 </ol>
 <h4 id="27-Concurrent包里的其他东西：ArrayBlockingQueue、CountDownLatch等等"><a href="#27-Concurrent包里的其他东西：ArrayBlockingQueue、CountDownLatch等等" class="headerlink" title="27 Concurrent包里的其他东西：ArrayBlockingQueue、CountDownLatch等等"></a>27 Concurrent包里的其他东西：ArrayBlockingQueue、CountDownLatch等等</h4><p><code>ArrayBlockingQueue</code>:由数组实现的有限堵塞队列，它本质上是一个容器队列。<br><code>BlockingQueue</code>的方法：<br><code>队尾添加</code>:</p>
@@ -588,24 +593,35 @@
 </table>
 <p><code>面向流和缓冲区的区别</code>：<code>Java IO</code>面向流意味着每次从流中读一个或者多个数据，直至读取所有数据，它们没有被缓存到任何地方。此外，它不能前后移动流中的数据。如果需要前后移动流中的数据，就必须先把流中的数据缓存到一个缓冲区中。<code>Java NIO</code>的方法略有不同。它是先把数据缓存到一个缓冲区中，需要时可以前后移动缓冲区中的数据，所以比较灵活。但是需要检查是否该缓冲区中包含所有你需要处理的数据。而且，需要确保当有更多数据放入缓冲区时，不要覆盖缓冲区中尚未处理完的数据。<br><code>堵塞IO和非堵塞IO</code>：这两个概念是在网络<code>IO</code>中提出的，<code>堵塞型IO</code>指的是当线程读取一个设备的数据时，发现没有数据可以读取，则线程堵塞，直到有数据可以读取时才被唤醒。当线程写一个设备时，发现设备没有空间可以写，则线程堵塞，直到有空间可以写时才被唤醒。<code>堵塞型IO</code>是<code>Java IO</code>的方式。非堵塞型IO，则有点不同，当线程读一个设备时，发现没有数据可以读，则线程不堵塞，可以做完成其它的任务，但是需要回来不断查询设备是否有数据可以读取。当一个线程写一个设备时，发现没有空间可以写，则线程去执行其它的任务，然后再回来不断查询设备现在是否有空间可以写。<code>Java NIO</code>的工作方式是非堵塞型IO。</p>
 <p><code>选择器</code>:一个线程可以用一个选择器注册多个<code>IO</code>通道，然后管理这些<code>IO</code>通道。</p>
-<h4 id="31-反射的作用于原理"><a href="#31-反射的作用于原理" class="headerlink" title="31 反射的作用于原理"></a>31 反射的作用于原理</h4><p><code>Java反射机制</code>: 可以让我们在运行时获取类的方法、属性、接口等类的内部信息的机制。也就是说。反射本质上是一个<code>反着来</code>的过程。当我们可以通过<code>new</code>创建一个类的实例时，实际上是由<code>Java</code>虚拟机根据这个类的<code>Class</code>对象在运行时构建出来的 。而反射是首先根据类的完整路径(运行期间)，或者类名(编译期间)获取该类的<code>Class</code>对象来获取它的定义信息，从而我们可以访问到它的方法、属性，知道这个类的父类、实现了哪些接口等信息。</p>
-<p>通过类名/对象 –&gt;(获取) 类的<code>class</code>对象  –&gt; 访问类的成员变量/成员方法（等所有信息）。</p>
+<h4 id="31-反射的作用与原理"><a href="#31-反射的作用与原理" class="headerlink" title="31 反射的作用与原理"></a>31 反射的作用与原理</h4><p><code>Java反射机制</code>: 可以让我们在运行时获取类的方法、属性、接口等类的内部信息的机制。也就是说，反射本质上是一个<code>反着来</code>的过程。当我们可以通过<code>new</code>创建一个类的实例时，实际上是由<code>Java</code>虚拟机根据这个类的<code>Class</code>对象在运行时构建出来的 。而反射是首先根据类的完整路径(运行期间)，或者类名(编译期间)获取该类的<code>Class</code>对象来获取它的定义信息，从而我们可以访问到它的方法、属性，知道这个类的父类、实现了哪些接口等信息。</p>
+<p>通过类名/对象 –&gt; (获取) 类的<code>class</code>对象  –&gt; 访问类的成员变量/成员方法（等所有信息）。</p>
 <h4 id="32-泛型常用特点，List能否转为List"><a href="#32-泛型常用特点，List能否转为List" class="headerlink" title="32 泛型常用特点，List能否转为List"></a>32 泛型常用特点，List<string>能否转为List<object></object></string></h4><ol>
 <li>为何引入泛型：在没有泛型出来的那时，一些容器的存取类型，都要经过类型转化，这会造成有些类型不符合造成的运行期间的错误。</li>
-<li><p>泛型类：就是具有一个或者多个类型参数的类。</p>
+<li>泛型类：就是具有一个或者多个类型参数的类。</li>
+</ol>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Pair</span>&lt;<span class="title">T</span>, <span class="title">U</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> T first;</span><br><span class="line">        <span class="keyword">private</span> U second;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Pair</span><span class="params">(T first, U second)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.first = first;</span><br><span class="line">	            <span class="keyword">this</span>.second = second;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> T <span class="title">getFirst</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> first;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> U <span class="title">getSecond</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> second;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setFirst</span><span class="params">(T newValue)</span> </span>&#123;</span><br><span class="line">            first = newValue;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setSecond</span><span class="params">(U newValue)</span> </span>&#123;</span><br><span class="line">            second = newValue;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
+<ol>
 <li><p>泛型方法：就是带类型参数的方法。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ArrayAlg</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="function">T <span class="title">getMiddle</span><span class="params">(T[] a)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> a[a.length / <span class="number">2</span>];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>类型通配符：</p>
 <ol>
 <li><code>?</code>:是所有实参的父类。</li>
-<li><code>? extends A</code>必须是A的子类</li>
-<li><code>? supper A</code>必须是A的父类<br><code>List&lt;String&gt; 能否转化为List&lt;Object&gt; ?</code><br>答案：不能转换。<br>因为<code>String</code>的<code>List</code>持有的是String类和其子类的对性，<code>Object</code>的<code>List</code>可以持有任何类型的<code>Object</code>,所以<code>String</code>的<code>List</code>不等价于<code>object</code>的<code>List</code>。<br>但是<code>List&lt;String&gt;</code>可以转换为<code>List&lt;? extends object&gt;</code></li>
+<li>&lt;? extends T&gt;：是指 “上界通配符（Upper Bounds Wildcards）,不能往里存，只能往外取</li>
+<li>&lt;? super T&gt;：是指 “下界通配符（Lower Bounds Wildcards）,不影响往里存，但往外取只能放在Object对象里</li>
 </ol>
 </li>
 </ol>
+<p>&lt;? extends Fruit&gt;会使往盘子里放东西的set()方法失效。但取东西get()方法还有效。比如下面例子里两个set()方法，插入Apple和Fruit都报错。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Plate&lt;? extends Fruit&gt; p=<span class="keyword">new</span> Plate&lt;Apple&gt;(<span class="keyword">new</span> Apple());</span><br><span class="line"><span class="comment">//不能存入任何元素</span></span><br><span class="line">p.set(<span class="keyword">new</span> Fruit()); <span class="comment">//Error</span></span><br><span class="line">p.set(<span class="keyword">new</span> Apple()); <span class="comment">//Error</span></span><br><span class="line"><span class="comment">//读取出来的东西只能存放在Fruit或它的基类里。</span></span><br><span class="line">Fruit newFruit1=p.get();</span><br><span class="line">Object newFruit2=p.get();</span><br><span class="line">Apple newFruit3=p.get(); <span class="comment">//Error</span></span><br></pre></td></tr></table></figure>
+<p>使用下界&lt;? super Fruit&gt;会使从盘子里取东西的get()方法部分失效，只能存放到Object对象里。set()方法正常。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Plate&lt;? <span class="keyword">super</span> Fruit&gt; p=<span class="keyword">new</span> Plate&lt;Fruit&gt;(<span class="keyword">new</span> Fruit());</span><br><span class="line"><span class="comment">//存入元素正常</span></span><br><span class="line">p.set(<span class="keyword">new</span> Fruit());</span><br><span class="line">p.set(<span class="keyword">new</span> Apple());</span><br><span class="line"><span class="comment">//读取出来的东西只能存放在Object类里。</span></span><br><span class="line">Apple newFruit3=p.get(); <span class="comment">//Error</span></span><br><span class="line">Fruit newFruit1=p.get(); <span class="comment">//Error</span></span><br><span class="line">Object newFruit2=p.get();</span><br></pre></td></tr></table></figure>
+<p>PECS（Producer Extends Consumer Super）原则，如果参数化类型表示一个生产者，就使用&lt;? extends T&gt;；如果它表示一个消费者，就使用&lt;? super T&gt;</p>
+<ul>
+<li>频繁往外读取内容的，适合用上界Extends。</li>
+<li>经常往里插入的，适合用下界Super。</li>
+</ul>
+<p><code>List&lt;String&gt; 能否转化为List&lt;Object&gt; ?</code><br>答案：不能转换。<br>因为<code>String</code>的<code>List</code>持有的是String类和其子类的对性，<code>Object</code>的<code>List</code>可以持有任何类型的<code>Object</code>，所以<code>String</code>的<code>List</code>不等价于<code>Object</code>的<code>List</code>。<br>但是<code>List&lt;String&gt;</code>可以转换为<code>List&lt;? extends Object&gt;</code></p>
 <h4 id="33-解析XML的几种方式的原理与特点：DOM、SAX、PULL"><a href="#33-解析XML的几种方式的原理与特点：DOM、SAX、PULL" class="headerlink" title="33 解析XML的几种方式的原理与特点：DOM、SAX、PULL"></a>33 解析XML的几种方式的原理与特点：DOM、SAX、PULL</h4><p><code>略</code></p>
 <h4 id="34-Java与C-对比"><a href="#34-Java与C-对比" class="headerlink" title="34 Java与C++对比"></a>34 Java与C++对比</h4><ol>
 <li><code>Java</code> 比<code>C++</code>具有更好的跨平台性（可移植性），但是付出了性能的代价。</li>
@@ -641,7 +657,7 @@
         <p><span>本文标题:</span><a href="/2018/04/05/java-base/">Java-基础</a></p>
         <p><span>文章作者:</span><a href="/" title="回到主页">HuangLangyou</a></p>
         <p><span>发布时间:</span>2018-04-05, 13:14:45</p>
-        <p><span>最后更新:</span>2018-08-13, 16:38:06</p>
+        <p><span>最后更新:</span>2018-08-15, 15:22:07</p>
         <p>
             <span>原始链接:</span><a class="post-url" href="/2018/04/05/java-base/" title="Java-基础">https://onlyyouhuang.github.io/2018/04/05/java-base/</a>
             <span class="copy-path" data-clipboard-text="原文: https://onlyyouhuang.github.io/2018/04/05/java-base/　　作者: HuangLangyou" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
@@ -659,7 +675,7 @@
         
             <div id="article-nav-newer" class="article-nav-title">
                 <a href="/2018/04/06/java-base-2/">
-                    Java-基础-并发包
+                    Java-基础(2)
                 </a>
             </div>
         
@@ -677,7 +693,7 @@
 
     <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
-    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-8种基本数据类型"><span class="toc-number">1.</span> <span class="toc-text">1. 8种基本数据类型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-不能作为switch的参数的类型"><span class="toc-number">2.</span> <span class="toc-text">2. 不能作为switch的参数的类型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-equals和-的区别"><span class="toc-number">3.</span> <span class="toc-text">3. equals和==的区别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-Object类的共有方法"><span class="toc-number">4.</span> <span class="toc-text">4. Object类的共有方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-Java的四种引用"><span class="toc-number">5.</span> <span class="toc-text">5.Java的四种引用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-Hashcode的作用"><span class="toc-number">6.</span> <span class="toc-text">6. Hashcode的作用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-ArrayList、LinkedList、Vector的区别"><span class="toc-number">7.</span> <span class="toc-text">7. ArrayList、LinkedList、Vector的区别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#8-String、StringBuffer与StringBuilder的区别"><span class="toc-number">8.</span> <span class="toc-text">8. String、StringBuffer与StringBuilder的区别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#9-Map、Set、List、Queue、Stack的特点与用法"><span class="toc-number">9.</span> <span class="toc-text">9. Map、Set、List、Queue、Stack的特点与用法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#10-HashMap和Hashtable的区别"><span class="toc-number">10.</span> <span class="toc-text">10. HashMap和Hashtable的区别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#11-HashMap和ConcurrentHashMap的区别，HashMap的底层源码"><span class="toc-number">11.</span> <span class="toc-text">11. HashMap和ConcurrentHashMap的区别，HashMap的底层源码</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#12-TreeMap、HashMap、LindedHashMap和WeakHashMap的区别"><span class="toc-number">12.</span> <span class="toc-text">12. TreeMap、HashMap、LindedHashMap和WeakHashMap的区别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#13-Collection包结构，与Collections的区别"><span class="toc-number">13.</span> <span class="toc-text">13 Collection包结构，与Collections的区别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#14-try-catch-finally，try里有return，finally还执行么？"><span class="toc-number">14.</span> <span class="toc-text">14 try catch finally，try里有return，finally还执行么？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#15-Excption与Error包结构。OOM你遇到过哪些情况，SOF你遇到过哪些情况。"><span class="toc-number">15.</span> <span class="toc-text">15 Excption与Error包结构。OOM你遇到过哪些情况，SOF你遇到过哪些情况。</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#16-Java面向对象的三个特征与含义"><span class="toc-number">16.</span> <span class="toc-text">16 Java面向对象的三个特征与含义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#17-Override和Overload的含义去区别。"><span class="toc-number">17.</span> <span class="toc-text">17 Override和Overload的含义去区别。</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#18-Interface与abstract类的区别"><span class="toc-number">18.</span> <span class="toc-text">18 Interface与abstract类的区别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#19-Static-class-与non-static-class的区别"><span class="toc-number">19.</span> <span class="toc-text">19 Static class 与non static class的区别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#20-java多态的实现原理"><span class="toc-number">20.</span> <span class="toc-text">20  java多态的实现原理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#21-实现多线程的两种方法：Thread与Runable"><span class="toc-number">21.</span> <span class="toc-text">21 实现多线程的两种方法：Thread与Runable</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#22-线程安全的方法：volatile、sychronized、reentrantLock"><span class="toc-number">22.</span> <span class="toc-text">22 线程安全的方法：volatile、sychronized、reentrantLock</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#23-锁的等级：方法锁、对象锁、类锁"><span class="toc-number">23.</span> <span class="toc-text">23 锁的等级：方法锁、对象锁、类锁</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#24-写出生产者消费者模式"><span class="toc-number">24.</span> <span class="toc-text">24 写出生产者消费者模式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#25-ThreadLocal的设计理念与作用"><span class="toc-number">25.</span> <span class="toc-text">25 ThreadLocal的设计理念与作用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#26-ThreadPool用法与优势。"><span class="toc-number">26.</span> <span class="toc-text">26. ThreadPool用法与优势。</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#27-Concurrent包里的其他东西：ArrayBlockingQueue、CountDownLatch等等"><span class="toc-number">27.</span> <span class="toc-text">27 Concurrent包里的其他东西：ArrayBlockingQueue、CountDownLatch等等</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#28-wait-和sleep-的区别"><span class="toc-number">28.</span> <span class="toc-text">28 wait()和sleep()的区别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#29-foreach与正常for循环效率对比"><span class="toc-number">29.</span> <span class="toc-text">29 foreach与正常for循环效率对比</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#30-Java-IO与NIO的主要区别"><span class="toc-number">30.</span> <span class="toc-text">30 Java IO与NIO的主要区别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#31-反射的作用于原理"><span class="toc-number">31.</span> <span class="toc-text">31 反射的作用于原理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#32-泛型常用特点，List能否转为List"><span class="toc-number">32.</span> <span class="toc-text">32 泛型常用特点，List能否转为List</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#33-解析XML的几种方式的原理与特点：DOM、SAX、PULL"><span class="toc-number">33.</span> <span class="toc-text">33 解析XML的几种方式的原理与特点：DOM、SAX、PULL</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#34-Java与C-对比"><span class="toc-number">34.</span> <span class="toc-text">34 Java与C++对比</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#35-Java1-7与1-8新特性"><span class="toc-number">35.</span> <span class="toc-text">35 Java1.7与1.8新特性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#36-设计模式：单例、工厂、适配器、责任链、观察者等等"><span class="toc-number">36.</span> <span class="toc-text">36 设计模式：单例、工厂、适配器、责任链、观察者等等</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#37-JNI的使用"><span class="toc-number">37.</span> <span class="toc-text">37 JNI的使用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#38-类加载顺序"><span class="toc-number">38.</span> <span class="toc-text">38 类加载顺序</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-8种基本数据类型"><span class="toc-number">1.</span> <span class="toc-text">1. 8种基本数据类型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-不能作为switch的参数的类型"><span class="toc-number">2.</span> <span class="toc-text">2. 不能作为switch的参数的类型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-equals和-的区别"><span class="toc-number">3.</span> <span class="toc-text">3. equals和==的区别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-Object类的共有方法"><span class="toc-number">4.</span> <span class="toc-text">4. Object类的共有方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-Java的四种引用"><span class="toc-number">5.</span> <span class="toc-text">5.Java的四种引用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-HashCode的作用"><span class="toc-number">6.</span> <span class="toc-text">6. HashCode的作用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-ArrayList、LinkedList、Vector的区别"><span class="toc-number">7.</span> <span class="toc-text">7. ArrayList、LinkedList、Vector的区别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#8-String、StringBuffer与StringBuilder的区别"><span class="toc-number">8.</span> <span class="toc-text">8. String、StringBuffer与StringBuilder的区别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#9-Map、Set、List、Queue、Stack的特点与用法"><span class="toc-number">9.</span> <span class="toc-text">9. Map、Set、List、Queue、Stack的特点与用法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#10-HashMap和Hashtable的区别"><span class="toc-number">10.</span> <span class="toc-text">10. HashMap和Hashtable的区别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#11-HashMap和ConcurrentHashMap的区别，HashMap的底层源码"><span class="toc-number">11.</span> <span class="toc-text">11. HashMap和ConcurrentHashMap的区别，HashMap的底层源码</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#12-TreeMap、HashMap、LindedHashMap和WeakHashMap的区别"><span class="toc-number">12.</span> <span class="toc-text">12. TreeMap、HashMap、LindedHashMap和WeakHashMap的区别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#13-Collection包结构，与Collections的区别"><span class="toc-number">13.</span> <span class="toc-text">13 Collection包结构，与Collections的区别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#14-try-catch-finally，try里有return，finally还执行么？"><span class="toc-number">14.</span> <span class="toc-text">14 try catch finally，try里有return，finally还执行么？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#15-Excption与Error包结构。OOM你遇到过哪些情况，SOF你遇到过哪些情况。"><span class="toc-number">15.</span> <span class="toc-text">15 Excption与Error包结构。OOM你遇到过哪些情况，SOF你遇到过哪些情况。</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#16-Java面向对象的三个特征与含义"><span class="toc-number">16.</span> <span class="toc-text">16 Java面向对象的三个特征与含义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#17-Override和Overload的含义去区别。"><span class="toc-number">17.</span> <span class="toc-text">17 Override和Overload的含义去区别。</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#18-Interface与abstract类的区别"><span class="toc-number">18.</span> <span class="toc-text">18 Interface与abstract类的区别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#19-Static-class-与non-static-class的区别"><span class="toc-number">19.</span> <span class="toc-text">19 Static class 与non static class的区别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#20-Java多态的实现原理"><span class="toc-number">20.</span> <span class="toc-text">20  Java多态的实现原理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#21-实现多线程的两种方法：Thread与Runable"><span class="toc-number">21.</span> <span class="toc-text">21 实现多线程的两种方法：Thread与Runable</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#22-线程安全的方法：volatile、synchronized、reentrantLock"><span class="toc-number">22.</span> <span class="toc-text">22 线程安全的方法：volatile、synchronized、reentrantLock</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#23-锁的等级：方法锁、对象锁、类锁"><span class="toc-number">23.</span> <span class="toc-text">23 锁的等级：方法锁、对象锁、类锁</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#24-写出生产者消费者模式"><span class="toc-number">24.</span> <span class="toc-text">24 写出生产者消费者模式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#25-ThreadLocal的设计理念与作用"><span class="toc-number">25.</span> <span class="toc-text">25 ThreadLocal的设计理念与作用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#26-ThreadPool用法与优势。"><span class="toc-number">26.</span> <span class="toc-text">26. ThreadPool用法与优势。</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#27-Concurrent包里的其他东西：ArrayBlockingQueue、CountDownLatch等等"><span class="toc-number">27.</span> <span class="toc-text">27 Concurrent包里的其他东西：ArrayBlockingQueue、CountDownLatch等等</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#28-wait-和sleep-的区别"><span class="toc-number">28.</span> <span class="toc-text">28 wait()和sleep()的区别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#29-foreach与正常for循环效率对比"><span class="toc-number">29.</span> <span class="toc-text">29 foreach与正常for循环效率对比</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#30-Java-IO与NIO的主要区别"><span class="toc-number">30.</span> <span class="toc-text">30 Java IO与NIO的主要区别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#31-反射的作用与原理"><span class="toc-number">31.</span> <span class="toc-text">31 反射的作用与原理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#32-泛型常用特点，List能否转为List"><span class="toc-number">32.</span> <span class="toc-text">32 泛型常用特点，List能否转为List</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#33-解析XML的几种方式的原理与特点：DOM、SAX、PULL"><span class="toc-number">33.</span> <span class="toc-text">33 解析XML的几种方式的原理与特点：DOM、SAX、PULL</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#34-Java与C-对比"><span class="toc-number">34.</span> <span class="toc-text">34 Java与C++对比</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#35-Java1-7与1-8新特性"><span class="toc-number">35.</span> <span class="toc-text">35 Java1.7与1.8新特性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#36-设计模式：单例、工厂、适配器、责任链、观察者等等"><span class="toc-number">36.</span> <span class="toc-text">36 设计模式：单例、工厂、适配器、责任链、观察者等等</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#37-JNI的使用"><span class="toc-number">37.</span> <span class="toc-text">37 JNI的使用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#38-类加载顺序"><span class="toc-number">38.</span> <span class="toc-text">38 类加载顺序</span></a></li></ol>
 </div>
 <style>
     .left-col .switch-btn {
@@ -754,7 +770,7 @@
 
     <div class="scroll" id="post-nav-button">
         
-            <a href="/2018/04/06/java-base-2/" title="上一篇: Java-基础-并发包">
+            <a href="/2018/04/06/java-base-2/" title="上一篇: Java-基础(2)">
                 <i class="fa fa-angle-left"></i>
             </a>
         
@@ -768,7 +784,7 @@
         
     </div>
 
-    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/05/15/java-LinkedHashMap精读(2)/">Java-LinkedHashMap精读(2)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/15/java-LinkedHashMap精读(1)/">Java-LinkedHashMap精读(1)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/15/java-LinkedHashMap/">Java-LinkedHashMap</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/13/java-ConcurrentHashMap精读(2)/">ConcurrentHashMap精读(2)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/13/java-ConcurrentHashMap精读(1)/">ConcurrentHashMap精读(1)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/11/java-hashtable/">java-hashtable</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/11/java-Hash-And-TreeMap/">TreeMap和hash解决冲突原理</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/10/java-HashMap精读(2)/">Java-HashMap精读(2)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/10/java-HashMap精读(1)/">Java-HashMap精读(1)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/08/java-ReentrantLock-2/">ReentrantLock精读(2)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/07/java-ReentrantLock-1/">ReentrantLock精读(1)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/06/java-Lock/">java-Lock的基本思想</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/06/java-Synchronized/">Java-Synchronized 原理</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/07/java-base-3/">Java-基础(3)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/06/java-base-2/">Java-基础-并发包</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/05/java-base/">Java-基础</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/04/JVM-GC与性能优化/">JVM GC与性能优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/04/数据库索引/">数据库索引</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/14/Oracle问题解决/">Oracle问题&解决方案</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/10/docker/">Docker命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/02/20/排序算法/">排序算法</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/22/Spring框架IOC容器和AOP解析/">Spring框架IOC容器和AOP解析</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/28/IDEA配置记录/">IDEA配置记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/01/10/hexo博客迁移-多机更新/">hexo博客迁移&多机更新</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/08/20/java-BIO、NIO、AIO/">Java BIO、NIO、AIO</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/28/git命令/">git命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/17/游戏项目记录/">游戏项目记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/01/Android-NDK/">Android NDK</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/29/开发工具记录/">开发工具记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/21/Android-JS桥/">Android JS桥</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/05/18/Android-onTouch事件传递机制/">Android onTouch事件传递机制</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/22/Android-Studio/">Android Studio</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/16/Android-px-dp-sp/">Android px_dp_sp</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/15/Android-fragment/">Android fragment</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/08/Android-adb/">Android adb</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/07/Android-Html5/">Android_Html5</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/05/Java实现断点续传/">Java实现断点续传</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/31/淘宝SDK-for-Android/">淘宝SDK for Android</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/20/2016-3-10-Android面试/">2016-3-10 Android面试总结</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/14/个人博客搭建/">个人博客搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/14/hello-world/">Hello World</a></li></ul>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/05/15/java-LinkedHashMap精读(2)/">Java-LinkedHashMap精读(2)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/15/java-LinkedHashMap精读(1)/">Java-LinkedHashMap精读(1)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/15/java-LinkedHashMap/">Java-LinkedHashMap</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/13/java-ConcurrentHashMap精读(2)/">ConcurrentHashMap精读(2)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/13/java-ConcurrentHashMap精读(1)/">ConcurrentHashMap精读(1)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/11/java-hashtable/">java-hashtable</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/11/java-Hash冲突/">hash解决冲突原理</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/10/java-HashMap精读(2)/">Java-HashMap精读(2)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/10/java-HashMap精读(1)/">Java-HashMap精读(1)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/08/java-ReentrantLock-2/">ReentrantLock精读(2)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/07/java-ReentrantLock-1/">ReentrantLock精读(1)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/06/java-Lock/">java-Lock的基本思想</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/06/java-Synchronized/">Java-Synchronized 原理</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/07/java-base-3/">Java-基础-并发包</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/06/java-base-2/">Java-基础(2)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/05/java-base/">Java-基础</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/04/JVM-GC与性能优化/">JVM GC与性能优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/04/数据库索引/">数据库索引</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/14/Oracle问题解决/">Oracle问题&解决方案</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/10/docker/">Docker命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/02/20/排序算法/">排序算法</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/22/Spring框架IOC容器和AOP解析/">Spring框架IOC容器和AOP解析</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/28/IDEA配置记录/">IDEA配置记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/01/10/hexo博客迁移-多机更新/">hexo博客迁移&多机更新</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/08/20/java-BIO、NIO、AIO/">Java BIO、NIO、AIO</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/28/git命令/">git命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/17/游戏项目记录/">游戏项目记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/01/Android-NDK/">Android NDK</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/29/开发工具记录/">开发工具记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/21/Android-JS桥/">Android JS桥</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/05/18/Android-onTouch事件传递机制/">Android onTouch事件传递机制</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/22/Android-Studio/">Android Studio</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/16/Android-px-dp-sp/">Android px_dp_sp</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/15/Android-fragment/">Android fragment</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/08/Android-adb/">Android adb</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/07/Android-Html5/">Android_Html5</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/05/Java实现断点续传/">Java实现断点续传</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/31/淘宝SDK-for-Android/">淘宝SDK for Android</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/20/2016-3-10-Android面试/">2016-3-10 Android面试总结</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/14/个人博客搭建/">个人博客搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/14/hello-world/">Hello World</a></li></ul>
 
 
 

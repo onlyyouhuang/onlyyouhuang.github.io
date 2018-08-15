@@ -5,19 +5,19 @@
   
   <title>Java-Synchronized 原理 | Onlyyouhuang&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="从JDK1.6开始引入偏向锁、轻量级锁、锁粗化、锁细化等机制。锁的状态总共有四种：无锁状态、偏向锁、轻量级锁和重量级锁。锁转化方向为：无锁-&amp;gt;偏向锁-&amp;gt;轻量级锁-&amp;gt;重量级锁。而且只能往这一个方向变化。锁的状态保存在对象的头文件中，以32位的JDK为例： 偏向锁偏向锁获取过程：  访问Mark Word中偏向锁的标志是否设置为1，锁标志为01，可以确认为可偏向状态。 如果为可偏向">
+  <meta name="description" content="Synchronized">
 <meta name="keywords" content="Java">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java-Synchronized 原理">
 <meta property="og:url" content="https://onlyyouhuang.github.io/2018/05/06/java-Synchronized/index.html">
 <meta property="og:site_name" content="Onlyyouhuang&#39;s blog">
-<meta property="og:description" content="从JDK1.6开始引入偏向锁、轻量级锁、锁粗化、锁细化等机制。锁的状态总共有四种：无锁状态、偏向锁、轻量级锁和重量级锁。锁转化方向为：无锁-&amp;gt;偏向锁-&amp;gt;轻量级锁-&amp;gt;重量级锁。而且只能往这一个方向变化。锁的状态保存在对象的头文件中，以32位的JDK为例： 偏向锁偏向锁获取过程：  访问Mark Word中偏向锁的标志是否设置为1，锁标志为01，可以确认为可偏向状态。 如果为可偏向">
+<meta property="og:description" content="Synchronized">
 <meta property="og:image" content="https://onlyyouhuang.github.io/img/java-synchronized.bmp">
 <meta property="og:image" content="https://onlyyouhuang.github.io/img/java-synchronized-2.bmp">
-<meta property="og:updated_time" content="2018-08-13T12:29:47.626Z">
+<meta property="og:updated_time" content="2018-08-15T13:47:51.488Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java-Synchronized 原理">
-<meta name="twitter:description" content="从JDK1.6开始引入偏向锁、轻量级锁、锁粗化、锁细化等机制。锁的状态总共有四种：无锁状态、偏向锁、轻量级锁和重量级锁。锁转化方向为：无锁-&amp;gt;偏向锁-&amp;gt;轻量级锁-&amp;gt;重量级锁。而且只能往这一个方向变化。锁的状态保存在对象的头文件中，以32位的JDK为例： 偏向锁偏向锁获取过程：  访问Mark Word中偏向锁的标志是否设置为1，锁标志为01，可以确认为可偏向状态。 如果为可偏向">
+<meta name="twitter:description" content="Synchronized">
 <meta name="twitter:image" content="https://onlyyouhuang.github.io/img/java-synchronized.bmp">
   
     <link rel="alternative" href="/atom.xml" title="Onlyyouhuang&#39;s blog" type="application/atom+xml">
@@ -270,7 +270,7 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <a id="more"></a>
+        <p>Synchronized<br><a id="more"></a></p>
 <p>从JDK1.6开始引入偏向锁、轻量级锁、锁粗化、锁细化等机制。<br>锁的状态总共有四种：无锁状态、偏向锁、轻量级锁和重量级锁。<br>锁转化方向为：无锁-&gt;偏向锁-&gt;轻量级锁-&gt;重量级锁。而且只能往这一个方向变化。<br>锁的状态保存在对象的头文件中，以32位的JDK为例：<br><img src="/img/java-synchronized.bmp" alt=""></p>
 <h3 id="偏向锁"><a href="#偏向锁" class="headerlink" title="偏向锁"></a>偏向锁</h3><p>偏向锁获取过程：</p>
 <ol>
@@ -311,7 +311,7 @@
         <p><span>本文标题:</span><a href="/2018/05/06/java-Synchronized/">Java-Synchronized 原理</a></p>
         <p><span>文章作者:</span><a href="/" title="回到主页">HuangLangyou</a></p>
         <p><span>发布时间:</span>2018-05-06, 10:22:35</p>
-        <p><span>最后更新:</span>2018-08-13, 20:29:47</p>
+        <p><span>最后更新:</span>2018-08-15, 21:47:51</p>
         <p>
             <span>原始链接:</span><a class="post-url" href="/2018/05/06/java-Synchronized/" title="Java-Synchronized 原理">https://onlyyouhuang.github.io/2018/05/06/java-Synchronized/</a>
             <span class="copy-path" data-clipboard-text="原文: https://onlyyouhuang.github.io/2018/05/06/java-Synchronized/　　作者: HuangLangyou" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
@@ -336,7 +336,7 @@
         
             <div id="article-nav-older" class="article-nav-title">
                 <a href="/2018/04/07/java-base-3/">
-                    Java-基础(3)
+                    Java-基础-并发包
                 </a>
             </div>
         
@@ -432,13 +432,13 @@
         <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
 
         
-            <a href="/2018/04/07/java-base-3/" title="下一篇: Java-基础(3)">
+            <a href="/2018/04/07/java-base-3/" title="下一篇: Java-基础-并发包">
                 <i class="fa fa-angle-right"></i>
             </a>
         
     </div>
 
-    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/05/15/java-LinkedHashMap精读(2)/">Java-LinkedHashMap精读(2)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/15/java-LinkedHashMap精读(1)/">Java-LinkedHashMap精读(1)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/15/java-LinkedHashMap/">Java-LinkedHashMap</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/13/java-ConcurrentHashMap精读(2)/">ConcurrentHashMap精读(2)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/13/java-ConcurrentHashMap精读(1)/">ConcurrentHashMap精读(1)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/11/java-hashtable/">java-hashtable</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/11/java-Hash-And-TreeMap/">TreeMap和hash解决冲突原理</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/10/java-HashMap精读(2)/">Java-HashMap精读(2)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/10/java-HashMap精读(1)/">Java-HashMap精读(1)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/08/java-ReentrantLock-2/">ReentrantLock精读(2)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/07/java-ReentrantLock-1/">ReentrantLock精读(1)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/06/java-Lock/">java-Lock的基本思想</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/06/java-Synchronized/">Java-Synchronized 原理</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/07/java-base-3/">Java-基础(3)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/06/java-base-2/">Java-基础-并发包</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/05/java-base/">Java-基础</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/04/JVM-GC与性能优化/">JVM GC与性能优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/04/数据库索引/">数据库索引</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/14/Oracle问题解决/">Oracle问题&解决方案</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/10/docker/">Docker命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/02/20/排序算法/">排序算法</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/22/Spring框架IOC容器和AOP解析/">Spring框架IOC容器和AOP解析</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/28/IDEA配置记录/">IDEA配置记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/01/10/hexo博客迁移-多机更新/">hexo博客迁移&多机更新</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/08/20/java-BIO、NIO、AIO/">Java BIO、NIO、AIO</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/28/git命令/">git命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/17/游戏项目记录/">游戏项目记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/01/Android-NDK/">Android NDK</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/29/开发工具记录/">开发工具记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/21/Android-JS桥/">Android JS桥</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/05/18/Android-onTouch事件传递机制/">Android onTouch事件传递机制</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/22/Android-Studio/">Android Studio</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/16/Android-px-dp-sp/">Android px_dp_sp</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/15/Android-fragment/">Android fragment</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/08/Android-adb/">Android adb</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/07/Android-Html5/">Android_Html5</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/05/Java实现断点续传/">Java实现断点续传</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/31/淘宝SDK-for-Android/">淘宝SDK for Android</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/20/2016-3-10-Android面试/">2016-3-10 Android面试总结</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/14/个人博客搭建/">个人博客搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/14/hello-world/">Hello World</a></li></ul>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/05/15/java-LinkedHashMap精读(2)/">Java-LinkedHashMap精读(2)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/15/java-LinkedHashMap精读(1)/">Java-LinkedHashMap精读(1)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/15/java-LinkedHashMap/">Java-LinkedHashMap</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/13/java-ConcurrentHashMap精读(2)/">ConcurrentHashMap精读(2)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/13/java-ConcurrentHashMap精读(1)/">ConcurrentHashMap精读(1)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/11/java-hashtable/">java-hashtable</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/11/java-Hash冲突/">hash解决冲突原理</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/10/java-HashMap精读(2)/">Java-HashMap精读(2)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/10/java-HashMap精读(1)/">Java-HashMap精读(1)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/08/java-ReentrantLock-2/">ReentrantLock精读(2)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/07/java-ReentrantLock-1/">ReentrantLock精读(1)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/06/java-Lock/">java-Lock的基本思想</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/06/java-Synchronized/">Java-Synchronized 原理</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/07/java-base-3/">Java-基础-并发包</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/06/java-base-2/">Java-基础(2)</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/05/java-base/">Java-基础</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/04/JVM-GC与性能优化/">JVM GC与性能优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/04/数据库索引/">数据库索引</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/14/Oracle问题解决/">Oracle问题&解决方案</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/10/docker/">Docker命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/02/20/排序算法/">排序算法</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/22/Spring框架IOC容器和AOP解析/">Spring框架IOC容器和AOP解析</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/28/IDEA配置记录/">IDEA配置记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/01/10/hexo博客迁移-多机更新/">hexo博客迁移&多机更新</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/08/20/java-BIO、NIO、AIO/">Java BIO、NIO、AIO</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/28/git命令/">git命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/17/游戏项目记录/">游戏项目记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/07/01/Android-NDK/">Android NDK</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/29/开发工具记录/">开发工具记录</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/06/21/Android-JS桥/">Android JS桥</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/05/18/Android-onTouch事件传递机制/">Android onTouch事件传递机制</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/22/Android-Studio/">Android Studio</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/16/Android-px-dp-sp/">Android px_dp_sp</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/15/Android-fragment/">Android fragment</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/08/Android-adb/">Android adb</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/07/Android-Html5/">Android_Html5</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/05/Java实现断点续传/">Java实现断点续传</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/31/淘宝SDK-for-Android/">淘宝SDK for Android</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/20/2016-3-10-Android面试/">2016-3-10 Android面试总结</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/14/个人博客搭建/">个人博客搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/03/14/hello-world/">Hello World</a></li></ul>
 
 
 

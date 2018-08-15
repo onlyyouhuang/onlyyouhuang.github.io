@@ -320,16 +320,8 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <a id="more"></a>
-<h3 id="Java关键字volatile"><a href="#Java关键字volatile" class="headerlink" title="Java关键字volatile"></a>Java关键字volatile</h3><p>被<code>volatile</code>修饰的变量有两个特点:<br>1.被<code>volatile</code>修饰的变量对所有线程都是可见的，意思就是当一个线程修改了这个变量的值，新值对于其它所有线程是立即可知的。但是这个变量不具备原子性。<br>2.被<code>volatile</code>修饰的变量禁止cpu指令重排优化。普通的变量仅仅会保证在该方法执行过程中所有依赖赋值结果的地方都能获取正确的结果，而不能保证变量赋值操作的顺序与程序代码中的执行顺序一致。</p>
-<h3 id="CAS-原子操作"><a href="#CAS-原子操作" class="headerlink" title="CAS 原子操作"></a>CAS 原子操作</h3><p>即比较并且交换<code>(compare and swap)</code>指令，这是一条原子操作指令，<code>compareAndSwap(V,A,B)</code>，包含三个参数，<code>V</code>是变量内存地址，<code>A</code>是旧的预期值，<code>B</code>是新的更新值。<code>CAS</code>执行时，如果<code>V</code>中的值和<code>A</code>相同，就把<code>B</code>更新<code>V</code>，否则就不执行。这个处理是一个原子操作。<code>Concurrent</code>包就是利用这条指令实现加锁的。</p>
-<h3 id="Lock类的实现"><a href="#Lock类的实现" class="headerlink" title="Lock类的实现"></a>Lock类的实现</h3><p>实现锁的功能，需要两个部分：<br>1.表示锁状态的变量。(假设0表示没有线程获取锁，1表示已有线程占据锁)<br>2.一个堵塞队列，队列中的节点表示因为没有获取锁而堵塞的队列。<br>为了解决多核处理器下，多线程缓存不一致的问题，表示状态的变量必须声明为<code>voaltile</code>，并且对表示状态的变量和堵塞队列的某些操作要保证原子性和可见性。原子性和可见性的操作主要通过<code>Atomic</code>包中的方法实现。</p>
-<h4 id="lock"><a href="#lock" class="headerlink" title="lock()"></a>lock()</h4><p>线程获取锁的大致过程（这里没有考虑可重入和获取锁过程被中断或超时的情况）<br>1.读取状态变量的值<br>2.如果状态变量为0，那么当前线程尝试将变量设为1(通过CAS指令)，当多个线程同时将状态变量从0设为1，只有1个线程可以成功，其它线程失败。<br>3.若成功，则表示获取了锁，如果该线程已经在堵塞队列中了，则将其退出队列。如果没有在队列，则不需要操作队列。然后从<code>lock()</code>返回，访问共享资源。<br>4.若失败，则将该线程放入堵塞队列中，并且堵塞线程，此时线程一直被堵塞在<code>lock()</code>方法内，没有从<code>lock()</code>方法返回。（被唤醒后仍然在<code>lock()</code>方法内，<code>并且从下一句语句开始执行，这里又回到第一步</code>）<br>5.如果状态量值为1，那么将当前线程放入堵塞队列中，然后堵塞线程（被唤醒后仍然在<code>lock()</code>方法内，<code>并且从下一句语句开始执行，这里又回到第一步</code>）</p>
-<h4 id="unlock"><a href="#unlock" class="headerlink" title="unlock()"></a>unlock()</h4><ol>
-<li>释放锁的线程将状态变量的值从1设置为0，并唤醒等待（锁）队列中的队首节点，释放锁的线程从就从unlock方法中返回，继续执行线程后面的代码</li>
-<li>被唤醒的线程（队列中的队首节点）可能和未进入队列并且准备获取的线程竞争获取锁，重复获取锁的过程<br>注意：可能有多个线程同时竞争去获取锁，但是一次只能有一个线程去释放锁，队列中的节点都需要它的前一个节点将其唤醒，例如有队列A&lt;-B&lt;-C ，即由A释放锁时唤醒B，B释放锁时唤醒C</li>
-</ol>
-
+              <p>Lock<br>
+          
       
     </div>
     
@@ -342,6 +334,10 @@
         <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
     </div>
 
+      
+        <p class="article-more-link">
+          <a href="/2018/05/06/java-Lock/#more">more >></a>
+        </p>
       
       <div class="clearfix"></div>
     </div>
@@ -386,37 +382,8 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <a id="more"></a>
-<p>从JDK1.6开始引入偏向锁、轻量级锁、锁粗化、锁细化等机制。<br>锁的状态总共有四种：无锁状态、偏向锁、轻量级锁和重量级锁。<br>锁转化方向为：无锁-&gt;偏向锁-&gt;轻量级锁-&gt;重量级锁。而且只能往这一个方向变化。<br>锁的状态保存在对象的头文件中，以32位的JDK为例：<br><img src="/img/java-synchronized.bmp" alt=""></p>
-<h3 id="偏向锁"><a href="#偏向锁" class="headerlink" title="偏向锁"></a>偏向锁</h3><p>偏向锁获取过程：</p>
-<ol>
-<li>访问<code>Mark Word</code>中偏向锁的标志是否设置为1，锁标志为01，可以确认为可偏向状态。</li>
-<li>如果为可偏向状态，则测试线程<code>id</code>是否为当前线程，如果是进入(5)，如果不是则进入步骤(3).</li>
-<li>如果线程id并未指向当前线程，则通过<code>CAS</code>竞争锁。如果竞争成功，则将<code>Mark Word</code>中线程ID设置为当前线程，然后执行(5)。失败执行(4)。</li>
-<li>如果<code>CAS</code>竞争失败，则表示有其它线程同时竞争该资源。当达到安全点的时候，获得偏向锁的线程被挂起，偏向锁升级为轻量级锁，然后被阻塞的线程在安全点的线程继续执行同步代码。</li>
-<li>执行同步代码。</li>
-</ol>
-<p>偏向锁释放过程：<br>偏向锁的撤销在上述第四步骤中有提到。偏向锁只有遇到其他线程尝试竞争偏向锁时，持有偏向锁的线程才会释放锁，线程不会主动去释放偏向锁。</p>
-<h3 id="轻量级锁"><a href="#轻量级锁" class="headerlink" title="轻量级锁"></a>轻量级锁</h3><p><code>轻量级</code>是相对于使用操作系统互斥量来实现的传统锁而言的。但是，首先需要强调一点的是，轻量级锁并不是用来代替重量级锁的，它的本意是在没有多线程竞争的前提下，减少传统的重量级锁使用产生的性能消耗。在解释轻量级锁的执行过程之前，先明白一点，轻量级锁所适应的场景是线程交替执行同步块的情况，如果存在同一时间访问同一锁的情况，就会导致轻量级锁膨胀为重量级锁。</p>
-<ol>
-<li>在代码进入同步块的时候，如果同步对象锁状态为无锁状态（锁标志位为<code>01</code>状态，是否为偏向锁为<code>0</code>），虚拟机首先将在当前线程的栈帧中建立一个名为锁记录<code>（Lock Record）</code>的空间，用于存储锁对象目前的<code>Mark Word</code>的拷贝，官方称之为 <code>Displaced Mark Word</code>。</li>
-<li>拷贝对象头中的<code>Mark Word</code>复制到锁记录中。</li>
-<li>拷贝成功后，虚拟机将使用<code>CAS</code>操作尝试将对象的<code>Mark Word</code>更新为指向<code>Lock Record</code>的指针，并将<code>Lock record</code>里的<code>owner</code>指针指向<code>object mark word</code>。如果更新成功，则执行步骤（4），否则执行步骤（5）。</li>
-<li>如果这个更新动作成功了，那么这个线程就拥有了该对象的锁，并且对象<code>Mark Word</code>的锁标志位设置为<code>00</code>，即表示此对象处于轻量级锁定状态，</li>
-<li>如果这个更新操作失败了，虚拟机首先会检查对象的<code>Mark Word</code>是否指向当前线程的栈帧，如果是就说明当前线程已经拥有了这个对象的锁，那就可以直接进入同步块继续执行。否则说明多个线程竞争锁，轻量级锁就要膨胀为重量级锁，锁标志的状态值变为<code>10</code>，<code>Mark Word</code>中存储的就是指向重量级锁（互斥量）的指针，后面等待锁的线程也要进入阻塞状态。 而当前线程便尝试使用自旋来获取锁，自旋就是为了不让线程阻塞，而采用循环去获取锁的过程。</li>
-</ol>
-<h3 id="重量级锁"><a href="#重量级锁" class="headerlink" title="重量级锁"></a>重量级锁</h3><p>重量级锁之所以为重量级锁，关键是线程堵塞会进入内核，这样的切换开销是很大的。<br>当多个线程同时请求某个对象监视器时，对象监视器会设置几种状态用来区分请求的线程：</p>
-<ol>
-<li>Contention List：所有请求锁的线程都会首先插入到这个竞争队列。</li>
-<li>Entry List：Contention List那些有资格成为候选的线程会插入到这个列表。</li>
-<li>Wait Set： 那些调用wait方法被阻塞的线程被放置到Wait Set。</li>
-<li>OnDeck：任何时刻最多只能有一个线程正在竞争锁，该线程称为OnDeck</li>
-<li>Owner：获得锁的线程称为Owner</li>
-<li>!Owner：释放锁的线程<br>状态转换图：<br><img src="/img/java-synchronized-2.bmp" alt=""></li>
-</ol>
-<p>重量级锁的运行过程：<br>EntryList与ContentionList逻辑上同属等待队列，ContentionList会被线程并发访问，为了降低对 ContentionList队尾的争用，而建立EntryList。Owner线程在unlock时会从ContentionList中迁移线程到 EntryList，并会指定EntryList中的某个线程（一般为Head）为Ready（OnDeck）线程。Owner线程并不是把锁传递给 OnDeck线程，只是把竞争锁的权利交给OnDeck，OnDeck线程需要重新竞争锁。这样做虽然牺牲了一定的公平性，但极大的提高了整体吞吐量，在 Hotspot中把OnDeck的选择行为称之为<code>竞争切换</code>。所以说<code>Synchronized</code>关键字形成的锁是不公平的锁。但是它是可重入的锁，这点在轻量级锁的过程中就可以看出来了。</p>
-<p>OnDeck线程获得锁后即变为owner线程，无法获得锁则会依然留在EntryList中，考虑到公平性，在EntryList中的位置不 发生变化（依然在队头）。如果Owner线程被wait方法阻塞，则转移到WaitSet队列；如果在某个时刻被notify/notifyAll唤醒， 则再次转移到EntryList。</p>
-
+              <p>Synchronized<br>
+          
       
     </div>
     
@@ -429,6 +396,10 @@
         <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
     </div>
 
+      
+        <p class="article-more-link">
+          <a href="/2018/05/06/java-Synchronized/#more">more >></a>
+        </p>
       
       <div class="clearfix"></div>
     </div>
@@ -450,7 +421,7 @@
   
     <div class="article-meta">
       <a href="/2018/04/07/java-base-3/" class="article-date">
-      <time datetime="2018-04-07T13:43:55.000Z" itemprop="datePublished">2018-04-07</time>
+      <time datetime="2018-04-07T02:25:10.000Z" itemprop="datePublished">2018-04-07</time>
 </a>
     </div>
   
@@ -463,7 +434,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/04/07/java-base-3/">Java-基础(3)</a>
+      <a class="article-title" href="/2018/04/07/java-base-3/">Java-基础-并发包</a>
     </h1>
   
 
@@ -473,140 +444,8 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <h3 id="终止线程方式"><a href="#终止线程方式" class="headerlink" title="终止线程方式"></a>终止线程方式</h3><ol>
-<li><p>使用volatile共享变量</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ThreadFlag</span> <span class="keyword">extends</span> <span class="title">Thread</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">volatile</span> <span class="keyword">boolean</span> exit = <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;  </span><br><span class="line">	   <span class="keyword">while</span> (!exit);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">	   ThreadFlag thread = <span class="keyword">new</span> ThreadFlag();</span><br><span class="line">	   thread.start();</span><br><span class="line">	   sleep(<span class="number">3000</span>); <span class="comment">// 主线程延迟3秒</span></span><br><span class="line">	   thread.exit = <span class="keyword">true</span>;  <span class="comment">// 终止线程thread</span></span><br><span class="line">	   thread.join();</span><br><span class="line">	   System.out.println(<span class="string">"线程退出!"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>当线程阻塞时，可以通过置中断状态取消线程，即调用<code>interrupt()</code>方法</p>
-</li>
-</ol>
-<h3 id="排序算法稳定性"><a href="#排序算法稳定性" class="headerlink" title="排序算法稳定性"></a>排序算法稳定性</h3><ol>
-<li>不稳定的排序算法：选择排序、快速排序、堆排序、希尔排序。</li>
-<li>稳定的排序算法：冒泡排序、归并排序、基数排序和插入排序。</li>
-</ol>
-<p>稳定排序的好处：如果多个字段需要排序，由于需要利用前面排序的结果，所以后面排序必须是稳定的，如果不稳定，则会出错。<br>比如：<br>字段1：1 2 2 2 3 4 5 6<br>字段2：5 7 6 2 9 7 5 3<br>首先对字段2排序：<br>字段1：2 6 1 5 2 2 4 3<br>字段2：2 3 5 5 6 7 7 8<br>再对字段1进行排序，由于字段1相等时，已经有序，为了保证这个有序关系，所以需要使用稳定的排序算法：<br>字段1：1 2 2 2 3 4 5 6<br>字段2：5 2 6 7 8 7 5 3</p>
-<h3 id="String"><a href="#String" class="headerlink" title="String"></a>String</h3><ol>
-<li><code>String</code>类不能被继承，因为被<code>final</code>修饰。</li>
-<li><code>String</code>类的<code>+</code>方法，通过构造一个新的<code>StringBuilder</code>对象，然后将两个<code>String</code>对象<code>append()</code>到后面。</li>
-<li><code>String</code>类的<code>hashCode</code>被重写，通过计算每个字符的<code>ASCII</code>*31相加获得，这样字符串相同的放到同一个<code>bucket</code>内。</li>
-<li><code>String</code>类的<code>toString()</code>被重写，返回<code>String</code>对象表示的字符串。</li>
-</ol>
-<h3 id="char能否存储汉字"><a href="#char能否存储汉字" class="headerlink" title="char能否存储汉字"></a>char能否存储汉字</h3><p>可以。因为<code>Java</code>中<code>char</code>使用<code>utf-16</code>进行编码，<code>utf-16</code>是一种变长编码，要么2个字节，要么4个字节表示。<br>所以当一个<code>utf-16</code>字符是2个字节时，则用1个<code>char</code>表示，如果一个<code>utf-16</code>字符是4个字节时，采用两个<code>char</code>表示。</p>
-<h3 id="接口能否继承多接口"><a href="#接口能否继承多接口" class="headerlink" title="接口能否继承多接口"></a>接口能否继承多接口</h3><p>接口可以继承多接口。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MultiInterface</span> <span class="keyword">extends</span> <span class="title">A</span>, <span class="title">B</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">c</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">A</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">a</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">B</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">b</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h3 id="实现线程的3种方式"><a href="#实现线程的3种方式" class="headerlink" title="实现线程的3种方式"></a>实现线程的3种方式</h3><ol>
-<li>继承<code>Thread</code>类，重写<code>run</code>方法。</li>
-<li>实现<code>Runnable</code>接口，重写<code>run</code>方法。</li>
-<li>实现<code>Callable</code>接口，提交到<code>ExecutorService</code>的线程池中，返回一个<code>future</code>。</li>
-</ol>
-<h3 id="实现线程安全的方式"><a href="#实现线程安全的方式" class="headerlink" title="实现线程安全的方式"></a>实现线程安全的方式</h3><ol>
-<li>使用不可变对象。</li>
-<li>使用<code>ThreadLocal</code>。</li>
-<li>加锁。</li>
-<li>使用无锁工具类(<code>ConcurrentHashmap, ConcurrentLinkedQueue</code>)。</li>
-</ol>
-<h3 id="ArrayList和LinkedList区别"><a href="#ArrayList和LinkedList区别" class="headerlink" title="ArrayList和LinkedList区别"></a>ArrayList和LinkedList区别</h3><p>1.ArrayList数组实现。<br>优点：随机访问，获取任意位置的元素 ，时间复杂度o(1)。<br>添加到最后，时间复杂度o(1)。<br>从中间插入，时间复杂度o(n)。<br>从中间删除，时间复杂度o(n)。</p>
-<ol>
-<li>LinkedList是双链表实现的。<br>优点：空间无限，比<code>ArrayList</code>耗内存。<br>获取操作，时间复杂度O(n)。<br>添加到尾部，时间度杂度o(1)。<br>删除操作，时间复杂度o(1)，因为是双链表。</li>
-</ol>
-<h3 id="Java-移位运算"><a href="#Java-移位运算" class="headerlink" title="Java 移位运算"></a>Java 移位运算</h3><ol>
-<li><code>&lt;&lt;</code>：带符号左移，无论正数还是负数， 移动后右侧都补0。</li>
-<li><code>&gt;&gt;</code>：带符号右移， 正数，移动后左侧补0， 负数移动后左侧补1。</li>
-<li><code>&gt;&gt;&gt;</code>：无符号右移，移动后，左侧不足补0。        </li>
-</ol>
-<h3 id="抽象类"><a href="#抽象类" class="headerlink" title="抽象类"></a>抽象类</h3><ol>
-<li>抽象类中可以有构造方法。</li>
-<li>抽象类中可以有普通属性，方法，静态属性和方法</li>
-<li>抽象类中可以有抽象方法</li>
-<li>如果一个类中有抽象方法，那么一定是抽线类。一个抽象类中可以没有抽象方法。</li>
-<li>抽象类中的方法必须由子类实现，如果子类没有实现，则子类也是一个抽象类。</li>
-</ol>
-<h3 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h3><ol>
-<li>接口中只有方法的声明，没有方法体。</li>
-<li>接口中可以有常量，因为会被默认加上<code>public static final</code>。</li>
-<li>接口中的方法必须是<code>public</code>的</li>
-<li>接口中没有构造方法，也不能实例化。</li>
-<li>接口可以实现多继承。</li>
-<li>接口中定义的类必须全部实现，如果实现类没有全部实现，则实现类定义为抽象类。</li>
-</ol>
-<h3 id="try-catch"><a href="#try-catch" class="headerlink" title="try catch"></a>try catch</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;<span class="keyword">finally</span>&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这里<code>finally</code>中的返回值会覆盖<code>try</code>中的返回值，所以返回<code>1</code>。</p>
-<h3 id="java-异常类"><a href="#java-异常类" class="headerlink" title="java 异常类"></a>java 异常类</h3><p><img src="/img/java-base-3-1.bmp" alt=""></p>
-<p>运行时异常包括(<code>常见的</code>)：</p>
-<ol>
-<li><code>NullPointerException</code>(空指针异常)</li>
-<li><code>ClassNotFoundException</code>(类未找到异常)</li>
-<li><code>IndexOutOfBoundsException</code>(数组越界异常)</li>
-</ol>
-<p><code>IO</code>异常(<code>常见的</code>)：</p>
-<ol>
-<li><code>EOFException</code>：已经读到末尾了</li>
-<li><code>FileNotFoundException</code>：文件未找到。</li>
-</ol>
-<p><code>VirtualMachineError</code>，包括：</p>
-<ol>
-<li><code>StackOverFlowError</code></li>
-<li><code>OutOfMemoryError</code></li>
-</ol>
-<h3 id="final修饰的基本数据类型和类型转化"><a href="#final修饰的基本数据类型和类型转化" class="headerlink" title="final修饰的基本数据类型和类型转化"></a>final修饰的基本数据类型和类型转化</h3><ol>
-<li><code>final</code>修饰的基本数据类型是常量</li>
-<li>在基本运算操作中，<code>byte</code>，<code>short</code>的运算结果，会被向上转型为<code>int</code>，<code>float</code>也会向上转型为<code>double</code>，所以将运算结果赋值时，需要做强制类型转化，否则编译不通过。<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">       <span class="keyword">byte</span> b1 = <span class="number">1</span>, b2 = <span class="number">2</span>, b3, b6;</span><br><span class="line"><span class="keyword">final</span> <span class="keyword">byte</span> b4 = <span class="number">4</span>, b5 = <span class="number">6</span>;</span><br><span class="line">b6 = b4 + b5;<span class="comment">//编译通过 因为b4和b5是常量</span></span><br><span class="line">b3 = b1 + b2;<span class="comment">//编译不能通过 b1+b2被转型为int  而int不能赋值给byte变量</span></span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<h3 id="jvm参数"><a href="#jvm参数" class="headerlink" title="jvm参数"></a>jvm参数</h3><ol>
-<li><code>-Xms</code>：初始化堆的大小，堆内存的最小值</li>
-<li><code>-Xmx</code>：堆最大内存大小</li>
-<li><code>-Xmn</code>：年轻代的大小</li>
-</ol>
-<h3 id="super"><a href="#super" class="headerlink" title="super()"></a>super()</h3><p>如果在子类的方法中需要调用父类的构造方法，则可以使用<code>super()</code>，而且<code>super()</code>一定要写在子类构造方法的第一行。</p>
-<h3 id="类权限修饰符"><a href="#类权限修饰符" class="headerlink" title="类权限修饰符"></a>类权限修饰符</h3><p><code>public</code> &gt; <code>protected</code> &gt; <code>package</code> &gt; <code>private</code>。<br>所以从上面可以看出<code>protected</code>包含包访问权限。</p>
-<h3 id="接口继承"><a href="#接口继承" class="headerlink" title="接口继承"></a>接口继承</h3><p>一个接口可以继承多个接口。<br>但是一个类只能继承一个接口。</p>
-<h3 id="反射的作用"><a href="#反射的作用" class="headerlink" title="反射的作用"></a>反射的作用</h3><ol>
-<li>在运行期间判断一个对象所属的类。</li>
-<li>在运行期间构造一个类的对象。</li>
-<li>在运行期间判断一个类具有的成员变量和方法。</li>
-<li>在运行期间调用一个对象的方法。</li>
-</ol>
-<h3 id="static变量"><a href="#static变量" class="headerlink" title="static变量"></a>static变量</h3><p><code>static变量</code>不能用<code>this</code>引用。</p>
-<h3 id="静态内部类"><a href="#静态内部类" class="headerlink" title="静态内部类"></a>静态内部类</h3><p><code>静态内部类</code>不可以访问外部类的非静态方法和成员变量。<br><code>非静态内部类</code>可以直接访问外部类的的数据，包括私有数据。</p>
-<h3 id="关于System-out-println"><a href="#关于System-out-println" class="headerlink" title="关于System.out.println()"></a>关于System.out.println()</h3><ol>
-<li>System.out.println(100 + 5 + “is”) 打印<code>105is</code>。</li>
-<li>System.out.println(“is”+100 + 5)   打印is1005</li>
-</ol>
-<h3 id="重写-覆盖-方法的约束"><a href="#重写-覆盖-方法的约束" class="headerlink" title="重写(覆盖)方法的约束"></a>重写(覆盖)方法的约束</h3><ol>
-<li>方法名，参数列表相同。</li>
-<li>子类的返回值类型小于等于父类的返回值类型。</li>
-<li>子类声明抛出的异常小于等于父类声明抛出的异常。</li>
-<li>子类的权限大于等于父类的权限修饰符。</li>
-</ol>
-<h3 id="基本数据类型的转换和计算"><a href="#基本数据类型的转换和计算" class="headerlink" title="基本数据类型的转换和计算"></a>基本数据类型的转换和计算</h3><p>基本数据类型的优先级：<br>低———————————–&gt;高<br>byte,short,char -&gt; int -&gt; long -&gt; double -&gt; float -&gt; double</p>
-<p>在运算中，不同类型的数据先转化为同一类型，然后进行运算，转换规则如下：<br><img src="/img/java-base-3-2.bmp" alt=""></p>
-<h3 id="关于继承中无参构造方法"><a href="#关于继承中无参构造方法" class="headerlink" title="关于继承中无参构造方法"></a>关于继承中无参构造方法</h3><p>用<code>new</code>创建子类的对象时，若子类没有带参的构造方法，则先执行父类的无参构造方法，然后再执行自己的构造方法。</p>
-<h3 id="父类的私语变量和方法"><a href="#父类的私语变量和方法" class="headerlink" title="父类的私语变量和方法"></a>父类的私语变量和方法</h3><p>子类会继承父类的私有变量和方法，只是不能访问。</p>
-<h3 id="Integer的valueOf和直接int赋值"><a href="#Integer的valueOf和直接int赋值" class="headerlink" title="Integer的valueOf和直接int赋值"></a>Integer的valueOf和直接int赋值</h3><p><code>Integer</code>直接<code>int</code>赋值和<code>valueOf(int)</code>获取的<code>Integer</code>对象时：</p>
-<ol>
-<li>如果<code>int</code>数值，在<code>-128~127</code>之间，则直接返回同一个对象(缓存对象)。</li>
-<li>如果<code>int</code>数值的数值超过这个范围，则新建一个对象。</li>
-</ol>
-<h3 id="继承和实现的顺序"><a href="#继承和实现的顺序" class="headerlink" title="继承和实现的顺序"></a>继承和实现的顺序</h3><p>一个类如果同时继承一个类，和实现多个接口，则继承和实现的顺序：<br>继承在实现之前。</p>
-<h3 id="外部类的访问修饰符"><a href="#外部类的访问修饰符" class="headerlink" title="外部类的访问修饰符"></a>外部类的访问修饰符</h3><p><code>外部类</code>的修饰符只能是<code>public</code>和默认包权限。</p>
-<h3 id="abstract关键字的使用"><a href="#abstract关键字的使用" class="headerlink" title="abstract关键字的使用"></a>abstract关键字的使用</h3><p><code>abstract</code>关键字不可以与<code>final</code>、<code>static</code>、<code>synchronized</code>一起使用。<br>但是可以与<code>protected</code>一起使用。</p>
-<h3 id="枚举"><a href="#枚举" class="headerlink" title="枚举"></a>枚举</h3><ol>
-<li>从jdk1.6开始 switch支持枚举</li>
-<li>枚举可以显示继承</li>
-<li>枚举创建是线程安全的</li>
-</ol>
-<h3 id="String-”abc”创建多少个对象"><a href="#String-”abc”创建多少个对象" class="headerlink" title="String=”abc”创建多少个对象"></a>String=”abc”创建多少个对象</h3><ol>
-<li><code>String=new String(&quot;abc&quot;)</code>，这条语句会创建2个对象，分别是<code>&quot;abc&quot;</code>会在常量池中创建一个对象，<code>new</code>又回在堆里面创建一个对象。</li>
-<li><code>String=&quot;abc&quot;</code>会在常量池中创建一个对象。</li>
-<li><code>String=&quot;ab&quot;+&quot;cd&quot;</code>会创建<code>三个</code>对象，即首先在常量池创建<code>ab</code>和<code>cd</code>两个对象，最后在常量池中创建<code>abcd</code>这个对象。</li>
-</ol>
-<p>所以当执行<code>String s=&quot;abc&quot;</code>时，首先会在常量池中寻找”abc”是否在常量池中，如果不再则在常量池中创建一个<code>&quot;abc&quot;</code>，否则则存在直接获取这个字符串对象。</p>
-<h3 id="接口访问权限"><a href="#接口访问权限" class="headerlink" title="接口访问权限"></a>接口访问权限</h3><p>接口访问权限只能为<code>public</code>或者<code>default</code>。<br>接口方法只能为为<code>public</code>。</p>
-<h3 id="abstract访问权限"><a href="#abstract访问权限" class="headerlink" title="abstract访问权限"></a>abstract访问权限</h3><ol>
-<li><code>abstract</code>不能与<code>final</code>一起修饰一个类。</li>
-<li><code>abstract</code>不能与<code>private</code>、<code>static</code>、<code>final</code>或者<code>native</code>并列修饰一个方法。</li>
-</ol>
-
+              <p> 并发包<br>
+          
       
     </div>
     
@@ -619,6 +458,10 @@
         <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
     </div>
 
+      
+        <p class="article-more-link">
+          <a href="/2018/04/07/java-base-3/#more">more >></a>
+        </p>
       
       <div class="clearfix"></div>
     </div>
@@ -640,7 +483,7 @@
   
     <div class="article-meta">
       <a href="/2018/04/06/java-base-2/" class="article-date">
-      <time datetime="2018-04-06T02:25:10.000Z" itemprop="datePublished">2018-04-06</time>
+      <time datetime="2018-04-06T13:43:55.000Z" itemprop="datePublished">2018-04-06</time>
 </a>
     </div>
   
@@ -653,7 +496,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/04/06/java-base-2/">Java-基础-并发包</a>
+      <a class="article-title" href="/2018/04/06/java-base-2/">Java-基础(2)</a>
     </h1>
   
 
@@ -663,155 +506,8 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <h3 id="ConcurrentHashMap"><a href="#ConcurrentHashMap" class="headerlink" title="ConcurrentHashMap"></a>ConcurrentHashMap</h3><p>原理：将一个<code>HashMap</code>分为若干段，然后当需要对<code>HashMap</code>进行写操作(<code>put和remove</code>)的时候，则对对应的段加锁。读的时候不加锁。</p>
-<h3 id="CopyOnWriteArrayList-set"><a href="#CopyOnWriteArrayList-set" class="headerlink" title="CopyOnWriteArrayList(set)"></a>CopyOnWriteArrayList(set)</h3><h4 id="CopyOnWriteArrayList"><a href="#CopyOnWriteArrayList" class="headerlink" title="CopyOnWriteArrayList"></a>CopyOnWriteArrayList</h4><p>原理：是一个<code>写时复制</code>的<code>列表(集合)</code>，读的时候不加锁。写的时候，先加锁，然后复制一份新的。<br>使用场景：<code>读多写少</code>的并发场景。<br>优点：支持高并发的读。<br>缺点：耗内存，以及数据的<code>不一致性</code>。</p>
-<h4 id="CopyOnWriteArraySet"><a href="#CopyOnWriteArraySet" class="headerlink" title="CopyOnWriteArraySet"></a>CopyOnWriteArraySet</h4><p><code>CopyOnWriteArraySet</code>继承自<code>CopyOnWriteArrayList</code>。简单的封装。</p>
-<h3 id="BlockingQueue"><a href="#BlockingQueue" class="headerlink" title="BlockingQueue"></a>BlockingQueue</h3><p>添加数据：</p>
-<ol>
-<li><code>boolean add(E e)</code>：成功则返回<code>true</code>，失败(队列已满)则抛出异常。忽略中断。</li>
-<li><code>boolean offer(E e)</code>：成功则返回<code>true</code>，失败则返回<code>false</code>。忽略中断。</li>
-<li><code>boolean offer(E e, long timeout, timeUnit unit)</code>：成功返回<code>true</code>，没有空间则等待一定时间。 成功返回<code>true</code>， 在规定等待时间内队列还是满的，返回<code>false</code>。对于中断抛出中断异常。</li>
-<li><code>void put()</code>：成功则返回<code>true</code>，空间不足，则阻塞，知道有空间为止。对于中断，抛出中断异常。</li>
-</ol>
-<p>取出数据：</p>
-<ol>
-<li><code>Boolean remove(Object obj)</code>：删除指定的<code>obj</code>，成功则返回<code>true</code>，失败则返回<code>false</code>。忽略中断。</li>
-<li><code>E poll()</code>：获取并且移除队列头部的元素，队列空则返回<code>null</code>。忽略中断。</li>
-<li><code>E pool(long timeout, timeUnit unit)</code>：获取并且移除队列头部的元素，如果队列为空，则等待指定时间。成功获取返回对象，在规定等待时间内队列还是为空，返回<code>null</code>。对于中断，抛出中断异常。 </li>
-<li><code>E take()</code>：获取并且移除队列头部的元素，队列空则阻塞，知道队列有元素可用为止。对于中断，抛出中断异常。</li>
-</ol>
-<h3 id="ArrayBlockingQueue-Linked"><a href="#ArrayBlockingQueue-Linked" class="headerlink" title="ArrayBlockingQueue(Linked)"></a>ArrayBlockingQueue(Linked)</h3><p>往队列尾部添加元素：</p>
-<ol>
-<li><code>boolean add(E e)</code>：成功则返回<code>true</code>，失败(队列已满)则抛出异常。</li>
-<li><code>boolean offer(E e)</code>：成功则返回<code>true</code>，失败则返回<code>false</code>。</li>
-<li><code>boolean offer(E e, long timeout, timeUnit unit)</code>：成功返回<code>true</code>，没有空间则等待一定时间。 成功返回<code>true</code>， 在规定等待时间内队列还是满的，返回<code>false</code>。 </li>
-<li><code>void put()</code>：成功则返回<code>true</code>，空间不足，则阻塞，知道有空间为止。</li>
-</ol>
-<p>往队列头部取出元素：</p>
-<ol>
-<li><code>Boolean remove(Object obj)</code>：删除指定的<code>obj</code>，成功则返回<code>true</code>，失败则返回<code>false</code>。</li>
-<li><code>E poll()</code>：获取并且移除队列头部的元素，队列空则返回<code>null</code>。</li>
-<li><code>E pool(long timeout, timeUnit unit)</code>：获取并且移除队列头部的元素，如果队列为空，则等待指定时间。成功获取返回对象，在规定等待时间内队列还是为空，返回<code>null</code>。 </li>
-<li><code>E take()</code>：获取并且移除队列头部的元素，队列空则阻塞，知道队列有元素可用为止。</li>
-</ol>
-<p><code>ArrayBlockingQueue</code>和<code>LinkedBlockingQueue</code>的区别：</p>
-<ol>
-<li><code>ArrayBlockingQueue</code>是有限的队列，而<code>LinkedBlockingQueue</code>是单链表实现，所以链表实现空间是无限的，数组空间大小由一开始构造函数中指定，以后不能变，所以是有界阻塞队列。</li>
-<li><code>LinkedBlockingQueue</code>把读写锁进行了分离，使并发更加高效。<code>ArrayBlockingQueue</code>读写都是用的同一个锁，没有使用读写锁分离，但是由于是数组实现，效率还是非常高的。队列容量构造方法确定，所以是有界阻塞队列。</li>
-<li><code>LinkedBlockingQueue</code>每当要插入时，需要将其封装成目标对象的<code>Node</code>类，由于需要维护单链表，所以相对于<code>ArrayBlockingQueue</code>更耗费内存。</li>
-</ol>
-<p><code>PriorityBlockingQueue</code>无界阻塞队列。即添加的时候不会阻塞，获取的时候会阻塞。队列会自动扩容，但是最大容量为<code>Integer.MaxValue</code>。</p>
-<p>阻塞队列比较：</p>
-<ol>
-<li><code>ArrayBlockingQueue</code>和<code>LinkedBlockingQueue</code>：不指定容量，则容量为<code>Intege.MaxValue</code>。指定则为指定值。</li>
-<li><code>PriorityBlockingQueue</code>：不指定容量，则为默认容量<code>11</code>，指定了则为指定的容量。<code>优先队列</code>可以自动扩容。</li>
-<li><code>SynchronousQueue</code>：没有维护容量。</li>
-</ol>
-<h3 id="AtomicInteger-long-boolean"><a href="#AtomicInteger-long-boolean" class="headerlink" title="AtomicInteger (long boolean)"></a>AtomicInteger (long boolean)</h3><p>原子类(<code>atomic</code>)中对几个基本数据类型的原子操作的封装，由<code>unsafe</code>中的<code>CAS</code>操作来实现。</p>
-<h3 id="CountDownLatch"><a href="#CountDownLatch" class="headerlink" title="CountDownLatch"></a>CountDownLatch</h3><p><code>CountDownLatch</code>：一个线程同步辅助类，在完成一组其它线程操作之前，它允许一个或者多个线程一直等待。<br>主要方法：</p>
-<ol>
-<li><code>CountDownLatch(int n)</code>：构造一个给定初始值的<code>CountDownLatch</code>。</li>
-<li><code>await()</code>：如果当前计数值大于0，则调用这个方法的线程处于等待状态，直到计数值为0，除非当前线程被中断。</li>
-<li><code>countDown()</code>：当一个线程内调用这个方法，则计数值减一。</li>
-<li><code>getCount()</code>：获取此时的计数值。<br>场景：一个或者多个线程等待若干个线程完成操作后执行。</li>
-</ol>
-<h3 id="CyclicBarrier"><a href="#CyclicBarrier" class="headerlink" title="CyclicBarrier"></a>CyclicBarrier</h3><p>一个同步辅助类，它允许一组线程互相等待，知道所有线程都达到一个公共的屏障点，即所有线程都调用了<code>await()</code>方法，所有线程才可以都继续执行。<br>主要方法：</p>
-<ol>
-<li><code>CyclicBarrier(int n)</code>：构造方法，<code>n</code>为需要相互等待的线程数目。</li>
-<li><code>CyclicBarrier(int n,  Runnable barrierAction)</code>：<code>barrierAction</code>为一个线程，只是大家都到达了屏障点后，执行的操作。</li>
-<li><code>await()</code>：在所有参与线程都调用<code>await()</code>方法之前等待。</li>
-<li><code>await(long time,TimeUnit unit)</code>：在所有参与线程都调用<code>await()</code>方法之前等待，或者超过等待时间。</li>
-<li><code>getNumberWaiting()</code>：返回当前等待线程的数目。</li>
-</ol>
-<p>场景：多个线程相互等待，直到都完成到一个公共的屏障点，然后才能执行新的操作。</p>
-<h3 id="Callable、Future和FutureTask"><a href="#Callable、Future和FutureTask" class="headerlink" title="Callable、Future和FutureTask"></a>Callable、Future和FutureTask</h3><h4 id="Callable和Runnable接口"><a href="#Callable和Runnable接口" class="headerlink" title="Callable和Runnable接口"></a>Callable和Runnable接口</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Callable</span>&lt;<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">      * Computes a result, or throws an exception if unable to do so.</span></span><br><span class="line"><span class="comment">      *</span></span><br><span class="line"><span class="comment">      * <span class="doctag">@return</span> computed result</span></span><br><span class="line"><span class="comment">      * <span class="doctag">@throws</span> Exception if unable to compute a result</span></span><br><span class="line"><span class="comment">      */</span></span><br><span class="line">	<span class="function">V <span class="title">call</span><span class="params">()</span> <span class="keyword">throws</span> Exception</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ol>
-<li><code>Runnable</code>接口中的<code>run</code>方法没有返回值。</li>
-<li><code>Callable</code>接口中的<code>call</code>方法有返回值，是一个传入<code>Callable</code>接口的泛型参数。<br>所以很多时候需要使用<code>Callable</code>接口实现线程。</li>
-</ol>
-<h4 id="Future接口"><a href="#Future接口" class="headerlink" title="Future接口"></a>Future接口</h4><p><code>Future</code>就是具有对<code>Runnable</code>和<code>Callable</code>任务进行的<code>执行结果</code>，进行<code>取消</code>、<code>查询是否完成</code>、<code>获取结果</code>的操作。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Future</span>&lt;<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">cancel</span><span class="params">(<span class="keyword">boolean</span> mayInterruptIfRunning)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isCancelled</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isDone</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function">V <span class="title">get</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException, ExecutionException</span>;</span><br><span class="line">    <span class="function">V <span class="title">get</span><span class="params">(<span class="keyword">long</span> timeout, TimeUnit unit)</span>  <span class="keyword">throws</span> InterruptedException, ExecutionException, TimeoutException</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><code>cancle</code>：取消任务，如果取消任务完成，则返回<code>true</code>，失败则返回<code>false</code>。参数<code>mayInterruptIfRunning</code>表示是否允许取消正在执行却没有执行完毕的任务。如果设置为<code>true</code>，则表示可以取消正在执行的过程中的任务。如果任务已经完成，则<code>mayInterruptIfRunning</code>无论设置成什么，都返回<code>false</code>。如果任务正在执行，若<code>mayInterruptIfRunning</code>为<code>true</code>，则返回<code>true</code>，若<code>mayInterruptIfRunning</code>为<code>flase</code>，则返回<code>false</code>。如果任务还没有开始，则无论<code>mayInterruptIfRunning</code>设置成什么，都返回<code>true</code>。<br><code>isCancelled</code>：表示任务是否取消成功，如果在任务成功完成前被取消成功，则返回<code>true</code>。<br><code>isDone</code>：表示任务是否正常完成，如果正常完成，则返回<code>true</code>。<br><code>get</code>：获取任务完成的返回值。</p>
-<p><code>Future</code>提供三种功能：</p>
-<ol>
-<li>判断任务是否完成。</li>
-<li>能够中断任务。</li>
-<li>能够获取任务执行的结果。</li>
-</ol>
-<h4 id="FutureTask"><a href="#FutureTask" class="headerlink" title="FutureTask"></a>FutureTask</h4><p><code>FutureTask</code>继承了<code>RunnableFuture</code>类，而<code>RunnableFuture</code>继承了<code>Runnable和Future</code>接口：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FutureTask</span>&lt;<span class="title">V</span>&gt; <span class="keyword">implements</span> <span class="title">RunnableFuture</span>&lt;<span class="title">V</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">interface</span> <span class="title">RunnableFuture</span>&lt;<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">Runnable</span>, <span class="title">Future</span>&lt;<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><code>FutureTask</code>类是唯一实现<code>Future</code>接口的类。<br><code>FutureTask</code>构造函数：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">FutureTask</span><span class="params">(Callable&lt;V&gt; callable)</span> </span>&#123;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">FutureTask</span><span class="params">(Runnable runnable, V result)</span> </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>使用场景：可以异步获取任务执行的结果。</p>
-<h3 id="Condition"><a href="#Condition" class="headerlink" title="Condition"></a>Condition</h3><p><code>Condition</code>的线程间同步机制，更加灵活。<br><code>wait()</code>和<code>notify()</code>只有一个等待队列，所以当有多个线程相互同步，性能上不如<code>Condition</code>，因为<code>Condition</code>可以定义多个等待队列，性能和灵活性上更好。</p>
-<h4 id="三个线程打印1000个ABC"><a href="#三个线程打印1000个ABC" class="headerlink" title="三个线程打印1000个ABC"></a>三个线程打印1000个<code>ABC</code></h4><p>比如需要用三个线程打印1000个<code>ABC</code>，<code>synchronized</code>、<code>wait</code>和<code>notify</code>机制，在<code>notify</code>唤醒的时候需要唤醒所有因为<code>wait</code>而等待的线程，而实际上，只要唤醒对应的一部分即可。<br>而<code>condition</code>，则可以对它进行分割，性能和灵活性更好。<br>在<code>condition</code>中，将有3个<code>Condition</code>,分别为<code>CA</code>、<code>CB</code>和<code>CC</code>，其中<code>CA</code>等待队列存放的是<code>打印A</code>的线程，<code>CB</code>等待队列存放的是<code>打印B</code>的线程，<code>CC</code>等待队列存放的是<code>打印C</code>的线程。<br>每次调用<code>x.await()</code>(<code>x</code>为<code>CA</code>、<code>CB</code>或者<code>CC</code>之一)，则将当前线程加入到<code>x</code>的等待队列。而每次调用<code>x.signal()</code>则从<code>x</code>的等待队列中第一个线程唤醒，所以唤醒的是目标同步的线程，而不是所有等待的线程(<code>wait和notify</code>则唤醒的是所有线程)。</p>
-<p>所以结果就是<code>Condition</code>比较灵活，而且有效。</p>
-<h3 id="Semaphore"><a href="#Semaphore" class="headerlink" title="Semaphore"></a>Semaphore</h3><p><code>Semaphore</code>信号量，信号量是当有多个资源时的，线程间的同步关系的解决方法。<br>同样<code>Semaphore</code>也可以实现互斥和同步是一种非常灵活的方式，不过用这个实现，效率可能不高。之前生产者消费者的伪代码就是按照<code>Semaphore</code>来实现。<br>主要方法：</p>
-<ol>
-<li><code>Semaphore(int perms)</code>：创建具有给定的许可数和默认非公平设置的<code>Semaphore</code>。</li>
-<li><code>Semaphore(int perms, boolean fair)</code>：创建具有给定的许可数和公平的<code>Semaphore</code>。</li>
-<li><code>acquire()</code>：从此信号量获取一个许可，在提供一个许可前将线程阻塞，否则线程被中断。</li>
-<li><code>acquireUninterruptibly()</code>：从此信号量获取一个许可，在提供一个许可前阻塞，不会响应中断。</li>
-<li><code>release()</code>：释放许可。</li>
-</ol>
-<h3 id="Executors"><a href="#Executors" class="headerlink" title="Executors"></a>Executors</h3><p><code>Executors</code>：基本的线程池有4种。</p>
-<ol>
-<li><code>newCachedThreadPool()</code>：缓存型线程池，首先查看是否有之前建立的线程，有则复用，没有则重新创建。</li>
-<li><code>newFixedThreadPool(int)</code>：创建固定数目的线程池，如果超出这个数目，就要把新的任务放到等待队列中。</li>
-<li><code>newSchedleThreadPool(int)</code>：创建的线程池中的线程可以延迟或者周期性执行。</li>
-<li><code>newSingleTreadPool()</code>：创建只有单个线程的线程池，每次执行一个任务。</li>
-</ol>
-<p><code>线程池</code>都是由<code>ThreadPoolExecutor()</code>方法创建的：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ThreadPoolExecutor</span><span class="params">(<span class="keyword">int</span> corePoolSize,</span></span></span><br><span class="line"><span class="function"><span class="params">                              <span class="keyword">int</span> maximumPoolSize,</span></span></span><br><span class="line"><span class="function"><span class="params">                              <span class="keyword">long</span> keepAliveTime,</span></span></span><br><span class="line"><span class="function"><span class="params">                              TimeUnit unit,</span></span></span><br><span class="line"><span class="function"><span class="params">                              BlockingQueue&lt;Runnable&gt; workQueue)</span></span></span><br></pre></td></tr></table></figure></p>
-<p><code>corePoolSize</code>：线程池中可以保留的线程数(<code>workers</code>)。<br><code>keepAliveTime</code>：当线程数(<code>works</code>)大于<code>corePoolSize</code>的时候，如果有线程处于空闲状态，那么它们的生命周期为<code>keepAliveTime</code>，超过这个时间线程就被终止。<br><code>unit</code>：时间的单位。<br><code>workQueue</code>：等待队列。当线程池中的线程数大于等于<code>corePoolSize</code>，而且小于<code>maximumPoolSize</code>时，则将新到的任务，且等待队列未满，则加入到等待队列中。如果等待队列已满，则直接创建线程。</p>
-<h5 id="工作过程："><a href="#工作过程：" class="headerlink" title="工作过程："></a>工作过程：</h5><ol>
-<li>活动线程(<code>worker任务载体</code>) &lt; <code>corePoolSize</code>，直接创建新线程。</li>
-<li><code>corePoolSize &lt; 活动线程(</code>worker任务载体<code>) &lt; maxPoolSize</code>，如果阻塞队列未满加入阻塞队列。如果阻塞队列已满，则直接创建新线程。</li>
-<li>活动线程(<code>worker任务载体</code>) &gt;= maxPoolSize，则采取拒绝策略，默认是抛出异常。<br>一开始线程池的线程数量为0，则都为到达的认为创建新的线程，知道线程数为<code>corePoolSize</code>。当线程数大于等于<code>corePoolSize</code>时，且等待队列未满，则加入等待队列，如果等待队列已满，则直接创建线程，如果线程数大于等于<code>maximumPoolSize</code>，则抛出异常。<br><code>maximumPoolSize</code>：线程池中维护最大的线程数。</li>
-</ol>
-<h4 id="newFixedThreadPool"><a href="#newFixedThreadPool" class="headerlink" title="newFixedThreadPool"></a>newFixedThreadPool</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ExecutorService <span class="title">newFixedThreadPool</span><span class="params">(<span class="keyword">int</span> nThreads)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ThreadPoolExecutor(nThreads, nThreads,</span><br><span class="line">                                      <span class="number">0L</span>, TimeUnit.MILLISECONDS,</span><br><span class="line">                                      <span class="keyword">new</span> LinkedBlockingQueue&lt;Runnable&gt;());</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p>创建一个<code>corePoolSize</code>和<code>maxSize</code>都为<code>nThreads</code>的线程池，<code>keepAliveTime</code>为0则表示空闲的线程立即停止。等待队列用的是<code>LinkedBlockingQueue&lt;&gt;</code></p>
-<h4 id="newSingleThreadExecutor"><a href="#newSingleThreadExecutor" class="headerlink" title="newSingleThreadExecutor"></a>newSingleThreadExecutor</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ExecutorService <span class="title">newSingleThreadExecutor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> FinalizableDelegatedExecutorService</span><br><span class="line">            (<span class="keyword">new</span> ThreadPoolExecutor(<span class="number">1</span>, <span class="number">1</span>,</span><br><span class="line">                                    <span class="number">0L</span>, TimeUnit.MILLISECONDS,</span><br><span class="line">                                    <span class="keyword">new</span> LinkedBlockingQueue&lt;Runnable&gt;()));</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p>创建一个只有一个线程的线程池，而且线程空闲立即停止。</p>
-<h4 id="newCachedThreadPool"><a href="#newCachedThreadPool" class="headerlink" title="newCachedThreadPool"></a>newCachedThreadPool</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ExecutorService <span class="title">newCachedThreadPool</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ThreadPoolExecutor(<span class="number">0</span>, Integer.MAX_VALUE,</span><br><span class="line">                                      <span class="number">60L</span>, TimeUnit.SECONDS,</span><br><span class="line">                                      <span class="keyword">new</span> SynchronousQueue&lt;Runnable&gt;());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>创建一个具有缓存池的线程池，因为<code>keepAliveTime</code>为1分钟。</p>
-<h3 id="newScheduledThreadPool"><a href="#newScheduledThreadPool" class="headerlink" title="newScheduledThreadPool"></a>newScheduledThreadPool</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ScheduledExecutorService <span class="title">newScheduledThreadPool</span><span class="params">(<span class="keyword">int</span> corePoolSize)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ScheduledThreadPoolExecutor(corePoolSize);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p>创建一个指定核心池数量的线程池。<br><code>ScheduledExecutorService</code>主要有3个方法：</p>
-<ol>
-<li><p><code>schedule(command, delay,unit)</code>:在<code>delay</code>时间后，调度执行任务。</p>
-</li>
-<li><p><code>scheduleAtFixedRate(command,initialDelay,period,unit)</code>:第一个任务在<code>initialDelay+period</code>时间后被调度，第二个任务在<code>initialDelay+2*period</code>之后被调度。</p>
-</li>
-<li><p><code>scheduleWithFixedDelay(command,initialDelay,delay,unit)</code>:第一个任务在<code>initialDelay</code>后调度执行，第二个任务在第一个任务执行完之后的<code>delay</code>时间之后调度执行。<br> `</p>
-</li>
-</ol>
-<h4 id="ExecutorService常用的方法"><a href="#ExecutorService常用的方法" class="headerlink" title="ExecutorService常用的方法"></a>ExecutorService常用的方法</h4><ol>
-<li><code>void shutdown()</code>：关闭线程池。等到线程池中的所有任务完成后，关闭线程池。</li>
-<li><code>boolean isShutDown()</code>：查看线程池是否已经关闭。</li>
-<li><code>&lt;T&gt; Future&lt;T&gt; submit(Callable&lt;T&gt; task)</code>：提交需要执行的任务。</li>
-<li><code>&lt;T&gt; Future&lt;T&gt; submit(Runnable task, T result)</code>：提交需要执行的任务。</li>
-<li><code>Future&lt;?&gt; submit(Runnable task)</code>：提交需要执行的任务。</li>
-<li><code>void execute(Runnable command)</code>：提交需要执行的任务。</li>
-</ol>
-<p><code>3 4 6</code>是经常使用的。</p>
-<h3 id="ReentrantReadWriteLock"><a href="#ReentrantReadWriteLock" class="headerlink" title="ReentrantReadWriteLock"></a>ReentrantReadWriteLock</h3><p><code>可重入读写锁</code><br>适合场景：读线程远远大于写线程的场景。<br>特点：</p>
-<ol>
-<li><code>读线程与读线程</code>：不互斥。</li>
-<li><code>读线程与写线程</code>：互斥。</li>
-<li><code>写线程与读线程</code>：互斥。</li>
-<li><code>写线程与写线程</code>：互斥。</li>
-</ol>
-<p>重入：</p>
-<ol>
-<li><code>读操作重入</code>：线程获取读锁之后再次申请读锁。</li>
-<li><code>写操作重入</code>：线程获取写锁之后再次申请写锁。</li>
-<li><code>读操作后写重入</code>：线程获取读锁后，再次申请写锁。</li>
-<li><code>写操作后读重入</code>：线程获取写锁后，再次申请读锁。</li>
-</ol>
-<p>操作：</p>
-<ol>
-<li><code>lock.readLock().lock()</code>：申请读锁。</li>
-<li><code>lock.readLock.unlock()</code>：释放读锁。</li>
-<li><code>lock.writeLock().lock()</code>：申请写锁。</li>
-<li><code>lock.writeLock().unlock()</code>：释放写锁。</li>
-</ol>
-
+              <p>Java基础整理<br>
+          
       
     </div>
     
@@ -824,6 +520,10 @@
         <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
     </div>
 
+      
+        <p class="article-more-link">
+          <a href="/2018/04/06/java-base-2/#more">more >></a>
+        </p>
       
       <div class="clearfix"></div>
     </div>
@@ -868,368 +568,8 @@
     <div class="article-entry" itemprop="articleBody">
       
           
-        <h4 id="1-8种基本数据类型"><a href="#1-8种基本数据类型" class="headerlink" title="1. 8种基本数据类型"></a>1. 8种基本数据类型</h4><table>
-<thead>
-<tr>
-<th>类型</th>
-<th style="text-align:right">大小</th>
-<th style="text-align:right">封装类</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>boolean</td>
-<td style="text-align:right">1/8</td>
-<td style="text-align:right">Boolean</td>
-</tr>
-<tr>
-<td>char</td>
-<td style="text-align:right">2</td>
-<td style="text-align:right">Character</td>
-</tr>
-<tr>
-<td>byte</td>
-<td style="text-align:right">1</td>
-<td style="text-align:right">Byte</td>
-</tr>
-<tr>
-<td>short</td>
-<td style="text-align:right">2</td>
-<td style="text-align:right">Short</td>
-</tr>
-<tr>
-<td>int</td>
-<td style="text-align:right">4</td>
-<td style="text-align:right">Integer</td>
-</tr>
-<tr>
-<td>long</td>
-<td style="text-align:right">8</td>
-<td style="text-align:right">Long</td>
-</tr>
-<tr>
-<td>float</td>
-<td style="text-align:right">4</td>
-<td style="text-align:right">Float</td>
-</tr>
-<tr>
-<td>double</td>
-<td style="text-align:right">8</td>
-<td style="text-align:right">Double</td>
-</tr>
-</tbody>
-</table>
-<p> <code>Java</code>数据类型分为<code>基本数据类型</code>和<code>引用数据类型</code>。<br> <code>基本数据类型</code>也称为原生类。<br> <code>引用数据类型</code>包括：数组、类和接口。<br><code>char</code>(2字节)采用<code>utf-16</code>编码，<code>utf-16</code>是一种变长编码，如果超过2字节，则使用两个<code>char</code>来表示。</p>
-<h4 id="2-不能作为switch的参数的类型"><a href="#2-不能作为switch的参数的类型" class="headerlink" title="2. 不能作为switch的参数的类型"></a>2. 不能作为switch的参数的类型</h4><p><code>float double boolean long</code> (String在 jdk1.7中被支持)</p>
-<h4 id="3-equals和-的区别"><a href="#3-equals和-的区别" class="headerlink" title="3. equals和==的区别"></a>3. equals和==的区别</h4><p>《Think in Java》中说：“关系操作符生成的是一个boolean结果，它们计算的是操作数的值之间的关系”。</p>
-<pre><code>&quot;==&quot;判断的是两个对象的内存地址是否一样，适用于原始数据类型和枚举类型（它们的变量存储的是值本身，而引用类型变量存储的是引用）；equals是Object类的方法，Object对它的实现是比较内存地址，我们可以重写这个方法来自定义“相等”这个概念。比如类库中的String、Date等类就对这个方法进行了重写。
-
-综上，对于枚举类型和原始数据类型的相等性比较，应该使用&quot;==&quot;；对于引用类型的相等性比较，应该使用equals方法。
-</code></pre><h4 id="4-Object类的共有方法"><a href="#4-Object类的共有方法" class="headerlink" title="4. Object类的共有方法"></a>4. Object类的共有方法</h4><ol>
-<li><code>clone</code>: 拷贝原对象的一个副本，返回这个副本的引用。对于基本数据类型，直接赋值即可，如果是是引用类型，clone会使副本和原来的对象指向相同的引用，所以需要进行深度拷贝。<code>clone</code>方法是<code>protected</code>权限的，所以只能在同一个包内或者继承的子类当中使用。同时使用时必须实现<code>cloneable</code>接口。</li>
-<li><code>equals</code>: 比较两个对象的内容是否相等，<code>object中是比较地址</code>，一般根据具体的类进行重写覆盖。</li>
-<li><code>finalize</code>: 垃圾回收机制准备回收这个对象的内存时，会先调用这个方法的<code>(详细见jvm-垃圾回收)</code>。</li>
-<li><code>getClass</code>: 返回这个对象的完整路径+类名。</li>
-<li><code>hashCode</code>: 返回这个对象的哈希值</li>
-<li><code>notify</code>: 唤醒一个(多个等待时)等待该对象的线程, 调用它之前必须已获取<code>monitor</code>(锁)</li>
-<li><code>notifyall</code>: 唤醒所有等待该对象的线程,调用它之前必须已获取<code>monitor</code>(锁)</li>
-<li><code>wait</code>: 调用它之前必须已获取<code>monitor</code>(锁),一般使用<code>Synchronized</code>关键字对目标进行锁定，使当前线程等待，直到其他线程调用此对象的<code>notify()</code>方法或<code>notifyAll()</code>方法。    </li>
-<li><code>toString</code>: 返回代表这个对象的字符串，<code>getClass().getName() + &#39;@&#39; + Integer.toHexString(hashCode())</code>即类名+@+对象的hash值的16进制表示。<br>10 <code>wait(time) 和 wait(time, nano)</code>,调用它之前必须已获取<code>monitor</code>(锁),和<code>wait()</code>一样<br><code>ps</code>:wait()、notify()和notifyall是用于线程间同步的机制。<br><code>wait</code>和<code>notify</code>实现线程同步机制，<code>synchronoized</code>实现互斥。不过<code>wait</code>和<code>notify</code>必须和<code>synchronoized</code>共同使用。<br>如果纯粹使用<code>线程间同步</code>，可以使用<code>volatile</code>。</li>
-</ol>
-<h4 id="5-Java的四种引用"><a href="#5-Java的四种引用" class="headerlink" title="5.Java的四种引用"></a>5.Java的四种引用</h4><ol>
-<li>强引用(<code>StrongReference</code>)：只要某个对象有强引用与之关联，<code>jvm</code>必定不会回收这个对象，即使在内存不足的情况下，<code>jvm</code>宁愿抛出<code>OutOfMemory</code>错误也不会回收这种对象。如果想中断强引用和某个对象的关联，可以显示地将引用赋值为<code>null</code>，这样一来jvm会在合适的时间回收该对象。</li>
-<li>软引用(<code>SoftReference</code>)：软引用用来描述一些非必须的对象。当内存充足时垃圾回收机制不会回收其内存，但是<code>OOP</code>（内存不充足时）会回收其内存， 所以软银用所关联的对象非常适合用来实现一些缓存：比如网页缓存、图片缓存等，可以在内存充足的情况下，提高系统的性能。只有在内存不足的情况下才会回收这些内存。在<code>Java</code>中用<code>java.lang.ref.SoftReference</code>类来表示。</li>
-<li>弱引用(<code>WeakReference</code>)：弱引用也是用来描述一些非必须的对象。但是当<code>JVM</code>进行垃圾回收时，无论内存是否充足都会对这部分内存进行回收。在<code>Java</code>中用<code>java.lang.ref.WeakReference</code>类进行描述。(一般用作缓存)</li>
-<li>虚引用：虚引用和前面的软引用、弱引用不同，它并不影响对象的生命周期(<code>比如，new出来的对象和正常的强引用一样</code>，只是在被<code>回收前</code>会放入<code>引用队列</code>中，然后可以使用<code>phref.isEnqueued()</code>查看是否在引用队列)。在java中用<code>java.lang.ref.PhantomReference</code>类表示。必须与引用队列一起使用，唯一的作用是在对象被gc回收时，可以起到通知的作用。<code>pf.get()</code>永远返回null。<br><code>进一步理解软引用和弱引用</code>：<br>对于强引用，我们平时在编写代码时经常会用到。而对于其他三种类型的引用，使用得最多的就是软引用和弱引用，这2种既有相似之处又有区别。<code>它们都是用来描述非必需对象的，但是被软引用关联的对象只有在内存不足时才会被回收，而被弱引用关联的对象在JVM进行垃圾回收时总会被回收。</code>针对上面的特性，软引用适合用来进行缓存，当内存不够时能让JVM回收内存，弱引用能用来在回调函数中防止内存泄露。当然现在缓存也不是用软引用或者弱引用实现的，一般使用<code>LruCache</code>实现。</li>
-</ol>
-<h4 id="6-Hashcode的作用"><a href="#6-Hashcode的作用" class="headerlink" title="6. Hashcode的作用"></a>6. Hashcode的作用</h4><p><code>object.hashCode()</code>方法返回该对象所在<code>jvm内存</code>的32位地址。(<code>hashCode()方法没有被重写的情况下</code>)<br>1、<code>hashCode</code>的存在主要是用于查找的快捷性，如<code>Hashtable</code>，<code>HashMap</code>等，<code>hashCode</code>是用来在散列存储结构中确定对象的存储地址的；<br>2、如果两个对象相同，就是适用于<code>equals(Java.lang.Object)</code> 方法，那么这两个对象的<code>hashCode</code>一定要相同；<br>3、如果对象的<code>equals</code>方法被重写，那么对象的<code>hashCode</code>也尽量重写，并且产生<code>hashCode</code>使用的对象，一定要和<code>equals</code>方法中使用的一致，否则就会违反上面提到的第2点；<br>4、两个对象的<code>hashCode</code>相同，并不一定表示两个对象就相同，也就是不一定适用于<code>equals(java.lang.Object)</code> 方法，只能够说明这两个对象在散列存储结构中，如<code>Hashtable</code>，他们“存放在同一个篮子里”。</p>
-<h4 id="7-ArrayList、LinkedList、Vector的区别"><a href="#7-ArrayList、LinkedList、Vector的区别" class="headerlink" title="7. ArrayList、LinkedList、Vector的区别"></a>7. ArrayList、LinkedList、Vector的区别</h4><p><code>ArrayList</code>和<code>Vector</code>都是数组实现的列表（<code>list</code>）,即动态数组，其中<code>Vector</code>是线程安全的(这个线程安全是很弱的，仅仅只是当一个线程调用vector的一个方法(比如<code>remove</code>时)，其它线程调用该方法时需要等待，这时是线程安全的，如果另外的线程调用的是其它的方法(比如size())，则会出现错误)。<code>LinkedList</code>是链表实现的<code>list</code>。</p>
-<p><code>ArrayList</code>和<code>LinkedList</code>的区别：</p>
-<ol>
-<li><code>Arraylist</code>：内部采取数组存储元素，支持高效随机访问(通过下标)。</li>
-<li><code>LinkedList</code>：内部采取双向链表来存储元素，支持快速插入和删除元素，但不支持随机访问。</li>
-<li><code>Vector</code>：线程安全的<code>ArrayList</code>，大部分的方法都用<code>synchronized</code>修饰。</li>
-</ol>
-<h4 id="8-String、StringBuffer与StringBuilder的区别"><a href="#8-String、StringBuffer与StringBuilder的区别" class="headerlink" title="8. String、StringBuffer与StringBuilder的区别"></a>8. String、StringBuffer与StringBuilder的区别</h4><p><code>首先：线程安全就是说多线程访问同一代码，不会产生不确定的结果。编写线程安全的代码是低靠线程同步。</code><br>. <code>String</code>: 不可变，需要改变时，其实是<code>new</code>了一个新的对象 (<code>String</code>是final的，所以显然也是线程安全的)<br>. <code>StringBuffer</code>: 可变的，线程安全的<br>. <code>StringBuilder</code>: 可变的 ，非线程安全的<br>. 速度: <code>StringBuilder &gt;(快于) StringBuffer &gt;(快于)  String</code></p>
-<p>String 和 另外两个的区别：<br>对于<code>equal</code>方法，<code>String</code>类重写了该方法，比较的是字符串的内容。<br>而<code>StringBuffer</code>和<code>StringBuilder</code>都没有重写<code>Object</code>类的方法，比较的还都是引用(地址)。<br>所以要将<code>StringBuffer</code>和<code>StringBuilder</code>的对象放入<code>Set</code>集合中最好使用,它们的<code>toString()</code>方法，因为<code>toString()</code>方法会<code>new</code>一个<code>String</code> 对象出来。<code>String</code>对象放在常量池内。</p>
-<p>使用建议：</p>
-<ol>
-<li>字符串数量较少时，使用<code>String</code>。</li>
-<li>单线程操作字符串缓冲区下操作大量字符串，使用<code>StringBuilder</code>。</li>
-<li>多线程操作字符串缓冲区下操作大量字符串，使用<code>StringBUffer</code>。</li>
-</ol>
-<p><code>String</code>类不能被继承，因为<code>String</code>类由<code>final</code>进行修饰。<br><code>String</code>类对象<code>+</code>的实现：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">String s1 = <span class="string">"a"</span>;</span><br><span class="line">String s2 = <span class="string">"b"</span>;</span><br><span class="line">String s = s1 + s2;</span><br></pre></td></tr></table></figure></p>
-<p>相当于：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">String s = <span class="keyword">new</span> StringBuilder().append(a).append(b).toString();</span><br></pre></td></tr></table></figure></p>
-<p>通过构建<code>StringBuilder</code>实现的。</p>
-<p><code>String</code>类的<code>hashcode()</code>方法被重写了：原因是当需要将相同字符串的<code>String</code>对象放到<code>hashmap</code>中的同一个<code>bucket</code>里面。<br><code>String</code>类的<code>toString()</code>方法也被重写了，返回表示的字符串，语义需要(因为<code>String</code>就是一个字符串)。</p>
-<h4 id="9-Map、Set、List、Queue、Stack的特点与用法"><a href="#9-Map、Set、List、Queue、Stack的特点与用法" class="headerlink" title="9. Map、Set、List、Queue、Stack的特点与用法"></a>9. Map、Set、List、Queue、Stack的特点与用法</h4><ol>
-<li><code>Map&lt;k,v&gt;</code>: <code>Java</code>中存储键值对的数据类型都实现了这个接口，表示<code>映射表</code>。支持的两个操作是<code>get(Object key)</code>和<code>put(Object key,Object value)</code>。分别用来获取键对应的值，以及向映射表插入键值对。</li>
-<li><code>Set&lt;E&gt;</code>: 实现这个接口的集合类型不允许存在重复的元素，即数学意义上的<code>集合</code>。它支持的操作<code>add(E e),remove(Object obj)和contains(Object obj)</code>，分别表示添加元素、删除元素和判断给定元素是否存在。</li>
-<li><code>List</code>：<code>Java</code>集合框架类型中的列表都实现了这个接口，表示一种有序序列。支持<code>get(int index) 和add(E e)</code>等操作。</li>
-<li><code>Queue</code>: <code>Java</code>集合类框架的队列接口，代表<code>先进先出队列</code>。支持<code>offer(E e)、poll()</code>等操作，队列已经由<code>LinkedList</code>实现。</li>
-<li><code>Stack</code>: <code>Java</code>集合类框架中表示栈的数据类型，代表<code>先进后出</code>的栈。支持操作<code>push(E e)和pop()</code>等操作。</li>
-</ol>
-<h4 id="10-HashMap和Hashtable的区别"><a href="#10-HashMap和Hashtable的区别" class="headerlink" title="10. HashMap和Hashtable的区别"></a>10. HashMap和Hashtable的区别</h4><p>首先<code>HashMap</code>和<code>Hashtable</code>都是用<code>数组+链表实现的散列表</code>。<code>哈希映射</code>依靠的是<code>Object.hashCode()</code>方法返回的哈希值，即该对象在<code>JVM</code>中的内存地址。</p>
-<ol>
-<li><code>HashMap</code>不是线程安全的, 但是<code>key和value都可以为null</code>，当<code>key</code>为<code>null</code>的时候，将该<code>key</code>和<code>value</code>插入到<code>table[0]</code>链表。(HashMap最多只允许一条记录的键为Null;允许多条记录的值为 Null;)    </li>
-<li><code>Hashtable</code>是线程安全的, <code>key</code>和<code>value</code>都不可以为<code>null</code>，在HashTable中调用put方法时，如果<code>key</code>或者<code>value</code>为<code>null</code>，直接抛出NullPointerException。线程安全的实现是用<code>Sycnchronized</code>修饰方法。<code>Hashtable</code>里面的方法基本都是<code>Synchronied</code>修饰的。这样当一个线程在使用这个对象的方法时，已经对该对象上锁，其它线程要调用这个对象(的方法)时，就必须等前面一个线程释放该对象。</li>
-</ol>
-<h4 id="11-HashMap和ConcurrentHashMap的区别，HashMap的底层源码"><a href="#11-HashMap和ConcurrentHashMap的区别，HashMap的底层源码" class="headerlink" title="11. HashMap和ConcurrentHashMap的区别，HashMap的底层源码"></a>11. HashMap和ConcurrentHashMap的区别，HashMap的底层源码</h4><ol>
-<li><code>HashMap</code>：数组+单链表 + 散列函数实现的哈希表， 非线程安全的， 用迭代器遍历时是随机的，原因是散列函数。</li>
-<li><code>ConcurrentHashMap</code>：实现与<code>HashMap</code>类似，但是是线程安全的，而且线程安全不是通过<code>sychronized</code>实现的（同样线程安全的<code>Hashtable</code>是由<code>sychronized</code>实现的）<code>ConcurrentHashMap</code>是将整个数组分为好几段，并且对访问得这一段加锁，实现线程安全带，所以要比<code>Hashtable</code>速度要快很多。线程读的时候不加锁，只有写的时候需要加锁。所以可以对于读可以达到非常高的并发量。<br><code>ConcurrentHashMap</code>在jdk-1.6、jdk-1.7、和jdk-1.8中都有优化。</li>
-</ol>
-<h4 id="12-TreeMap、HashMap、LindedHashMap和WeakHashMap的区别"><a href="#12-TreeMap、HashMap、LindedHashMap和WeakHashMap的区别" class="headerlink" title="12. TreeMap、HashMap、LindedHashMap和WeakHashMap的区别"></a>12. TreeMap、HashMap、LindedHashMap和WeakHashMap的区别</h4><ol>
-<li><code>TreeMap</code>：红黑树的二叉排序树实现的<code>Map</code>，遍历时按升序遍历。这里的顺序，默认是可以比较的类的对象，比如<code>String</code>、<code>Integer</code>等。默认内容升序。但是可以通过<code>key</code>的类实现<code>Comparator</code>的比较器，或者传入<code>Comparator</code>自定义比较器，实现自定义的升序。</li>
-<li><code>HashMap</code>：数组+单链表 + 散列函数实现的哈希表， 非线程安全的， 用迭代器遍历时是随机的，原因是散列函数。</li>
-<li><code>LinkedHashMap</code>：继承了HashMap, 然后增加了一个双链表的<code>header</code>, <code>entry</code>也再多了双链表的两个指针(之前只有一个<code>next</code>指针)， 当<code>accessOrder</code>为<code>true</code>时， 遍历的时候是按照访问的顺序。每次将刚访问的<code>entry</code>插入到<code>header</code>之前（双链表最后），当<code>accessOrder</code>为<code>false</code>时，则遍历的时候是插入顺序。。最后迭代器遍历即为双链表中的顺序。<code>accessOrder</code>可以在构造函数中指定。由于当<code>accessOrder</code>为<code>true</code>时，每次访问都将目标<code>entry</code>移动<code>header</code>之前，也就是双链表尾部，所以链表头部保存的都是最近最少被访问的<code>entry</code>，所以可以实现<code>Lru</code>缓存。</li>
-<li><code>WeakHashMap</code>：也是<code>拉链法</code>实现的<code>映射</code>，但是放入<code>WeakHashMap</code>中的键值封装成<code>WeakRefence</code>，即弱引用，每次<code>gc</code>都会被回收，然后加入到一个<code>引用队列</code>中，所以需要定期检查和整理<code>WeakHashMap</code>。<code>WeakHashMap</code>主要做缓存。而<code>TreeMap</code>、<code>HashMap</code>和<code>LinkedHashMap</code>都是<code>强键</code>。</li>
-</ol>
-<p><code>Set</code>定义：</p>
-<ol>
-<li>Set不允许包含相同的元素，如果试图把两个相同元素加入同一个集合中，add方法返回false。</li>
-<li>Set判断两个对象相同不是使用==运算符，而是根据equals方法。也就是说，只要两个对象用equals方法比较返回true，Set就不会接受这两个对象。</li>
-</ol>
-<p><code>TreeSet</code>、<code>HashSet</code>和<code>LinkedHashSet</code>区别：</p>
-<ol>
-<li><code>TreeSet</code>：是利用<code>TreeMap</code>实现的，遍历自然升序，当然可以通过传入<code>Comparator</code>实现自定义升序。</li>
-<li><code>HashSet</code>：是继承<code>HashMap</code>实现的，遍历的时候无序。</li>
-<li><code>LinkedHashSet</code>：继承自<code>HashSet</code>，但是调用的是<code>new LinkedHashMap&lt;&gt;()</code>创建哈希表，由于<code>Set</code>没有访问的方法，所以<code>LinkedHashSet</code>遍历的时候就是按照插入的顺序。</li>
-</ol>
-<h4 id="13-Collection包结构，与Collections的区别"><a href="#13-Collection包结构，与Collections的区别" class="headerlink" title="13 Collection包结构，与Collections的区别"></a>13 Collection包结构，与Collections的区别</h4><p><code>Collection</code>是一个接口，<code>List</code>、<code>Set</code>和<code>Queue</code>的具体类都实现了这个接口。<br><code>Collection</code>本身继承了<code>Iterable</code>类，而了<code>Iterable</code>类本身包含一个<code>Iterator</code>类的成员，简单来讲，就是<code>Collection</code>可以实现一个迭代器的功能。</p>
-<p><em>Collection包包含<code>List</code>、<code>Set</code>和<code>Queue</code>三种集合：</em></p>
-<ol>
-<li><code>List</code>：包含<code>ArrayList</code>、 <code>LinkedList</code></li>
-<li><code>Set</code>：包含<code>HashSet</code>，<code>TreeSet</code>，<code>EnumSet</code>，<code>LinkedHashSet</code>等</li>
-<li><code>Queue</code>：<code>AbstractQueue</code>， <code>ArrayDeque</code>， <code>LinkedList</code>，<code>PriorityQueue</code>，<code>DelayQueue</code>等</li>
-</ol>
-<p><em>Collections类：</em>可以对一些<code>Collection</code>类的对象调用它的方法，实现对其操作（比如对<code>list</code>的排序，二分搜索等）</p>
-<ol>
-<li>是针对集合类的一个帮助类，提供操作集合的工具方法；</li>
-<li>系列静态方法实现对各种集合的搜索、排序、线程安全化等操作；</li>
-<li>服务于Java的<code>Collection</code>的框架；</li>
-</ol>
-<h4 id="14-try-catch-finally，try里有return，finally还执行么？"><a href="#14-try-catch-finally，try里有return，finally还执行么？" class="headerlink" title="14 try catch finally，try里有return，finally还执行么？"></a>14 try catch finally，try里有return，finally还执行么？</h4><ol>
-<li><code>finally</code>中的语句肯定会执行 在<code>try return</code>中表达式执行完，<code>return</code>返回之前执行。如果<code>finally</code>中有<code>return</code>语句，则覆盖<code>try</code>中的<code>return</code>提前返回。<br><code>try catch finally</code>中<code>finally</code>不执行的两种情况：<ol>
-<li>JVM崩溃了。</li>
-<li>另外一种<code>finally</code>里面的语句不执行的情况是<code>try catch</code>中包含<code>System.exit()</code>，使整个<code>java</code>进程退出。</li>
-</ol>
-</li>
-</ol>
-<h4 id="15-Excption与Error包结构。OOM你遇到过哪些情况，SOF你遇到过哪些情况。"><a href="#15-Excption与Error包结构。OOM你遇到过哪些情况，SOF你遇到过哪些情况。" class="headerlink" title="15 Excption与Error包结构。OOM你遇到过哪些情况，SOF你遇到过哪些情况。"></a>15 Excption与Error包结构。OOM你遇到过哪些情况，SOF你遇到过哪些情况。</h4><p><code>Throwable</code>类包含两个子类<code>Error</code>和<code>Exception</code>。<br><img src="/img/java-base-1.bmp" alt=""><br><code>SOF(StackOverFlow)</code>：栈溢出，当应用程序递归太深发生栈溢出，抛出<code>stackoverflowError</code>错误。<br>原因：如果栈请求的栈深度大于虚拟机锁允许的最大深度，将抛出<code>stackoverflowError</code>错误。</p>
-<p><code>OOM(Out of Memery)</code>:<br>原因1：由于不断创建对象，导致<code>java</code>堆溢出，将抛出<code>OutofMemeryError</code>错误。<br>原因2：如果虚拟机在扩展栈时无法申请到足够的内存，则将抛出<code>OutofMemeryError</code>错误。</p>
-<h4 id="16-Java面向对象的三个特征与含义"><a href="#16-Java面向对象的三个特征与含义" class="headerlink" title="16 Java面向对象的三个特征与含义"></a>16 Java面向对象的三个特征与含义</h4><p>Java面向对象三种特性是指：封装、继承和多态。</p>
-<ol>
-<li>封装：将方法和数据成员封装在类的内部</li>
-<li>继承：子对象可以继承父对象的属性和方法</li>
-<li>多态：<code>override</code>(重写)和<code>overload</code>(重载)</li>
-</ol>
-<h4 id="17-Override和Overload的含义去区别。"><a href="#17-Override和Overload的含义去区别。" class="headerlink" title="17 Override和Overload的含义去区别。"></a>17 Override和Overload的含义去区别。</h4><p><code>Override</code>即<code>重写</code>（<code>覆盖</code>）: <code>动态绑定多态机制</code>，父类和子类多态的表现<br><code>Overload</code>即<code>重载</code>：<code>参数多态机制</code>。一个类中同名方法，可以通过<code>不同的参数个数、不同的参数类型和不同的参数顺序</code>进行重载<br><code>Override</code>即<code>重写</code>(<code>覆盖</code>)的特点：</p>
-<ol>
-<li>覆盖的方法的标志必须要和被覆盖的方法的标志完全匹配，才能达到覆盖的效果；  </li>
-<li>覆盖的方法的返回值必须和被覆盖的方法的返回一致；</li>
-<li>覆盖的方法所抛出的异常必须和被覆盖方法的所抛出的异常一致，或者是其子类；</li>
-<li>方法被定义为<code>final</code>不能被重写。</li>
-<li>对于继承来说，如果某一方法在父类中是访问权限是private，那么就不能在子类对其进行重写覆盖，如果定义的话，也只是定义了一个新方法，而不会达到重写覆盖的效果。（通常存在于父类和子类之间。） </li>
-</ol>
-<p><code>Overload</code>即<code>重载</code>的特点：</p>
-<ol>
-<li>通过<code>不同的参数个数、不同的参数类型和不同的参数顺序</code>进行重载</li>
-<li>不能通过修改返回类型、访问权限和抛出的异常类型进行重载</li>
-<li>类方法的异常类型和数目不会对重载造成任何的影响</li>
-<li>重载事件通常发生在同一个类中，不同方法之间的现象。</li>
-</ol>
-<p>. Override表示“重写”，是子类对父类中同一方法的重新定义<br>. Overload表示“重载”，也就是定义一个与已定义方法名称相同但签名不同的新方法</p>
-<h4 id="18-Interface与abstract类的区别"><a href="#18-Interface与abstract类的区别" class="headerlink" title="18 Interface与abstract类的区别"></a>18 Interface与abstract类的区别</h4><p><em>相同点：</em></p>
-<ol>
-<li>都不能实例化</li>
-<li>都需要子类实现自己生命的 抽象方法</li>
-<li>都可以定义静态成员变量</li>
-</ol>
-<p><em>不同点：</em></p>
-<ol>
-<li><code>interface</code>需要实现，要用<code>implements</code>，而<code>abstract class</code>需要继承，要用<code>extends</code>。</li>
-<li>一个类可以实现多个<code>interface</code>，但一个类只能继承一个<code>abstract class</code>。一个类自能有一个父类。</li>
-<li><code>interface</code>中的每个方法都是抽象的，<code>abstract class</code>中可以由非抽象的方法。</li>
-<li><code>abstract class</code>中可以有一般的成员变量，但是<code>interface</code>的成员变量必须是<code>static final</code>的。</li>
-</ol>
-<p>接口是一种约定，实现接口的类要遵循这个约定；抽象类本质上是一个类，使用抽象类的代价要比接口大。接口与抽象类的对比如下：</p>
-<ol>
-<li>抽象类中可以包含属性，方法（包含抽象方法与有着具体实现的方法），常量；接口只能包含常量和方法声明。</li>
-<li>抽象类中的方法和成员变量可以定义可见性（比如<code>public</code>、<code>private</code>等）；而接口中的方法只能为<code>public</code>（缺省为<code>public</code>）。</li>
-<li>一个子类只能有一个父类（具体类或抽象类）；而一个接口可以继承一个多个接口，一个类也可以实现多个接口。</li>
-<li>子类中实现父类中的抽象方法时，可见性可以大于等于父类中的；而接口实现类中的接口 方法的可见性只能与接口中相同（public）。</li>
-</ol>
-<h4 id="19-Static-class-与non-static-class的区别"><a href="#19-Static-class-与non-static-class的区别" class="headerlink" title="19 Static class 与non static class的区别"></a>19 Static class 与non static class的区别</h4><p><code>Static class</code>只能在一个类的内部声明，如果不是则无法通过编译，编译器会报错。所以<code>Static class</code>只能是内部静态类。<br>1.静态内部类不会持有外围类的引用，而非静态内部类会隐式持有外围类的一个引用。<br>所以静态内部类只能访问外部类的静态属性和静态方法，因为它没有持有外部类对象的引用，而非静态内部类持有了这个引用。</p>
-<h4 id="20-java多态的实现原理"><a href="#20-java多态的实现原理" class="headerlink" title="20  java多态的实现原理"></a>20  java多态的实现原理</h4><p>java多态的实现依靠<code>.class</code>（编译之后）文件中的<code>方法区</code>。<code>方法区</code>包含<code>类型信息（方法、数据和类信息</code>）、<code>一个指向类里面各种方法的方法表的指针</code>和<code>运行时的常量池</code>。其中方法表里面有指向类中每个方法的指针。<code>.class</code>是编译生成的，所以说方法表也是编译生成的，所以动态绑定(多态)其实就在在方法表中找到目标方法。</p>
-<h4 id="21-实现多线程的两种方法：Thread与Runable"><a href="#21-实现多线程的两种方法：Thread与Runable" class="headerlink" title="21 实现多线程的两种方法：Thread与Runable"></a>21 实现多线程的两种方法：Thread与Runable</h4><p>继承<code>Thread</code>类:</p>
-<ol>
-<li>继承<code>Thread</code>类，并且重写<code>run</code>方法</li>
-<li>构建对象</li>
-<li>调用对象的<code>start</code>方法</li>
-</ol>
-<p>实现<code>Runnable</code>接口</p>
-<ol>
-<li><code>A</code>实现<code>Runnable</code>接口，重写<code>run</code>方法</li>
-<li>创建<code>A</code>对象<code>aa</code></li>
-<li><code>Thread tt = new Thread(aa);</code></li>
-<li><code>tt.start();</code></li>
-</ol>
-<p>其中<code>Runnable</code>接口不能抛出异常，只能<code>try catch</code>捕获异常<br><code>一般在Thread和Runnable中选择Runnable，因为可以多继承</code></p>
-<h4 id="22-线程安全的方法：volatile、sychronized、reentrantLock"><a href="#22-线程安全的方法：volatile、sychronized、reentrantLock" class="headerlink" title="22 线程安全的方法：volatile、sychronized、reentrantLock"></a>22 线程安全的方法：volatile、sychronized、reentrantLock</h4><p><code>volatile</code>:线程安全最轻量级的实现，具有两个性质可见性和禁止指令重排的特性。<br><code>volatile</code>实现线程安全的情况非常有限，因为它不具有原子性。<br>满足下面两个性质的线程操作才可以实现线程安全：</p>
-<ol>
-<li>该变量的写操作不依赖于当前值。</li>
-<li>该变量不能包含在其它变量的不变式中。</li>
-</ol>
-<p><code>Java</code>内存模型：</p>
-<ol>
-<li><code>volatile</code>共享变量：线程每次读，都需要从主内存中读。线程每次写该变量时，都需要写入主内存。</li>
-<li>非<code>volatile</code>共享变量：线程读写该变量都从自己工作空间的变量拷贝中读写，但是当线程进入或者离开同步代码块的时候需要更新该变量。</li>
-</ol>
-<p><code>sychronized</code>：是<code>java</code>中的关键字，底层用<code>monitor</code>对象实现。<br>三种修饰：</p>
-<ol>
-<li>修饰非静态方法，此时锁的是当前对象</li>
-<li>修饰静态方法，  此时锁的是当前的类的<code>class</code>对象，即所有这个类的实例化对象。</li>
-<li>修饰代码块， 锁的是括号中配置的实例对象。</li>
-</ol>
-<p><code>sychronized</code>底层(线程状态及状态转换):<br>当多个线程同时请求某个对象监视器时，对象监视器会设置几种状态用来区分请求的线程：<br><code>Contention List</code>：所有请求锁的线程将被首先放置到该竞争队列<br><code>Entry List</code>：<code>Contention List</code>中那些有资格成为候选人的线程被移到<code>Entry List</code><br><code>Wait Set</code>：那些调用wait方法被阻塞的线程被放置到<code>Wait Set</code><br><code>OnDeck</code>：任何时刻最多只能有一个线程正在竞争锁，该线程称为<code>OnDeck</code><br><code>Owner</code>：获得锁的线程称为<code>Owner</code><br><code>!Owner</code>：释放锁的线程</p>
-<p><code>sychronized</code>底层包含3种锁（优化性能）：</p>
-<ol>
-<li>偏向锁：主要用于无竞争条件下，由于锁都是可重入的，即已经获得锁的进程可以多次锁住/解锁<code>monitor对象</code>。偏向的意思就是当线程第一次获得锁之后，下一次由于还是这个线程获得锁，那么就取消加锁/解锁的流程，以提高效率。</li>
-<li>轻量级锁(自选锁)：适用于多线程竞争条件下，当发生竞争时，想要获取锁的线程由于当前有其它线程占用锁，所以必须等待。此时由于锁占用的时间不会很长，所以竞争线程不需要挂起，只需自旋一段时间就可以获得该锁。</li>
-<li>重量级锁：竞争线程由于不能获取锁，而且需要等待很长的时间，所以将其挂起， 由<code>OS</code>来调度。</li>
-</ol>
-<p>锁的升级：无锁–&gt;偏向锁–&gt;轻量级锁(自旋锁)–&gt;重量级锁</p>
-<p><code>Lock</code>:</p>
-<ol>
-<li><code>Lock</code>是<code>java</code>代码实现的，和jvm无关。</li>
-<li><code>Lock</code>和<code>sychronized</code>一点最大的不同，采用<code>sychronized</code>的代码不需要手动解锁，而采用<code>Lock</code>的方式必须手动解锁。</li>
-</ol>
-<p><code>Lock</code>的特点：</p>
-<ol>
-<li><code>Lock</code>实现了读写锁。</li>
-<li><code>Lock</code>实现了可中断的锁：A、B竞争互斥锁，A获得了该锁，B必须等待，如果B被中断(比如IO)，那么B可以响应中断。</li>
-</ol>
-<p>锁的相关概念：</p>
-<ol>
-<li>可重入锁：可重入性实际上表明了锁的分配机制，基于线程的分配，而不是基于方法调用的分配。<code>Lock</code>和<code>sychronized</code>都是可重入锁。具体解释是当一个线程已经获取了这个锁，然后在调用加锁的方法时，可重入锁会将锁的引用计数加一，然后从这个方法返回。</li>
-<li>可中断锁：如果某一线程A正在执行锁中的代码，另一线程B正在等待获取该锁，可能由于等待时间过长，线程B不想等待了，想先处理其他事情，我们可以让它中断自己或者在别的线程中中断它，这种就是可中断锁。<code>synchronized</code>就不是可中断锁，而<code>Lock</code>是可中断锁。</li>
-<li>公平锁：公平锁即尽量以请求锁的顺序来获取锁。比如同是有多个线程在等待一个锁，当这个锁被释放时，等待时间最久的线程（最先请求的线程）会获得该所，这种就是公平锁。<code>synchronized</code>就是非公平锁，它无法保证等待的线程获取锁的顺序。</li>
-</ol>
-<h4 id="23-锁的等级：方法锁、对象锁、类锁"><a href="#23-锁的等级：方法锁、对象锁、类锁" class="headerlink" title="23 锁的等级：方法锁、对象锁、类锁"></a>23 锁的等级：方法锁、对象锁、类锁</h4><p><code>sychronized</code>三种修饰(一样)：</p>
-<ol>
-<li>修饰非静态方法，此时锁的是当前对象</li>
-<li>修饰静态方法，  此时锁的是当前的类的<code>class</code>对象，即所有这个类的实例化对象。</li>
-<li>修饰代码块， 锁的是括号中配置的实例对象。</li>
-</ol>
-<h4 id="24-写出生产者消费者模式"><a href="#24-写出生产者消费者模式" class="headerlink" title="24 写出生产者消费者模式"></a>24 写出生产者消费者模式</h4><p><code>分析：</code><br><code>生产者和生产者：互斥</code><br><code>生产者和消费者：互斥和同步</code><br><code>消费者和消费者：互斥</code></p>
-<p><em>伪代码</em><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">semphore empty = <span class="number">20</span>;</span><br><span class="line">semphore full  = <span class="number">0</span>;</span><br><span class="line">semphore mutex = <span class="number">1</span>; <span class="comment">//互斥</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">producer</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">while</span> (<span class="number">1</span>)&#123;</span><br><span class="line">	      p(empty);</span><br><span class="line">	      p(mutex);</span><br><span class="line">	      produce_and_put();</span><br><span class="line">	      v(mutex);</span><br><span class="line">	      v(full);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">consumer</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">while</span> (<span class="number">1</span>)&#123;</span><br><span class="line">	      p(full);</span><br><span class="line">	      p(mutex);</span><br><span class="line">	      get_and_consumer();</span><br><span class="line">	      v(mutex);</span><br><span class="line">	      v(empty);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h4 id="25-ThreadLocal的设计理念与作用"><a href="#25-ThreadLocal的设计理念与作用" class="headerlink" title="25 ThreadLocal的设计理念与作用"></a>25 ThreadLocal的设计理念与作用</h4><p><code>ThreadLocal</code>是线程局部变量。每个线程都有自己的副本，而不会与其它线程的副本相冲突。<br><code>ThreadLocal</code>最常用于以下这个场景：多线程环境下存在对非线程安全对象的并发访问，而且该对象不需要在线程间共享，但是我们不想加锁，这时候可以使用ThreadLocal来使得每个线程都持有一个该对象的副本。</p>
-<p><code>pulic T get(){}</code>: 获取当前线程的局部变量。<br><code>public void set(T vaule){}</code>: 设置当前线程的局部变量。<br><code>public void remove()</code>: 移除当前线程副本。<br><code>protected initialvalue(){}</code>：<code>protected</code>方法，在使用前 需要重写。</p>
-<p>实现原理：<br>每个<code>ThreadLocal</code>对象都包含一个<code>ThreadLocalMap</code>(类似于一个<code>hashmap</code>，数组实现，因为没有碰撞)，key为<code>thread</code>，<code>value</code>为变量。</p>
-<h4 id="26-ThreadPool用法与优势。"><a href="#26-ThreadPool用法与优势。" class="headerlink" title="26. ThreadPool用法与优势。"></a>26. ThreadPool用法与优势。</h4><p>线程池的优点：</p>
-<ol>
-<li>减少资源消耗：当有大量线程进行不断得创建和撤销，这种性能的消耗是很大的，有了线程池可以减少这种不必要的消耗。</li>
-<li>加快线程的响应：没有线程池的情况，线程需要创建才能运行，有了线程池之后，就可以直接运行可。</li>
-<li>方便对于线程的管理。</li>
-</ol>
-<h4 id="27-Concurrent包里的其他东西：ArrayBlockingQueue、CountDownLatch等等"><a href="#27-Concurrent包里的其他东西：ArrayBlockingQueue、CountDownLatch等等" class="headerlink" title="27 Concurrent包里的其他东西：ArrayBlockingQueue、CountDownLatch等等"></a>27 Concurrent包里的其他东西：ArrayBlockingQueue、CountDownLatch等等</h4><p><code>ArrayBlockingQueue</code>:由数组实现的有限堵塞队列，它本质上是一个容器队列。<br><code>BlockingQueue</code>的方法：<br><code>队尾添加</code>:</p>
-<ol>
-<li><code>add(an object)</code>：向队列添加，如果成功返回<code>true</code>，否则抛出异常。</li>
-<li><code>offer(an object)</code>: 向队列添加，如果成功返回<code>true</code>，否则返回<code>false</code>。</li>
-<li><code>put(an object)</code>：向队列添加，如果成功，则返回，否则(空间不足)，则线程堵塞，知道队列有空间为止。</li>
-</ol>
-<p><code>队首删除</code>:</p>
-<ol>
-<li><code>remove</code>：取走队首，成功返回<code>true</code>，如果队列空了，则抛出异常。</li>
-<li><code>poll()</code>：去走队列头部的对象，如果不能立即取出，则返回<code>null</code>;</li>
-<li><code>take()</code>：取出队列头的对象，如果队列为空，则线程堵塞。</li>
-</ol>
-<p>访问队列的线程堵塞的两种情况：</p>
-<ol>
-<li>试图向已经满的队列放入数据的操作会堵塞线程，直到<code>ArrayBlockingQueue</code>里有新的空间才会被唤醒继续操作。</li>
-<li>试图向空队列提取数据会导致堵塞，直到<code>ArrayBlockingQueue</code>进了新的数据才会被唤醒。<br><code>ArrayBlockingQueue</code>:支持可选公平策略。即<code>FIFO</code>，因放入的<code>FIFO</code>和提取的<code>FIFO</code>。<br>注意：</li>
-<li>它是数组实现的，有界堵塞队列，大小在对象构造时确定。</li>
-<li>它是线程安全的，是堵塞的。</li>
-<li>不接收<code>null</code>元素。</li>
-<li>公平性可以在构造函数中指定，<code>true</code>为公平（FIFO），<code>false</code>则唤醒的顺序不确定。</li>
-<li>实现了<code>BlockingQueue</code>接口。</li>
-<li>实现了<code>Collection</code>和<code>iterator</code>接口。</li>
-<li>容量在构造函数中确定。容量不可以自动扩展，也没有手动扩展的接口。</li>
-</ol>
-<p><code>CountDownLatch</code>:解决线程同步问题的类。<br><code>应用场景</code>:有一个线程任务想要往下执行，但必须等到其它的任务执行完毕之后才可以继续执行下去。<br>具体原理：<code>CountDownLatch</code>类中有一个计数器(<code>count</code>)，对它的<code>+-</code>操作都是原子操作(操作不可中断)，即同时只有一个线程可以操作它。<code>CountDownLatch</code>通过构造函数传入一个初始值。调用类的实例化对象方法<code>cutDown()</code>，使计数减一；调用<code>await()</code>方法，线程将堵塞，直到<code>count</code>计数为0，才被唤醒。</p>
-<h4 id="28-wait-和sleep-的区别"><a href="#28-wait-和sleep-的区别" class="headerlink" title="28 wait()和sleep()的区别"></a>28 wait()和sleep()的区别</h4><p><code>sleep()</code>：<code>thread</code>类中的静态方法，作用是让当前线程进入休眠状态，以便让其它线程有机会执行。进入休眠状态的线程不会释放线程占有的锁。<br><code>wait()</code>：<code>Object</code>类中定义的方法。在指定的对象上调用<code>wait()</code>方法会让当前线程进入等待状态（前提是当前线程持有了<code>monitor</code>对象），此时当前线程会释放当前持有的<code>monitor</code>，这样其它线程便有机会获取这个对象的<code>monitor</code>。当其它线程获取了这个对象的<code>monitor</code>时，便可以调用<code>notify</code>唤醒之前进入等待状态的线程。</p>
-<h4 id="29-foreach与正常for循环效率对比"><a href="#29-foreach与正常for循环效率对比" class="headerlink" title="29 foreach与正常for循环效率对比"></a>29 foreach与正常for循环效率对比</h4><ol>
-<li>遍历数组时， <code>foreach</code>好些</li>
-<li>遍历集合时， <code>for</code>好些，因为<code>foreach</code>遍历时会锁定集合中的对象(线程安全)</li>
-<li><code>foreach</code>在代码上更加清晰和简单</li>
-</ol>
-<h4 id="30-Java-IO与NIO的主要区别"><a href="#30-Java-IO与NIO的主要区别" class="headerlink" title="30 Java IO与NIO的主要区别"></a>30 Java IO与NIO的主要区别</h4><table>
-<thead>
-<tr>
-<th style="text-align:right"><code>IO</code></th>
-<th style="text-align:right"><code>NIO</code></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:right"><code>面向流</code></td>
-<td style="text-align:right"><code>缓存区</code></td>
-</tr>
-<tr>
-<td style="text-align:right"><code>同步堵塞IO</code></td>
-<td style="text-align:right"><code>同步非堵塞IO(轮询)</code></td>
-</tr>
-<tr>
-<td style="text-align:right"><code>无</code></td>
-<td style="text-align:right"><code>选择器</code></td>
-</tr>
-</tbody>
-</table>
-<p><code>面向流和缓冲区的区别</code>：<code>Java IO</code>面向流意味着每次从流中读一个或者多个数据，直至读取所有数据，它们没有被缓存到任何地方。此外，它不能前后移动流中的数据。如果需要前后移动流中的数据，就必须先把流中的数据缓存到一个缓冲区中。<code>Java NIO</code>的方法略有不同。它是先把数据缓存到一个缓冲区中，需要时可以前后移动缓冲区中的数据，所以比较灵活。但是需要检查是否该缓冲区中包含所有你需要处理的数据。而且，需要确保当有更多数据放入缓冲区时，不要覆盖缓冲区中尚未处理完的数据。<br><code>堵塞IO和非堵塞IO</code>：这两个概念是在网络<code>IO</code>中提出的，<code>堵塞型IO</code>指的是当线程读取一个设备的数据时，发现没有数据可以读取，则线程堵塞，直到有数据可以读取时才被唤醒。当线程写一个设备时，发现设备没有空间可以写，则线程堵塞，直到有空间可以写时才被唤醒。<code>堵塞型IO</code>是<code>Java IO</code>的方式。非堵塞型IO，则有点不同，当线程读一个设备时，发现没有数据可以读，则线程不堵塞，可以做完成其它的任务，但是需要回来不断查询设备是否有数据可以读取。当一个线程写一个设备时，发现没有空间可以写，则线程去执行其它的任务，然后再回来不断查询设备现在是否有空间可以写。<code>Java NIO</code>的工作方式是非堵塞型IO。</p>
-<p><code>选择器</code>:一个线程可以用一个选择器注册多个<code>IO</code>通道，然后管理这些<code>IO</code>通道。</p>
-<h4 id="31-反射的作用于原理"><a href="#31-反射的作用于原理" class="headerlink" title="31 反射的作用于原理"></a>31 反射的作用于原理</h4><p><code>Java反射机制</code>: 可以让我们在运行时获取类的方法、属性、接口等类的内部信息的机制。也就是说。反射本质上是一个<code>反着来</code>的过程。当我们可以通过<code>new</code>创建一个类的实例时，实际上是由<code>Java</code>虚拟机根据这个类的<code>Class</code>对象在运行时构建出来的 。而反射是首先根据类的完整路径(运行期间)，或者类名(编译期间)获取该类的<code>Class</code>对象来获取它的定义信息，从而我们可以访问到它的方法、属性，知道这个类的父类、实现了哪些接口等信息。</p>
-<p>通过类名/对象 –&gt;(获取) 类的<code>class</code>对象  –&gt; 访问类的成员变量/成员方法（等所有信息）。</p>
-<h4 id="32-泛型常用特点，List能否转为List"><a href="#32-泛型常用特点，List能否转为List" class="headerlink" title="32 泛型常用特点，List能否转为List"></a>32 泛型常用特点，List<string>能否转为List<object></object></string></h4><ol>
-<li>为何引入泛型：在没有泛型出来的那时，一些容器的存取类型，都要经过类型转化，这会造成有些类型不符合造成的运行期间的错误。</li>
-<li><p>泛型类：就是具有一个或者多个类型参数的类。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Pair</span>&lt;<span class="title">T</span>, <span class="title">U</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> T first;</span><br><span class="line">        <span class="keyword">private</span> U second;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Pair</span><span class="params">(T first, U second)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.first = first;</span><br><span class="line">	            <span class="keyword">this</span>.second = second;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> T <span class="title">getFirst</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> first;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> U <span class="title">getSecond</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> second;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setFirst</span><span class="params">(T newValue)</span> </span>&#123;</span><br><span class="line">            first = newValue;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setSecond</span><span class="params">(U newValue)</span> </span>&#123;</span><br><span class="line">            second = newValue;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>泛型方法：就是带类型参数的方法。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ArrayAlg</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="function">T <span class="title">getMiddle</span><span class="params">(T[] a)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> a[a.length / <span class="number">2</span>];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>类型通配符：</p>
-<ol>
-<li><code>?</code>:是所有实参的父类。</li>
-<li><code>? extends A</code>必须是A的子类</li>
-<li><code>? supper A</code>必须是A的父类<br><code>List&lt;String&gt; 能否转化为List&lt;Object&gt; ?</code><br>答案：不能转换。<br>因为<code>String</code>的<code>List</code>持有的是String类和其子类的对性，<code>Object</code>的<code>List</code>可以持有任何类型的<code>Object</code>,所以<code>String</code>的<code>List</code>不等价于<code>object</code>的<code>List</code>。<br>但是<code>List&lt;String&gt;</code>可以转换为<code>List&lt;? extends object&gt;</code></li>
-</ol>
-</li>
-</ol>
-<h4 id="33-解析XML的几种方式的原理与特点：DOM、SAX、PULL"><a href="#33-解析XML的几种方式的原理与特点：DOM、SAX、PULL" class="headerlink" title="33 解析XML的几种方式的原理与特点：DOM、SAX、PULL"></a>33 解析XML的几种方式的原理与特点：DOM、SAX、PULL</h4><p><code>略</code></p>
-<h4 id="34-Java与C-对比"><a href="#34-Java与C-对比" class="headerlink" title="34 Java与C++对比"></a>34 Java与C++对比</h4><ol>
-<li><code>Java</code> 比<code>C++</code>具有更好的跨平台性（可移植性），但是付出了性能的代价。</li>
-<li><code>C++</code> 保留了指针，<code>JAVA</code>没有</li>
-<li><code>C++</code> 支持多继承，<code>Java</code>不支持多继承， 但是允许一个类实现多个接口。 </li>
-<li><code>C++</code> 可以进行手动内存管理，<code>JAVA</code>由<code>GC</code>机制进行内存管理</li>
-<li><code>Java</code> 不支持操作符重载，<code>C++</code> 支持</li>
-<li><code>Java</code> 不支持预处理</li>
-</ol>
-<h4 id="35-Java1-7与1-8新特性"><a href="#35-Java1-7与1-8新特性" class="headerlink" title="35 Java1.7与1.8新特性"></a>35 Java1.7与1.8新特性</h4><p><code>略</code>     </p>
-<h4 id="36-设计模式：单例、工厂、适配器、责任链、观察者等等"><a href="#36-设计模式：单例、工厂、适配器、责任链、观察者等等" class="headerlink" title="36 设计模式：单例、工厂、适配器、责任链、观察者等等"></a>36 设计模式：单例、工厂、适配器、责任链、观察者等等</h4><p><code>略</code></p>
-<h4 id="37-JNI的使用"><a href="#37-JNI的使用" class="headerlink" title="37 JNI的使用"></a>37 JNI的使用</h4><p><code>JNI——Java Native Interface</code>，它是<code>Java</code>平台的一个特性(并不是<code>Android</code>系统特有的)。其实主要是定义了一些<code>JNI</code>函数，让开发者可以通过调用这些函数实现<code>Java</code>代码调用<code>C/C++</code>的代码，<code>C/C++</code>的代码也可以调用<code>Java</code>的代码，这样就可以发挥各个语言的特点了。</p>
-<h4 id="38-类加载顺序"><a href="#38-类加载顺序" class="headerlink" title="38 类加载顺序"></a>38 类加载顺序</h4><p>当加载一个类时，首先调用<code>父类的静态代码块和静态成员</code>，然后是调用<code>子类的静态代码块和静态成员</code>。代码块和成员按照类中编写顺序调用。</p>
-<ol>
-<li><code>父类的静态代码块和静态成员</code></li>
-<li><code>子类的静态代码块和静态成员</code></li>
-</ol>
-<p>当<code>new</code>一个子类的实例对象时，</p>
-<ol>
-<li><code>父类的非静态成员</code></li>
-<li><code>父类的构造方法</code></li>
-<li><code>子类的非静态成员</code></li>
-<li><code>子类的构造方法</code></li>
-</ol>
-
+              <p>Java基础整理<br>
+          
       
     </div>
     
@@ -1242,6 +582,10 @@
         <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
     </div>
 
+      
+        <p class="article-more-link">
+          <a href="/2018/04/05/java-base/#more">more >></a>
+        </p>
       
       <div class="clearfix"></div>
     </div>
